@@ -1,0 +1,63 @@
+15:54:50.718 I <4 · Logger> [Logger] BaseLogger 日志初始化结束
+15:54:50.717 I <3 · Logger> [Logger] 开始轮转日志文件
+15:54:50.726 I <3 · Logger> [Logger] PclLogger 日志初始化结束
+15:54:50.986 I [Application] 程序版本：快照版 2.13.1.1 (410)
+15:54:50.987 I [Application] 识别码：0000-0000-0000-0000，已解锁反馈主题
+15:54:50.987 I [Application] 程序路径：C:\Users\啼南山\Desktop\ssmc\sspcl\Sspcl.exe
+15:54:50.987 I [Application] 系统编码：gb2312 (936, GBK=True)
+15:54:50.987 I [Application] 管理员权限：False
+15:54:50.987 I [Application] 第一阶段加载用时：282 ms
+15:54:51.029 I [FormMain] 全新的 PCL，使用新的版本隔离默认值
+15:54:51.050 I [ModLoader] 加载器 LoaderTask`2 MC stub 状态改变：Loading
+15:54:51.050 I [FormMain] 第二阶段加载用时：61 ms
+15:54:51.051 I <5 · L/MC stub> [ModLoader] 加载器 LoaderTask`2 MC stub 状态改变：Finished
+15:54:51.075 I [FormMain] 从设置更新背景图片与标题栏样式
+15:54:51.094 I [FormMain] 窗口已置顶，位置：(318.4, 136.8), 900 x 550.4
+15:54:51.097 I [FormMain] 第三阶段加载用时：23 ms
+15:54:51.097 I <7 · Animation> [ModAnimation] 动画线程开始
+15:54:51.211 I <9 · 初始化> [ModLoader] 加载器 LoaderTask`2 MC stub 状态改变：Loading
+15:54:51.211 I <10 · L/MC stub> [ModLoader] 加载器 LoaderTask`2 MC stub 状态改变：Finished
+15:54:51.212 I <9 · 初始化> [ModLoader] 加载器 LoaderTask`2 PCL 配置更新 状态改变：Loading
+15:54:51.213 I <11 · L/PCL 配置更新> [ModSecret] 该版本中不包含更新通知功能……
+15:54:51.213 I <11 · L/PCL 配置更新> [ModLoader] 加载器 LoaderTask`2 PCL 配置更新 状态改变：Finished
+15:54:51.213 I <12 · TryClearTaskTemp> [ModMain] 开始清理任务缓存文件夹
+15:54:51.213 I <12 · TryClearTaskTemp> [ModMain] 已清理任务缓存文件夹
+15:54:51.432 I [ModAnimation] 两个动画帧间隔 276 ms
+15:54:51.812 I [FormMain] DPI：120，系统版本：Microsoft Windows NT 10.0.19045.0，PCL 位置：C:\Users\啼南山\Desktop\ssmc\sspcl\Sspcl.exe
+15:54:53.332 I [MyRadioButton] 按下单选按钮：启动器启动
+15:54:54.343 I [MyRadioButton] 按下单选按钮：下载
+15:54:54.349 I [FormMain] 切换主要页面：Download, -1
+15:54:56.123 I [MyRadioButton] 按下单选按钮：设置
+15:54:56.129 I [FormMain] 切换主要页面：Link, -1
+15:54:58.560 I [MyRadioButton] 按下单选按钮：更多
+15:54:58.570 I [FormMain] 切换主要页面：Setup, -1
+15:54:59.053 I [MyRadioButton] 按下单选按钮：启动
+15:54:59.054 I [FormMain] 切换主要页面：Launch, -1
+15:55:01.446 I [MyButton] 按下按钮：版本设置
+15:55:01.449 I [] TabCheck tag=
+15:55:01.455 I [FormMain] 切换主要页面：InstanceSetup, SetupLaunch
+15:55:01.559 I [PageStarsectorInstanceRight] ShowTab tag=2
+15:55:06.112 I [MyListItem] 按下单选列表项：导出
+15:55:06.112 I [] TabCheck tag=4
+15:55:06.112 I [PageStarsectorInstanceRight] ShowTab tag=4
+15:55:06.762 I [MyButton] 按下按钮：复制 mod id 列表
+15:55:08.839 I [MyListItem] 按下单选列表项：settings 文件
+15:55:08.839 I [] TabCheck tag=5
+15:55:08.839 I [PageStarsectorInstanceRight] ShowTab tag=5
+15:55:09.542 I [MyListItem] 按下单选列表项：Mod 管理
+15:55:09.542 I [] TabCheck tag=3
+15:55:09.542 I [PageStarsectorInstanceRight] ShowTab tag=3
+15:55:09.875 I [MyListItem] 按下单选列表项：概览
+15:55:09.875 I [] TabCheck tag=2
+15:55:09.875 I [PageStarsectorInstanceRight] ShowTab tag=2
+15:55:10.164 I [MyListItem] 按下单选列表项：内存分配
+15:55:10.164 I [] TabCheck tag=1
+15:55:10.164 I [PageStarsectorInstanceRight] ShowTab tag=1
+15:55:11.999 I [MyCheckBox] 按下复选框（True）：跟随全局设置（使用 设置 → 启动 中的内存分配）
+15:55:12.749 I [MyIconButton] 按下图标按钮：BtnTitleInner
+15:55:12.749 I [FormMain] 切换主要页面：Launch, -1
+15:55:13.715 I [MyRadioButton] 按下单选按钮：设置
+15:55:13.715 I [FormMain] 切换主要页面：Link, -1
+15:55:16.160 I [MyIconButton] 按下图标按钮：BtnTitleClose
+15:55:16.161 I [FormMain] 收到关闭指令
+15:55:16.385 I [FormMain] 程序已退出，返回值：Success

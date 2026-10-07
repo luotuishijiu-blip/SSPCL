@@ -1036,19 +1036,6 @@ Public Class FormMain
             End If
             '安装 Mod
             If PageInstanceMod.InstallMods(PathList) Then Return
-            '安装整合包
-            If {"zip", "rar", "mrpack"}.Any(Function(t) t = Extension) Then '部分压缩包是 zip 格式但后缀为 rar，总之试一试
-                Logger.Info("文件为压缩包，尝试作为整合包安装")
-                Hint("检测到压缩包拖入，正在准备安装……")
-                Try
-                    ModpackInstall(FilePath)
-                    RunInUi(Sub() FrmMain.PageChange(FormMain.PageType.TaskManager))
-                    Return
-                Catch ex As Exception
-                    If ex.IsCanceled Then Return
-                    '安装失败，继续往后尝试
-                End Try
-            End If
             'RAR 处理
             If Extension = "rar" Then
                 Hint("PCL 无法处理 rar 格式的压缩包，请在解压后重新压缩为 zip 格式再试！")

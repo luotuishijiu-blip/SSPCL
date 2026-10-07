@@ -80,11 +80,6 @@ Module ModStarsector
         Return SaveScanner.Scan(IO.Path.Combine(installPath, "saves"))
     End Function
 
-    ''' <summary>安装一个 mod 压缩包（.zip/.7z/.rar）。</summary>
-    Function InstallArchive(archivePath As String, modsDir As String) As InstallResult
-        Return ModInstaller.InstallArchive(archivePath, modsDir)
-    End Function
-
     ''' <summary>删除一个 mod 目录（进回收站）。</summary>
     Sub RecycleDir(path As String)
         ModInstaller.RecycleDir(path)

@@ -245,8 +245,6 @@ Module ModMcStubs
     End Function
     Public Sub JavaInit()
     End Sub
-    Public Sub ModpackInstall(Optional a As Object = Nothing)
-    End Sub
     Public Sub MusicControlNext()
     End Sub
     Public Sub MusicControlPause()

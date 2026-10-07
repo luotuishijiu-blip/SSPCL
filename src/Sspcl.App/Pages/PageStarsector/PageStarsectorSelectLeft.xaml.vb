@@ -42,9 +42,6 @@ Public Class PageStarsectorSelectLeft
         Dim addItem As New MyListItem With {.IsScaleAnimationEnabled = False, .Type = MyListItem.CheckType.Clickable, .Title = "添加已有文件夹", .Height = 34, .ToolTip = "将一个已有的远行星号文件夹添加到列表", .Logo = AddIcon}
         AddHandler addItem.Click, Sub(s, e2) RaiseEvent AddFolderRequested()
         PanList.Children.Add(addItem)
-        Dim importItem As New MyListItem With {.IsScaleAnimationEnabled = False, .Type = MyListItem.CheckType.Clickable, .Title = "导入整合包", .Height = 34, .ToolTip = "导入整合包", .Logo = ImportIcon}
-        AddHandler importItem.Click, Sub(s, e2) ImportModArchive()
-        PanList.Children.Add(importItem)
         '边距
         PanList.Children.Add(New FrameworkElement With {.Height = 10, .IsHitTestVisible = False})
         '确认勾选状态
@@ -68,20 +65,6 @@ Public Class PageStarsectorSelectLeft
         ModMain.SaveStarsectorPaths()
         RefreshList()
         ModMain.FrmStarsectorSelectRight.RefreshCards()
-    End Sub
-
-    Private Sub ImportModArchive()
-        Dim dlg As New Microsoft.Win32.OpenFileDialog With {
-            .Title = "导入 mod 压缩包",
-            .Filter = "压缩包|*.zip;*.7z;*.rar;*.jar"
-        }
-        If dlg.ShowDialog() <> True Then Return
-        Dim r = ModStarsector.InstallArchive(dlg.FileName, ModStarsector.ModsDir(ModMain.StarsectorPath))
-        If r.Success Then
-            MsgBox("mod 已安装到 mods 目录。", MsgBoxStyle.Information, "导入整合包")
-        Else
-            MsgBox("安装失败：" & r.Error, MsgBoxStyle.Exclamation, "导入整合包")
-        End If
     End Sub
 
 End Class
