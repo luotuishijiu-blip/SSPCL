@@ -2,10 +2,11 @@ Public Class PageStarsectorSettings
 
     Private _loading As Boolean = False
     Private _ramTimer As System.Windows.Threading.DispatcherTimer
+    Private Shared _lastTab As Integer = 0
 
     Private Sub Init() Handles Me.Loaded
         PanBack.ScrollToHome()
-        ShowTab(0)
+        ShowTab(_lastTab)
         ' 内存实时刷新（照抄 Sspcl 原版：每 1 秒刷新一次内存占用显示）
         _ramTimer = New System.Windows.Threading.DispatcherTimer With {.Interval = TimeSpan.FromSeconds(1)}
         AddHandler _ramTimer.Tick, Sub()
@@ -22,6 +23,7 @@ Public Class PageStarsectorSettings
     End Sub
 
     Public Sub ShowTab(tag As Integer)
+        _lastTab = tag
         PanLaunch.Visibility = If(tag = 0, Visibility.Visible, Visibility.Collapsed)
         PanUI.Visibility = If(tag = 1, Visibility.Visible, Visibility.Collapsed)
         PanSystem.Visibility = If(tag = 2, Visibility.Visible, Visibility.Collapsed)
