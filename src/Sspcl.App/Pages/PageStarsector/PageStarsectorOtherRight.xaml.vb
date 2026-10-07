@@ -38,8 +38,23 @@ Public Class PageStarsectorOtherRight
             Dim del As New MyButton With {.Text = "删除", .Padding = New Thickness(12, 5, 12, 5), .Margin = New Thickness(10, 0, 0, 0)}
             AddHandler del.Click, Sub(s, e2) DeleteTool(t)
             row.Children.Add(del)
+            Dim re As New MyButton With {.Text = "重命名", .Padding = New Thickness(12, 5, 12, 5), .Margin = New Thickness(10, 0, 0, 0)}
+            AddHandler re.Click, Sub(s, e2) RenameTool(t)
+            row.Children.Add(re)
             PanToolList.Children.Add(row)
         Next
+    End Sub
+
+    Private Sub RenameTool(t As String)
+        Dim parts = t.Split("|"c)
+        Dim name = If(parts.Length > 0, parts(0), "")
+        Dim path = If(parts.Length > 1, parts(1), "")
+        Dim newName = InputBox("插件名称：", "重命名插件", name)
+        If String.IsNullOrWhiteSpace(newName) Then Return
+        Dim idx = ModMain.StarsectorTools.IndexOf(t)
+        If idx >= 0 Then ModMain.StarsectorTools(idx) = newName & "|" & path
+        ModMain.SaveStarsectorTools()
+        RefreshTools()
     End Sub
 
     Private Sub RunTool(path As String)
@@ -62,7 +77,9 @@ Public Class PageStarsectorOtherRight
             .Filter = "程序|*.exe;*.bat;*.cmd;*.lnk|所有文件|*.*"
         }
         If dlg.ShowDialog() <> True Then Return
-        Dim entry = ModMain.ImportStarsectorTool(dlg.FileName)
+        Dim name = InputBox("插件名称：", "导入插件", IO.Path.GetFileNameWithoutExtension(dlg.FileName))
+        If String.IsNullOrWhiteSpace(name) Then Return
+        Dim entry = ModMain.ImportStarsectorTool(dlg.FileName, name)
         If entry = "" Then
             MsgBox("导入失败：无法移动文件到插件目录。", MsgBoxStyle.Exclamation, "错误")
             Return

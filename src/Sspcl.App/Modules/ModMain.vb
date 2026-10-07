@@ -461,11 +461,11 @@ EndHint:
         End Try
     End Function
 
-    ''' <summary>导入插件：创建插件目录并把文件移入，返回 name|path（失败返回空串）。</summary>
-    Public Function ImportStarsectorTool(filePath As String) As String
+    ''' <summary>导入插件：创建插件目录并把文件移入，返回 name|path（失败返回空串）。name 为空时使用文件名。</summary>
+    Public Function ImportStarsectorTool(filePath As String, Optional name As String = "") As String
         Try
             If String.IsNullOrWhiteSpace(filePath) OrElse Not IO.File.Exists(filePath) Then Return ""
-            Dim name = IO.Path.GetFileNameWithoutExtension(filePath)
+            If String.IsNullOrWhiteSpace(name) Then name = IO.Path.GetFileNameWithoutExtension(filePath)
             Dim toolsDir = StarsectorToolsDir()
             IO.Directory.CreateDirectory(toolsDir)
             Dim target = IO.Path.Combine(toolsDir, IO.Path.GetFileName(filePath))
