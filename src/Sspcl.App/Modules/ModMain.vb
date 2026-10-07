@@ -423,6 +423,24 @@ EndHint:
         Settings.Set("StarsectorHomeShortcuts", String.Join(vbCrLf, StarsectorHomeShortcuts))
     End Sub
 
+    ''' <summary>导入插件：创建 Tools 文件夹并把文件移入，返回 name|path（失败返回空串）。</summary>
+    Public Function ImportStarsectorTool(filePath As String) As String
+        Try
+            If String.IsNullOrWhiteSpace(filePath) OrElse Not IO.File.Exists(filePath) Then Return ""
+            Dim name = IO.Path.GetFileNameWithoutExtension(filePath)
+            Dim toolsDir = PathPure.Value & "Tools\"
+            IO.Directory.CreateDirectory(toolsDir)
+            Dim target = IO.Path.Combine(toolsDir, IO.Path.GetFileName(filePath))
+            If IO.File.Exists(target) Then
+                Try : IO.File.Delete(target) : Catch : Return "" : End Try
+            End If
+            IO.File.Move(filePath, target)
+            Return name & "|" & target
+        Catch ex As Exception
+            Return ""
+        End Try
+    End Function
+
     ''' <summary>mod 池目录（所有下载的 mod 都存这里）。</summary>
     Public Function ModPoolDir() As String
         Return IO.Path.Combine(Paths.Base, "ModPool")

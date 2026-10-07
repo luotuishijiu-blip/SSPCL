@@ -56,11 +56,17 @@ Public Class PageStarsectorOtherRight
     End Sub
 
     Private Sub AddTool_Click(sender As Object, e As MouseButtonEventArgs) Handles BtnAddTool.Click
-        Dim name = InputBox("工具名称：", "添加工具")
-        If String.IsNullOrWhiteSpace(name) Then Return
-        Dim path = InputBox("工具路径（.exe / .bat / .cmd 等）：", "添加工具")
-        If String.IsNullOrWhiteSpace(path) Then Return
-        ModMain.StarsectorTools.Add(name & "|" & path)
+        Dim dlg As New Microsoft.Win32.OpenFileDialog With {
+            .Title = "导入插件（exe / bat / cmd / lnk）",
+            .Filter = "程序|*.exe;*.bat;*.cmd;*.lnk|所有文件|*.*"
+        }
+        If dlg.ShowDialog() <> True Then Return
+        Dim entry = ModMain.ImportStarsectorTool(dlg.FileName)
+        If entry = "" Then
+            MsgBox("导入失败：无法移动文件到插件目录。", MsgBoxStyle.Exclamation, "错误")
+            Return
+        End If
+        ModMain.StarsectorTools.Add(entry)
         ModMain.SaveStarsectorTools()
         RefreshTools()
     End Sub
