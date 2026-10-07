@@ -9,8 +9,8 @@
             <local:MyCard Title="下载" Margin="0,0,0,15">
                 <StackPanel Margin="20,38,20,18">
                     <TextBlock Text="远行星号 Mod 商店（中文论坛）" FontSize="14" Foreground="{DynamicResource ColorBrush1}"/>
-                    <TextBlock x:Name="LabStatus" FontSize="12" Foreground="{DynamicResource ColorBrushGray3}" TextWrapping="Wrap" Margin="0,6,0,0" Text="正在加载……"/>
-                    <local:MyButton x:Name="BtnDownloadGame" Text="下载游戏原版" Padding="14,6" Margin="0,12,0,0" HorizontalAlignment="Left"/>
+                    <TextBlock x:Name="LabStatus" FontSize="12" Foreground="{DynamicResource ColorBrushGray3}" TextWrapping="Wrap" Margin="0,6,0,0" Text="正在沟通……"/>
+                    <local:MyButton x:Name="BtnDownloadGame" Text="下载游戏原版" Padding="14,6" Margin="0,12,0,0" HorizontalAlignment="Left" IsEnabled="False"/>
                 </StackPanel>
             </local:MyCard>
             <StackPanel x:Name="PanStoreList"/>
