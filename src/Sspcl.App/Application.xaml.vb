@@ -220,7 +220,7 @@ RetryCacheCheck:
 
     '动态 DLL 加载
     Private Sub New() '这里必须尽早调用，且不能使用任何库，否则加载 Sspcl.Foundation 就会导致崩溃
-        Static Prefixes As String() = {"Sspcl.Core", "System.Text.Json", "System.Text.Encodings.Web", "System.IO.Compression.ZipFile", "System.Net.Http.Formatting", "System.Numerics.Vectors", "System.Runtime.CompilerServices.Unsafe", "System.Threading.Tasks.Extensions", "System.Memory", "System.Buffers", "Microsoft.Bcl.AsyncInterfaces", "NAudio", "Newtonsoft.Json", "Ookii.Dialogs.Wpf", "Imazen.WebP", "CacheCow.Common", "CacheCow.Client.FileStore", "CacheCow.Client", "ThrottleDebounce", "Microsoft.Win32.Registry", "Sspcl.Java", "Sspcl.Foundation.Wpf", "Sspcl.Foundation"}
+        Static Prefixes As String() = {"Sspcl.Core", "System.Text.Json", "System.Text.Encodings.Web", "System.IO.Compression.ZipFile", "System.Net.Http.Formatting", "System.Numerics.Vectors", "System.Runtime.CompilerServices.Unsafe", "System.Threading.Tasks.Extensions", "System.Memory", "System.Buffers", "Microsoft.Bcl.AsyncInterfaces", "Newtonsoft.Json", "Ookii.Dialogs.Wpf", "Imazen.WebP", "CacheCow.Common", "CacheCow.Client.FileStore", "CacheCow.Client", "ThrottleDebounce", "Microsoft.Win32.Registry", "Sspcl.Java", "Sspcl.Foundation.Wpf", "Sspcl.Foundation"}
         Static LoadedAssemblies As New ConcurrentDictionary(Of String, Lazy(Of Assembly))(StringComparer.Ordinal) '缓存
         AddHandler AppDomain.CurrentDomain.AssemblyResolve,
         Function(sender As Object, Args As ResolveEventArgs) As Assembly

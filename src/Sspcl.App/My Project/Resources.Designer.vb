@@ -170,15 +170,6 @@ Namespace My.Resources
             End Get
         End Property
         
-        '''<summary>
-        '''  查找 System.Byte[] 类型的本地化资源。
-        '''</summary>
-        Friend ReadOnly Property NAudio() As Byte()
-            Get
-                Dim obj As Object = ResourceManager.GetObject("NAudio", resourceCulture)
-                Return CType(obj,Byte())
-            End Get
-        End Property
         
         '''<summary>
         '''  查找 System.Byte[] 类型的本地化资源。

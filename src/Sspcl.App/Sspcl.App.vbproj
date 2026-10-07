@@ -145,11 +145,6 @@
       <HintPath>Resources\Imazen.WebP.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="NAudio, Version=1.7.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Resources\NAudio.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Resources\Newtonsoft.Json.dll</HintPath>
@@ -582,7 +577,6 @@
   <ItemGroup>
     <Resource Include="Resources\Font.ttf" />
     <None Include="Resources\Help.zip" />
-    <None Include="Resources\NAudio.dll" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>
