@@ -25,31 +25,34 @@
 依赖：Visual Studio 2022+（含 .NET Framework 4.8 目标包）与 .NET 8 SDK。
 
 ```powershell
-# 1) 构建 C# 核心库（Sspcl.Core，netstandard2.0），并复制 DLL 到主程序 Resources 目录
+# 1) 还原依赖并构建 C# 核心库（Sspcl.Core，netstandard2.0），复制 DLL 到主程序 Resources 目录
+dotnet restore Sspcl.sln
 dotnet build src\Sspcl.Core\Sspcl.Core.csproj -c Release
 Copy-Item src\Sspcl.Core\bin\Release\netstandard2.0\Sspcl.Core.dll `
-  "PCL-main\Plain Craft Launcher 2\Resources\Sspcl.Core.dll" -Force
+  "src\Sspcl.App\Resources\Sspcl.Core.dll" -Force
 
 # 2) 构建主程序（单文件 exe）
 $msb = "C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Current\Bin\MSBuild.exe"
-& $msb "PCL-main\Plain Craft Launcher 2\Plain Craft Launcher 2.vbproj" -t:Build -p:Configuration=Debug
+& $msb "src\Sspcl.App\Sspcl.App.vbproj" -t:Build -p:Configuration=Debug
 ```
 
-产物：`PCL-main\Plain Craft Launcher 2\bin\Sspcl.exe`（DLL 已内嵌，单文件可分发）。
+产物：`src\Sspcl.App\bin\Sspcl.exe`（DLL 已内嵌，单文件可分发）。
 
 ---
 
 ## 目录结构
 
 ```
-├─ PCL-main\Plain Craft Launcher 2\   主程序（VB.NET / WPF）
-│   ├─ Pages\PageStarsector\          远行星号各页面（启动/设置/实例/百宝箱）
-│   ├─ ModStarsector.vb               游戏封装（扫描、配装、启动）
-│   └─ Modules\ModMain.vb             启动器入口逻辑
-├─ PCL-main\MeloongCore\              PCL 底层库（.NET）
-├─ PCL-main\PCLCS\                    PCL 辅助库（Java 启动封装等）
-├─ src\Sspcl.Core\                    独立核心库（Install/Launch/Mods/Saves/…）
-├─ src\Sspcl.Cli\、src\Sspcl.App\     辅助命令行与演示应用
+├─ src\Sspcl.App\                 主程序（VB.NET / WPF）
+│   ├─ Pages\PageStarsector\      远行星号各页面（启动/设置/实例/百宝箱）
+│   ├─ ModStarsector.vb           游戏封装（扫描、配装、启动）
+│   └─ Modules\ModMain.vb         启动器入口逻辑
+├─ src\Sspcl.Foundation\          基础库（.NET Standard 2.0）
+├─ src\Sspcl.Foundation.Wpf\      WPF 基础库（.NET Framework 4.8）
+├─ src\Sspcl.Java\                Java 启动封装库（.NET Framework 4.8）
+├─ src\Sspcl.Core\                核心库（Install/Launch/Mods/Saves/…）
+├─ src\Sspcl.Cli\                 命令行工具
+├─ src\Sspcl.Desktop\             演示桌面应用（.NET 8 WPF）
 └─ Sspcl.sln
 ```
 

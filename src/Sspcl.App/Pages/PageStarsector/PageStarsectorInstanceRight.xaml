@@ -1,0 +1,68 @@
+<local:MyPageRight x:Class="PageStarsectorInstanceRight"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Sspcl" PanScroll="PanBack">
+    <local:MyScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" x:Name="PanBack">
+        <StackPanel x:Name="PanMain" Margin="25,25,25,10">
+            <!-- 内存分配 -->
+            <StackPanel x:Name="PanMemory" Visibility="Collapsed">
+                <local:MyCard Title="内存分配" Margin="0,0,0,15">
+                    <StackPanel Margin="20,38,20,18">
+                        <local:MyCheckBox x:Name="ChkFollowGlobal" Text="跟随全局设置（使用 设置 → 启动 中的内存分配）" Margin="0,0,0,12"/>
+                        <StackPanel x:Name="PanMemManual" Orientation="Horizontal">
+                            <TextBlock Text="Xmx" VerticalAlignment="Center" Foreground="{DynamicResource ColorBrushGray3}"/>
+                            <local:MyTextBox x:Name="BoxXmx" Width="100" Margin="8,0,0,0"/>
+                            <TextBlock Text="Xms" VerticalAlignment="Center" Margin="20,0,0,0" Foreground="{DynamicResource ColorBrushGray3}"/>
+                            <local:MyTextBox x:Name="BoxXms" Width="100" Margin="8,0,0,0"/>
+                        </StackPanel>
+                        <TextBlock x:Name="LabMemHint" FontSize="12" Foreground="{DynamicResource ColorBrushGray4}" TextWrapping="Wrap" Margin="0,10,0,0" Text="保存后写入 vmparams 文件，下次启动生效。"/>
+                        <local:MyButton x:Name="BtnSaveMem" Text="保存" Padding="14,6" Margin="0,15,0,0" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </local:MyCard>
+            </StackPanel>
+            <!-- 概览 -->
+            <StackPanel x:Name="PanOverview" Visibility="Collapsed">
+                <local:MyCard Title="概览" Margin="0,0,0,15">
+                    <StackPanel Margin="20,38,20,18">
+                        <TextBlock x:Name="LabOverview" FontSize="13" Foreground="{DynamicResource ColorBrush1}" TextWrapping="Wrap" Text="正在读取……"/>
+                    </StackPanel>
+                </local:MyCard>
+            </StackPanel>
+            <!-- Mod 管理 -->
+            <StackPanel x:Name="PanMod" Visibility="Collapsed">
+                <local:MyCard Title="Mod 管理" Margin="0,0,0,15">
+                    <StackPanel Margin="20,38,20,18">
+                        <TextBlock x:Name="LabModSummary" FontSize="13" Foreground="{DynamicResource ColorBrushGray3}" TextWrapping="Wrap" Text="正在扫描……"/>
+                        <local:MyButton x:Name="BtnRescan" Text="重新扫描" Padding="14,6" Margin="0,12,0,0" HorizontalAlignment="Left"/>
+                        <StackPanel x:Name="PanModList" Margin="0,15,0,0"/>
+                    </StackPanel>
+                </local:MyCard>
+            </StackPanel>
+            <!-- 导出 -->
+            <StackPanel x:Name="PanExport" Visibility="Collapsed">
+                <local:MyCard Title="导出" Margin="0,0,0,15">
+                    <StackPanel Margin="20,38,20,18">
+                        <TextBlock FontSize="13" Foreground="{DynamicResource ColorBrush1}" TextWrapping="Wrap" Text="把当前已启用的 mod id 列表复制到剪贴板，便于分享或备份。"/>
+                        <local:MyButton x:Name="BtnExportClip" Text="复制 mod id 列表" Padding="14,6" Margin="0,15,0,0" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </local:MyCard>
+            </StackPanel>
+            <!-- settings 文件 -->
+            <StackPanel x:Name="PanSettings" Visibility="Collapsed">
+                <local:MyCard Title="settings 文件" Margin="0,0,0,15">
+                    <StackPanel Margin="20,38,20,18">
+                        <TextBox x:Name="BoxSettingsJson" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto"
+                                 Height="300" FontFamily="Consolas" FontSize="12" TextWrapping="NoWrap"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                            <local:MyButton x:Name="BtnSaveSettings" Text="保存" Padding="14,6"/>
+                            <local:MyButton x:Name="BtnReloadSettings" Text="重新读取" Padding="14,6" Margin="10,0,0,0"/>
+                        </StackPanel>
+                        <TextBlock x:Name="LabSettingsHint" FontSize="12" Foreground="{DynamicResource ColorBrushGray4}" TextWrapping="Wrap" Margin="0,10,0,0" Text="直接编辑 settings.json 原始内容。"/>
+                    </StackPanel>
+                </local:MyCard>
+            </StackPanel>
+        </StackPanel>
+    </local:MyScrollViewer>
+</local:MyPageRight>
