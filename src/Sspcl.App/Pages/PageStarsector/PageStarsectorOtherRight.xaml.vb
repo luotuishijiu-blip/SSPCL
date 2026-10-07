@@ -23,6 +23,7 @@ Public Class PageStarsectorOtherRight
     ' ============ 百宝箱 ============
     Private Sub RefreshTools()
         If ModMain.StarsectorTools.Count = 0 Then ModMain.LoadStarsectorTools()
+        LabToolsDir.Text = "插件目录：" & ModMain.StarsectorToolsDir()
         PanToolList.Children.Clear()
         If ModMain.StarsectorTools.Count = 0 Then Return
         For Each t In ModMain.StarsectorTools
@@ -69,6 +70,19 @@ Public Class PageStarsectorOtherRight
         ModMain.StarsectorTools.Add(entry)
         ModMain.SaveStarsectorTools()
         RefreshTools()
+    End Sub
+
+    Private Sub BtnChangeDir_Click(sender As Object, e As MouseButtonEventArgs) Handles BtnChangeDir.Click
+        Dim dlg As New Ookii.Dialogs.Wpf.VistaFolderBrowserDialog()
+        dlg.Description = "选择插件存放目录"
+        dlg.SelectedPath = ModMain.StarsectorToolsDir()
+        If dlg.ShowDialog() = True Then
+            If ModMain.ChangeStarsectorToolsDir(dlg.SelectedPath) Then
+                RefreshTools()
+            Else
+                MsgBox("改变路径失败：无法迁移插件文件。", MsgBoxStyle.Exclamation, "错误")
+            End If
+        End If
     End Sub
 
     Private Sub BtnAiLoadout_Click(sender As Object, e As MouseButtonEventArgs) Handles BtnAiLoadout.Click

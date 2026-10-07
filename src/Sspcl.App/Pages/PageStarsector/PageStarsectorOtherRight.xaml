@@ -31,7 +31,11 @@
                         <TextBlock Text="内置工具" FontSize="13" Foreground="{DynamicResource ColorBrush1}"/>
                         <local:MyButton x:Name="BtnAiLoadout" Text="AI 配装（舰船自动装配器）" Padding="14,6" Margin="0,10,0,0" HorizontalAlignment="Left"/>
                         <TextBlock Text="自制工具（运行 exe / bat / cmd）" FontSize="13" Foreground="{DynamicResource ColorBrush1}" Margin="0,16,0,0"/>
-                        <local:MyButton x:Name="BtnAddTool" Text="添加工具" Padding="14,6" Margin="0,10,0,0" HorizontalAlignment="Left"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                            <local:MyButton x:Name="BtnAddTool" Text="添加工具" Padding="14,6"/>
+                            <local:MyButton x:Name="BtnChangeDir" Text="改变路径" Padding="14,6" Margin="10,0,0,0"/>
+                        </StackPanel>
+                        <TextBlock x:Name="LabToolsDir" FontSize="12" Foreground="{DynamicResource ColorBrushGray3}" TextWrapping="Wrap" Margin="0,10,0,0"/>
                         <StackPanel x:Name="PanToolList" Margin="0,12,0,0"/>
                     </StackPanel>
                 </local:MyCard>

@@ -155,6 +155,7 @@ Public Class Settings
         New Setting("StarsectorWarmStart", True),
         New Setting("StarsectorPaths", ""),
         New Setting("StarsectorTools", ""),
+        New Setting("StarsectorToolsDir", ""),
         New Setting("StarsectorHomeShortcuts", ""),
         New Setting("StarsectorIsolateSaves", False),
         New Setting("StarsectorCloseAfterLaunch", False),

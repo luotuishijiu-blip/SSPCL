@@ -423,12 +423,50 @@ EndHint:
         Settings.Set("StarsectorHomeShortcuts", String.Join(vbCrLf, StarsectorHomeShortcuts))
     End Sub
 
-    ''' <summary>导入插件：创建 Tools 文件夹并把文件移入，返回 name|path（失败返回空串）。</summary>
+    ''' <summary>获取插件目录（默认在启动器安装目录下的 Tools 文件夹）。</summary>
+    Public Function StarsectorToolsDir() As String
+        Dim s = Settings.Get(Of String)("StarsectorToolsDir")
+        If String.IsNullOrWhiteSpace(s) Then Return Paths.Base & "Tools\"
+        Return s.TrimEnd("\"c) & "\"
+    End Function
+
+    ''' <summary>改变插件目录，并把已有插件文件迁移到新目录。返回是否成功。</summary>
+    Public Function ChangeStarsectorToolsDir(newDir As String) As Boolean
+        Try
+            If String.IsNullOrWhiteSpace(newDir) Then Return False
+            newDir = newDir.TrimEnd("\"c) & "\"
+            Dim oldDir = StarsectorToolsDir()
+            If String.Equals(oldDir, newDir, StringComparison.OrdinalIgnoreCase) Then Return True
+            IO.Directory.CreateDirectory(newDir)
+            '迁移每个工具文件
+            For i = 0 To StarsectorTools.Count - 1
+                Dim t = StarsectorTools(i)
+                Dim parts = t.Split("|"c)
+                Dim name = If(parts.Length > 0, parts(0), "")
+                Dim oldPath = If(parts.Length > 1, parts(1), "")
+                If oldPath <> "" AndAlso IO.File.Exists(oldPath) Then
+                    Dim newPath = IO.Path.Combine(newDir, IO.Path.GetFileName(oldPath))
+                    If IO.File.Exists(newPath) Then
+                        Try : IO.File.Delete(newPath) : Catch : End Try
+                    End If
+                    IO.File.Move(oldPath, newPath)
+                    StarsectorTools(i) = name & "|" & newPath
+                End If
+            Next
+            SaveStarsectorTools()
+            Settings.Set("StarsectorToolsDir", newDir)
+            Return True
+        Catch ex As Exception
+            Return False
+        End Try
+    End Function
+
+    ''' <summary>导入插件：创建插件目录并把文件移入，返回 name|path（失败返回空串）。</summary>
     Public Function ImportStarsectorTool(filePath As String) As String
         Try
             If String.IsNullOrWhiteSpace(filePath) OrElse Not IO.File.Exists(filePath) Then Return ""
             Dim name = IO.Path.GetFileNameWithoutExtension(filePath)
-            Dim toolsDir = PathPure.Value & "Tools\"
+            Dim toolsDir = StarsectorToolsDir()
             IO.Directory.CreateDirectory(toolsDir)
             Dim target = IO.Path.Combine(toolsDir, IO.Path.GetFileName(filePath))
             If IO.File.Exists(target) Then
