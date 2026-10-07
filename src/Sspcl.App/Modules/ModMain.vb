@@ -409,6 +409,20 @@ EndHint:
         Settings.Set("StarsectorTools", String.Join(vbCrLf, StarsectorTools))
     End Sub
 
+    ''' <summary>主页快捷方式列表（每项 name|path，用换行分隔）。</summary>
+    Public StarsectorHomeShortcuts As List(Of String) = New List(Of String)()
+
+    ''' <summary>从设置读取主页快捷方式。</summary>
+    Public Sub LoadStarsectorHomeShortcuts()
+        Dim s = Settings.Get(Of String)("StarsectorHomeShortcuts")
+        StarsectorHomeShortcuts = If(String.IsNullOrWhiteSpace(s), New List(Of String)(), s.Split({vbCrLf, vbLf}, StringSplitOptions.RemoveEmptyEntries).ToList())
+    End Sub
+
+    ''' <summary>把主页快捷方式写回设置。</summary>
+    Public Sub SaveStarsectorHomeShortcuts()
+        Settings.Set("StarsectorHomeShortcuts", String.Join(vbCrLf, StarsectorHomeShortcuts))
+    End Sub
+
     ''' <summary>mod 池目录（所有下载的 mod 都存这里）。</summary>
     Public Function ModPoolDir() As String
         Return IO.Path.Combine(Paths.Base, "ModPool")
