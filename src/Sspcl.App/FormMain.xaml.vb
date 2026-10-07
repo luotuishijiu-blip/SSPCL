@@ -71,7 +71,7 @@ Public Class FormMain
         If BuildType = BuildTypes.Debug Then Hint("[开发者模式] Sspcl 正以开发者模式运行，这可能会造成严重的性能下降，请务必立即向开发者反馈此问题！", HintType.Red)
         If ModeDebug Then Hint("[调试模式] Sspcl 正以调试模式运行，这可能会导致性能下降，若无必要请不要开启！")
         '尽早执行的加载池
-        McFolderListLoader.Start(0) '为了让下载已存在文件检测可以正常运行，必须跑一次；为了让启动按钮尽快可用，需要尽早执行；为了与 PageLaunchLeft 联动，需要为 0 而不是 GetUuid
+        GameFolderListLoader.Start(0) '为了让下载已存在文件检测可以正常运行，必须跑一次；为了让启动按钮尽快可用，需要尽早执行；为了与 PageLaunchLeft 联动，需要为 0 而不是 GetUuid
 
         Logger.Info($"第二阶段加载用时：{GetTimeMs() - ApplicationStartTick} ms")
     End Sub
@@ -506,7 +506,7 @@ Public Class FormMain
         '按 ESC：启动中则取消启动，否则返回上一级
         If e.Key = Key.Escape Then
             If McLaunchLoader.State = LoadState.Loading Then
-                McLaunchCancel()
+                GameLaunchCancel()
             Else
                 TriggerPageBack()
             End If
@@ -514,7 +514,7 @@ Public Class FormMain
         '更改隐藏版本可见性
         If e.Key = Key.F11 AndAlso PageCurrent = FormMain.PageType.InstanceSelect Then
             FrmSelectRight.ShowHidden = Not FrmSelectRight.ShowHidden
-            LoaderFolderRun(McInstanceListLoader, McFolderSelected, LoaderFolderRunType.ForceRun, MaxDepth:=1, ExtraPath:="versions\")
+            LoaderFolderRun(GameInstanceListLoader, GameFolderSelected, LoaderFolderRunType.ForceRun, MaxDepth:=1, ExtraPath:="versions\")
             Return
         End If
         '更改功能隐藏可见性
@@ -633,7 +633,7 @@ Public Class FormMain
                             Hint($"输入的 Authlib 验证服务器不符合网址格式（{AuthlibServer}）！", HintType.Red)
                             Return
                         End If
-                        Dim Target = If(PageCurrent = PageType.InstanceSetup, PageInstanceLeft.Instance, McInstanceSelected)
+                        Dim Target = If(PageCurrent = PageType.InstanceSetup, PageInstanceLeft.Instance, GameInstanceSelected)
                         If Target Is Nothing Then
                             Hint("请先下载游戏，再设置第三方登录！", HintType.Red)
                             Return
@@ -1343,7 +1343,7 @@ Public Class FormMain
     Public Sub BtnExtraShutdown_Click() Handles BtnExtraShutdown.Click
         Try
             If McLaunchLoaderReal IsNot Nothing Then McLaunchLoaderReal.Cancel()
-            For Each Watcher In McWatcherList
+            For Each Watcher In GameWatcherList
                 Watcher.Kill()
             Next
             Hint("已关闭运行中的 Minecraft！", HintType.Green)

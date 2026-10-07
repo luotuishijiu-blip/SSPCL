@@ -364,7 +364,7 @@ EndHint:
     '窗体声明
     Public FrmMain As FormMain
     Public FrmStart As SplashScreen
-    Public McInstanceSelected As McInstance
+    Public GameInstanceSelected As GameInstance
     Public StarsectorPath As String = "D:\Starsector"
     Public SkipLauncher As Boolean = True
     Public SelectedFolderPath As String = ""
@@ -465,15 +465,15 @@ EndHint:
     Public FrmSetupUI As PageSetupUI
 
     'MC 加载器占位
-    Public DlClientListMojangLoader As LoaderBase = New LoaderTask(Of Integer, Integer)("MC stub", AddressOf McLoaderNoop)
-    Public McFolderListLoader As LoaderBase = New LoaderTask(Of Integer, Integer)("MC stub", AddressOf McLoaderNoop)
-    Public McInstanceListLoader As LoaderBase = New LoaderTask(Of Integer, Integer)("MC stub", AddressOf McLoaderNoop)
-    Public McLaunchLoader As LoaderBase = New LoaderTask(Of Integer, Integer)("MC stub", AddressOf McLoaderNoop)
-    Public McLaunchLoaderReal As LoaderBase = New LoaderTask(Of Integer, Integer)("MC stub", AddressOf McLoaderNoop)
-    Public McLoginLoader As LoaderTask(Of McLoginInput, McLoginOutput) = New LoaderTask(Of McLoginInput, McLoginOutput)("MC stub", AddressOf McLoginNoop)
-    Public McFolderList As List(Of McFolder)
-    Public McFolderSelected As McFolder
-    Public McWatcherList As List(Of McWatcher)
+    Public DlClientListMojangLoader As LoaderBase = New LoaderTask(Of Integer, Integer)("MC stub", AddressOf GameLoaderNoop)
+    Public GameFolderListLoader As LoaderBase = New LoaderTask(Of Integer, Integer)("MC stub", AddressOf GameLoaderNoop)
+    Public GameInstanceListLoader As LoaderBase = New LoaderTask(Of Integer, Integer)("MC stub", AddressOf GameLoaderNoop)
+    Public McLaunchLoader As LoaderBase = New LoaderTask(Of Integer, Integer)("MC stub", AddressOf GameLoaderNoop)
+    Public McLaunchLoaderReal As LoaderBase = New LoaderTask(Of Integer, Integer)("MC stub", AddressOf GameLoaderNoop)
+    Public McLoginLoader As LoaderTask(Of LoginInput, LoginOutput) = New LoaderTask(Of LoginInput, LoginOutput)("MC stub", AddressOf GameLoginNoop)
+    Public GameFolderList As List(Of GameFolder)
+    Public GameFolderSelected As GameFolder
+    Public GameWatcherList As List(Of GameWatcher)
 
 #End Region
 
@@ -903,21 +903,21 @@ NextFile:
             Text = Text.Replace("{time}", Replacer(Date.Now.ToString("HH':'mm':'ss")))
         End If
         'Minecraft
-        Text = Text.Replace("{java}", Replacer(McLaunchJavaSelected?.Folder))
-        Text = Text.Replace("{minecraft}", Replacer(McFolderSelected))
-        If McInstanceSelected?.IsLoaded Then
-            Text = Text.Replace("{version_path}", Replacer(McInstanceSelected.PathVersion)) : Text = Text.Replace("{verpath}", Replacer(McInstanceSelected.PathVersion))
-            Text = Text.Replace("{version_indie}", Replacer(McInstanceSelected.PathIndie)) : Text = Text.Replace("{verindie}", Replacer(McInstanceSelected.PathIndie))
-            Text = Text.Replace("{name}", Replacer(McInstanceSelected.Name))
-            If {"unknown", "old", "pending"}.Contains(McInstanceSelected.Version.VanillaName.Lower) Then
-                Text = Text.Replace("{version}", Replacer(McInstanceSelected.Name))
+        Text = Text.Replace("{java}", Replacer(GameLaunchJavaSelected?.Folder))
+        Text = Text.Replace("{minecraft}", Replacer(GameFolderSelected))
+        If GameInstanceSelected?.IsLoaded Then
+            Text = Text.Replace("{version_path}", Replacer(GameInstanceSelected.PathVersion)) : Text = Text.Replace("{verpath}", Replacer(GameInstanceSelected.PathVersion))
+            Text = Text.Replace("{version_indie}", Replacer(GameInstanceSelected.PathIndie)) : Text = Text.Replace("{verindie}", Replacer(GameInstanceSelected.PathIndie))
+            Text = Text.Replace("{name}", Replacer(GameInstanceSelected.Name))
+            If {"unknown", "old", "pending"}.Contains(GameInstanceSelected.Version.VanillaName.Lower) Then
+                Text = Text.Replace("{version}", Replacer(GameInstanceSelected.Name))
             Else
-                Text = Text.Replace("{version}", Replacer(McInstanceSelected.Version.VanillaName))
+                Text = Text.Replace("{version}", Replacer(GameInstanceSelected.Version.VanillaName))
             End If
-            Text = Text.Replace("{forge}", Replacer(If(McInstanceSelected.Version.HasForge, McInstanceSelected.Version.Forge, "")))
-            Text = Text.Replace("{fabric}", Replacer(If(McInstanceSelected.Version.HasFabric, McInstanceSelected.Version.Fabric, "")))
-            Text = Text.Replace("{neoforge}", Replacer(If(McInstanceSelected.Version.HasNeoForge, McInstanceSelected.Version.NeoForge, "")))
-            Text = Text.Replace("{liteloader}", Replacer(If(McInstanceSelected.Version.HasLiteLoader, "true", "")))
+            Text = Text.Replace("{forge}", Replacer(If(GameInstanceSelected.Version.HasForge, GameInstanceSelected.Version.Forge, "")))
+            Text = Text.Replace("{fabric}", Replacer(If(GameInstanceSelected.Version.HasFabric, GameInstanceSelected.Version.Fabric, "")))
+            Text = Text.Replace("{neoforge}", Replacer(If(GameInstanceSelected.Version.HasNeoForge, GameInstanceSelected.Version.NeoForge, "")))
+            Text = Text.Replace("{liteloader}", Replacer(If(GameInstanceSelected.Version.HasLiteLoader, "true", "")))
         Else
             Text = Text.Replace("{version_path}", Replacer(Nothing)) : Text = Text.Replace("{verpath}", Replacer(Nothing))
             Text = Text.Replace("{version_indie}", Replacer(Nothing)) : Text = Text.Replace("{verindie}", Replacer(Nothing))
@@ -933,13 +933,13 @@ NextFile:
             Text = Text.Replace("{user}", Replacer(McLoginLoader.Output.Name))
             Text = Text.Replace("{uuid}", Replacer(McLoginLoader.Output.Uuid?.Lower))
             Select Case McLoginLoader.Input.Type
-                Case McLoginType.Legacy
+                Case LoginType.Legacy
                     Text = Text.Replace("{login}", Replacer("离线"))
-                Case McLoginType.Ms
+                Case LoginType.Ms
                     Text = Text.Replace("{login}", Replacer("正版"))
-                Case McLoginType.Nide
+                Case LoginType.Nide
                     Text = Text.Replace("{login}", Replacer("统一通行证"))
-                Case McLoginType.Auth
+                Case LoginType.Auth
                     Text = Text.Replace("{login}", Replacer("Authlib-Injector"))
             End Select
         Else
@@ -950,7 +950,7 @@ NextFile:
         '高级
         Text = Text.RegexReplace("\{hint\}", Function(m) Replacer(PageOtherTest.GetRandomHint()))
         Text = Text.RegexReplace("\{cave\}", Function(m) Replacer(PageOtherTest.GetRandomCave()))
-        Text = Text.RegexReplace("\{setup:([a-zA-Z0-9]+)\}", Function(m) Replacer(Settings.GetSafe(m.Groups(1).Value, McInstanceSelected)))
+        Text = Text.RegexReplace("\{setup:([a-zA-Z0-9]+)\}", Function(m) Replacer(Settings.GetSafe(m.Groups(1).Value, GameInstanceSelected)))
         Text = Text.RegexReplace("\{varible:([^:\}]+)(?::([^\}]+))?\}", Function(m) Replacer(RegistryUtils.TryRead($"HKEY_CURRENT_USER\Software\{RegFolder}", $"CustomEvent{m.Groups(1).Value}", m.Groups(2).Value)))
         Text = Text.RegexReplace("\{variable:([^:\}]+)(?::([^\}]+))?\}", Function(m) Replacer(RegistryUtils.TryRead($"HKEY_CURRENT_USER\Software\{RegFolder}", $"CustomEvent{m.Groups(1).Value}", m.Groups(2).Value)))
         Return Text
@@ -1034,7 +1034,7 @@ NextFile:
             "操作系统：" & My.Computer.Info.OSFullName & vbCrLf &
             "剩余内存：" & Int(My.Computer.Info.AvailablePhysicalMemory / 1024 / 1024) & " M / " & Int(My.Computer.Info.TotalPhysicalMemory / 1024 / 1024) & " M" & vbCrLf &
             "DPI：" & DPI & "（" & Math.Round(DPI / 96, 2) * 100 & "%）" & vbCrLf &
-            "MC 文件夹：" & If(McFolderSelected, "Nothing") & vbCrLf &
+            "MC 文件夹：" & If(GameFolderSelected, "Nothing") & vbCrLf &
             "文件位置：" & Paths.Base)
     End Sub
 

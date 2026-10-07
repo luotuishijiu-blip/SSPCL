@@ -1449,7 +1449,7 @@ FinishExCatch:
                     '获取 MC 文件夹列表
                     Dim Folders As New List(Of String)
                     Folders.Add(Paths.AppData & ".minecraft\") '总是添加官启文件夹，因为 HMCL 会把所有文件存在这里
-                    Folders.AddRange(McFolderList.Select(Function(f) f.Location))
+                    Folders.AddRange(GameFolderList.Select(Function(f) f.Location))
                     Folders = Folders.Distinct.Where(Function(f) DirectoryUtils.Exists(f)).ToList
                     '平均分配到多个检查线程
                     Dim ThreadCount As Integer = (FilesToCheck.Count \ 40).Clamp(1, 8) '每个线程至少 40 个文件，最多 8 线程
@@ -1476,8 +1476,8 @@ FinishExCatch:
                 Logger.Trace(Function() $"文件检查开始，本线程负责 {Files.Count} 个文件，首个文件为 {Files.FirstOrDefault?.LocalName}")
                 '列出 MC 文件夹中的各个版本文件夹
                 Dim VersionFolders As New List(Of String)
-                For Each McFolder In FolderList
-                    For Each VersionFolder In DirectoryUtils.EnumerateDirectories(McFolder & "versions\")
+                For Each GameFolder In FolderList
+                    For Each VersionFolder In DirectoryUtils.EnumerateDirectories(GameFolder & "versions\")
                         VersionFolders.Add(PathUtils.AddSlashSuffix(VersionFolder))
                     Next
                 Next

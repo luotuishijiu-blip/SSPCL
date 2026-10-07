@@ -66,7 +66,7 @@ Public Class PageLoginNide : Inherits MyPageRight
     Public TextPass As System.Windows.Controls.PasswordBox
 End Class
 Public Class PageInstanceLeft : Inherits MyPageLeft
-    Public Shared Property Instance As McInstance
+    Public Shared Property Instance As GameInstance
     Public Property PageID As Integer = 0
     Public Function PageGet(subType As Object) As MyPageRight
         Return Nothing
@@ -139,7 +139,7 @@ Public Class PageSelectLeft : Inherits MyPageLeft
 End Class
 Public Class PageSelectRight : Inherits MyPageRight
     Public Shared ShowHidden As Boolean
-    Public Shared Function McInstanceListContent(i As McInstance) As UIElement
+    Public Shared Function GameInstanceListContent(i As GameInstance) As UIElement
         Return Nothing
     End Function
 End Class
@@ -187,7 +187,7 @@ End Class
 
 #Region "MC 类型占位"
 
-Public Enum McLoginType
+Public Enum LoginType
     None = 0
     Legacy = 1
     Ms = 2
@@ -205,20 +205,20 @@ Public Class CrashAnalyzer
     Public Sub Output(a As Boolean, b As List(Of String))
     End Sub
 End Class
-Public Class McLoginInput
-    Public Property Type As McLoginType
+Public Class LoginInput
+    Public Property Type As LoginType
 End Class
-Public Class McLoginOutput
+Public Class LoginOutput
     Public Property Name As String = ""
     Public Property Uuid As String = ""
 End Class
-Public Class McFolder
+Public Class GameFolder
     Public Property Location As String = ""
-    Public Shared Widening Operator CType(Value As McFolder) As String
+    Public Shared Widening Operator CType(Value As GameFolder) As String
         Return If(Value Is Nothing, "", Value.Location)
     End Operator
 End Class
-Public Class McWatcher
+Public Class GameWatcher
     Public Sub Kill()
     End Sub
 End Class
@@ -235,10 +235,10 @@ Module ModDevelop
     End Sub
 End Module
 
-Module ModMcStubs
-    Public Sub McLoaderNoop(l As LoaderTask(Of Integer, Integer))
+Module ModGameStubs
+    Public Sub GameLoaderNoop(l As LoaderTask(Of Integer, Integer))
     End Sub
-    Public Sub McLoginNoop(l As LoaderTask(Of McLoginInput, McLoginOutput))
+    Public Sub GameLoginNoop(l As LoaderTask(Of LoginInput, LoginOutput))
     End Sub
     Public Function HasRunningMinecraft() As Boolean
         Return False
@@ -251,9 +251,9 @@ Module ModMcStubs
     End Sub
     Public Sub MusicRefreshPlay(a As Boolean, b As Boolean)
     End Sub
-    Public Sub McLaunchCancel()
+    Public Sub GameLaunchCancel()
     End Sub
-    Public Function McLaunchJavaSelected() As Object
+    Public Function GameLaunchJavaSelected() As Object
         Return Nothing
     End Function
 End Module

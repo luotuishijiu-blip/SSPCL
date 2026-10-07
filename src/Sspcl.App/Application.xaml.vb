@@ -247,15 +247,15 @@ RetryCacheCheck:
 
     '控件模板事件
     Private Sub MyIconButton_Click(sender As Object, e As EventArgs)
-        Select Case Settings.Get(Of McLoginType)("LoginType")
-            Case McLoginType.Ms
+        Select Case Settings.Get(Of LoginType)("LoginType")
+            Case LoginType.Ms
                 '微软
                 Dim MsJson As JObject = Settings.Get(Of String)("LoginMsJson").DeserializeJson()
                 MsJson.Remove(sender.Tag)
                 Settings.Set("LoginMsJson", MsJson.ToString(Newtonsoft.Json.Formatting.None))
                 If FrmLoginMs.ComboAccounts.SelectedItem Is sender.Parent Then FrmLoginMs.ComboAccounts.SelectedIndex = 0
                 FrmLoginMs.ComboAccounts.Items.Remove(sender.Parent)
-            Case McLoginType.Legacy
+            Case LoginType.Legacy
                 '离线
                 Dim Names As New List(Of String)
                 Names.AddRange(Settings.Get(Of String)("LoginLegacyName").ToString.Split("¨"))
@@ -265,7 +265,7 @@ RetryCacheCheck:
                 FrmLoginLegacy.ComboName.Text = If(Names.Any, Names(0), "")
             Case Else
                 '第三方
-                Dim Token As String = Settings.Get(Of McLoginType)("LoginType").ToString()
+                Dim Token As String = Settings.Get(Of LoginType)("LoginType").ToString()
                 Dim Dict As New Dictionary(Of String, String)
                 Dim Names As New List(Of String)
                 Dim Passs As New List(Of String)

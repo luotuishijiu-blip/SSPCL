@@ -80,7 +80,7 @@ Public Class Settings
         New Setting("LoginNidePass", "", Source:=Sources.Registry, Encrypted:=True),
         New Setting("LoginAuthEmail", "", Source:=Sources.Registry, Encrypted:=True),
         New Setting("LoginAuthPass", "", Source:=Sources.Registry, Encrypted:=True),
-        New Setting("LoginType", McLoginType.Legacy, Source:=Sources.Registry),
+        New Setting("LoginType", LoginType.Legacy, Source:=Sources.Registry),
         New Setting("LoginPageType", 0),
         New Setting("LaunchSkinID", "", Source:=Sources.Registry, OnChanged:=Sub() PageLaunchLeft.SkinLegacy.Start()),
         New Setting("LaunchSkinType", 0, Source:=Sources.Registry, OnChanged:=AddressOf PageSetupLaunch.UpdateSkinType),
@@ -252,12 +252,12 @@ Public Class Settings
         ''' 若为版本独立设置，键为版本路径；否则，键为空字符串。
         ''' </summary>
         Public ValueCache As New ConcurrentDictionary(Of String, Object)
-        Public Function GetCache(Instance As McInstance)
+        Public Function GetCache(Instance As GameInstance)
             Dim Key As String = If(Source = Sources.Instance, Instance.PathVersion, "")
             Dim Result = Nothing
             Return If(ValueCache.TryGetValue(Key, Result), Result, Nothing)
         End Function
-        Public Sub [Set](Value As Object, Instance As McInstance)
+        Public Sub [Set](Value As Object, Instance As GameInstance)
             Dim Key As String = If(Source = Sources.Instance, Instance.PathVersion, "")
             ValueCache(Key) = Value
         End Sub
@@ -265,7 +265,7 @@ Public Class Settings
         ''' <summary>
         ''' 立即将当前的 Value 写入对应的注册表或文件。
         ''' </summary>
-        Public Sub Save(Optional Instance As McInstance = Nothing)
+        Public Sub Save(Optional Instance As GameInstance = Nothing)
             Dim Value As String = GetCache(Instance)
             Logger.Trace($"保存设置：{Key} {If(Encrypted, "", "= " & Value)}{If(Instance Is Nothing, "", $"（实例：{Instance?.PathVersion}）")}")
             If Encrypted Then
@@ -296,7 +296,7 @@ Public Class Settings
     ''' <summary>
     ''' 改变某个设置项的值。
     ''' </summary>
-    Public Shared Sub [Set](Key As String, Value As Object, Optional Instance As McInstance = Nothing)
+    Public Shared Sub [Set](Key As String, Value As Object, Optional Instance As GameInstance = Nothing)
         Dim Entry As Setting = Nothing
         If Not Entries.TryGetValue(Key, Entry) Then Throw New KeyNotFoundException("未找到设置项：" & Key)
         Try
@@ -317,7 +317,7 @@ Public Class Settings
     ''' 写入某个未经加密的设置项。
     ''' 若该设置项经过了加密，则会抛出异常。
     ''' </summary>
-    Public Shared Sub SetSafe(Key As String, Value As Object, Optional Instance As McInstance = Nothing)
+    Public Shared Sub SetSafe(Key As String, Value As Object, Optional Instance As GameInstance = Nothing)
         Dim Entry As Setting = Nothing
         If Not Entries.TryGetValue(Key, Entry) Then Throw New KeyNotFoundException("未找到设置项：" & Key)
         If Entry.Encrypted Then Throw New InvalidOperationException("禁止写入加密设置项：" & Key)
@@ -327,7 +327,7 @@ Public Class Settings
     ''' <summary>
     ''' 获取某个设置项的值。
     ''' </summary>
-    Public Shared Function [Get](Key As String, Optional Instance As McInstance = Nothing)
+    Public Shared Function [Get](Key As String, Optional Instance As GameInstance = Nothing)
         Dim Entry As Setting = Nothing
         If Not Entries.TryGetValue(Key, Entry) Then Throw New KeyNotFoundException("未找到设置项：" & Key)
         Dim Value = Entry.GetCache(Instance)
@@ -379,14 +379,14 @@ Public Class Settings
         End Try
         Return Entry.GetCache(Instance)
     End Function
-    Public Shared Function [Get](Of T)(Key As String, Optional Instance As McInstance = Nothing) As T
+    Public Shared Function [Get](Of T)(Key As String, Optional Instance As GameInstance = Nothing) As T
         Return [Get](Key, Instance)
     End Function
     ''' <summary>
     ''' 获取某个未经加密的设置项的值。
     ''' 若该设置项经过了加密，则会抛出异常。
     ''' </summary>
-    Public Shared Function GetSafe(Key As String, Optional Instance As McInstance = Nothing)
+    Public Shared Function GetSafe(Key As String, Optional Instance As GameInstance = Nothing)
         Dim Entry As Setting = Nothing
         If Not Entries.TryGetValue(Key, Entry) Then Throw New KeyNotFoundException("未找到设置项：" & Key)
         If Entry.Encrypted Then Throw New InvalidOperationException("禁止读取加密设置项：" & Key)
@@ -396,7 +396,7 @@ Public Class Settings
     ''' <summary>
     ''' 初始化某个设置项的值。
     ''' </summary>
-    Public Shared Sub Reset(Key As String, Optional Instance As McInstance = Nothing)
+    Public Shared Sub Reset(Key As String, Optional Instance As GameInstance = Nothing)
         Dim Entry As Setting = Nothing
         If Not Entries.TryGetValue(Key, Entry) Then Throw New KeyNotFoundException("未找到设置项：" & Key)
         Try
@@ -436,7 +436,7 @@ Public Class Settings
     ''' 对应的注册表或文件是否已经储存了某个设置项。
     ''' 若改成了和默认值一样的，在 2.12.3- 会储存更改，在 2.12.4+ 不会储存更改。
     ''' </summary>
-    Public Shared Function HasSaved(Key As String, Optional Instance As McInstance = Nothing) As Boolean
+    Public Shared Function HasSaved(Key As String, Optional Instance As GameInstance = Nothing) As Boolean
         Select Case Entries(Key).Source
             Case Sources.Normal
                 Return HasIniKey("Setup", Key)
