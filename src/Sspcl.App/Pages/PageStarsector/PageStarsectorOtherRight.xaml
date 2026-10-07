@@ -20,7 +20,7 @@
                 <local:MyCard Title="关于与鸣谢" Margin="0,0,0,15">
                     <StackPanel Margin="20,38,20,18">
                         <TextBlock FontSize="13" Foreground="{DynamicResource ColorBrush1}" TextWrapping="Wrap"
-                                   Text="sspcl · 远行星号启动器&#xa;远行星号（Starsector）专用启动器兼 MOD 管理器，基于 WPF 与 .NET Framework 4.8 开发。&#xa;&#xa;鸣谢：Starsector 社区与远行星号中文论坛。"/>
+                                   Text="sspcl · 远行星号启动器&#xa;远行星号（Starsector）专用启动器兼 MOD 管理器，基于 WPF 与 .NET Framework 4.8 开发。&#xa;&#xa;鸣谢：PCL2（Plain Craft Launcher 2）作者龙腾猫跃；Starsector 社区与远行星号中文论坛。"/>
                     </StackPanel>
                 </local:MyCard>
             </StackPanel>
