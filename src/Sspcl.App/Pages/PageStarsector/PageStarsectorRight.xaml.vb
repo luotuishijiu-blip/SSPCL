@@ -21,22 +21,49 @@ Public Class PageStarsectorRight
     End Sub
 
     Private Function BuildShortcutTile(name As String, path As String, entry As String) As FrameworkElement
-        Dim card As New MyCard With {.Title = name, .Width = 190, .Margin = New Thickness(0, 0, 12, 12)}
-        Dim panel As New StackPanel With {.Margin = New Thickness(16, 34, 16, 14)}
-        Dim row As New StackPanel With {.Orientation = Orientation.Horizontal}
-        Dim run As New MyButton With {.Text = "运行", .Padding = New Thickness(12, 5, 12, 5)}
-        AddHandler run.Click, Sub(s, e2) RunTool(path)
-        row.Children.Add(run)
-        Dim del As New MyButton With {.Text = "移除", .Padding = New Thickness(12, 5, 12, 5), .Margin = New Thickness(10, 0, 0, 0), .ColorType = MyButton.ColorState.Red}
-        AddHandler del.Click, Sub(s, e2)
-                                   ModMain.StarsectorHomeShortcuts.Remove(entry)
-                                   ModMain.SaveStarsectorHomeShortcuts()
-                                   RefreshShortcuts()
-                               End Sub
-        row.Children.Add(del)
-        panel.Children.Add(row)
-        card.BorderChild = panel
-        Return card
+        Dim widget As New Grid With {.Width = 150, .Height = 46, .Margin = New Thickness(0, 0, 10, 10), .Cursor = Cursors.Hand}
+        ' 背景卡片
+        Dim back As New Border With {
+            .CornerRadius = New CornerRadius(6),
+            .Background = New SolidColorBrush(Color.FromArgb(245, 255, 255, 255)),
+            .BorderThickness = New Thickness(1)
+        }
+        back.SetResourceReference(Border.BorderBrushProperty, "ColorBrushGray3")
+        widget.Children.Add(back)
+        ' 名称
+        Dim lab As New TextBlock With {
+            .Text = name,
+            .TextTrimming = TextTrimming.CharacterEllipsis,
+            .VerticalAlignment = VerticalAlignment.Center,
+            .HorizontalAlignment = HorizontalAlignment.Left,
+            .Margin = New Thickness(12, 0, 26, 0)
+        }
+        lab.SetResourceReference(TextBlock.ForegroundProperty, "ColorBrush1")
+        widget.Children.Add(lab)
+        ' 点击整个小组件运行插件
+        AddHandler widget.MouseLeftButtonUp, Sub(s, e2) RunTool(path)
+        ' 右上角 × 移除
+        Dim closeBtn As New Button With {
+            .Content = "×",
+            .Width = 22, .Height = 22,
+            .Padding = New Thickness(0),
+            .HorizontalAlignment = HorizontalAlignment.Right,
+            .VerticalAlignment = VerticalAlignment.Top,
+            .Margin = New Thickness(0, 2, 2, 0),
+            .Background = Brushes.Transparent,
+            .BorderThickness = New Thickness(0),
+            .Cursor = Cursors.Hand,
+            .ToolTip = "移除",
+            .FontSize = 14
+        }
+        closeBtn.SetResourceReference(Control.ForegroundProperty, "ColorBrushGray3")
+        AddHandler closeBtn.Click, Sub(s, e2)
+                                       ModMain.StarsectorHomeShortcuts.Remove(entry)
+                                       ModMain.SaveStarsectorHomeShortcuts()
+                                       RefreshShortcuts()
+                                   End Sub
+        widget.Children.Add(closeBtn)
+        Return widget
     End Function
 
     Private Sub RunTool(path As String)

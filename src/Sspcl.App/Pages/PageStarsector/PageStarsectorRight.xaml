@@ -7,7 +7,6 @@
     <Grid>
         <local:MyScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" x:Name="PanBack">
             <StackPanel x:Name="PanMain" Margin="25,25,25,10">
-                <TextBlock Text="快捷方式" FontSize="14" Foreground="{DynamicResource ColorBrush1}" Margin="0,0,0,12"/>
                 <WrapPanel x:Name="PanShortcuts"/>
             </StackPanel>
         </local:MyScrollViewer>
