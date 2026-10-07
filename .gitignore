@@ -1,0 +1,22 @@
+# 构建产物
+bin/
+obj/
+*.user
+*.suo
+.vs/
+[Dd]ebug/
+[Rr]elease/
+
+# 运行时数据（下载的 mod、设置、日志，不提交）
+PCL-main/Plain Craft Launcher 2/bin/
+PCL-main/Plain Craft Launcher 2/obj/
+
+# 发布二进制
+sspcl-*.zip
+release/
+PCL-main/*.zip
+
+# 系统
+Thumbs.db
+.DS_Store
+desktop.ini

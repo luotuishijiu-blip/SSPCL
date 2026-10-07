@@ -1,0 +1,4970 @@
+[
+{
+"name": "vsync",
+"translation": "垂直同步",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "fps",
+"translation": "最大每秒刷新帧数",
+"format": "数字(单位:帧)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "devMode",
+"translation": "开发者模式",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "godMode",
+"translation": "上帝模式",
+"format": "布尔值",
+"note": "造成的伤害乘以100，自身免疫伤害",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "playtestingMode",
+"translation": "启用调试模式",
+"format": "布尔值",
+"note": "用于在开发者模式下关闭一些调试项；如果不是在开发者模式下，则不发挥作用",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "printRulesDebugInfo",
+"translation": "显示debug模式详细信息",
+"format": "布尔值",
+"note": "如果设置为真，则会在游戏中显示哪些规则被启用，哪些条件判断成功/失败，如此等等。在启用时点击交互选项可能会增加响应时间。亦可在debug模式中开启/关闭(通过修改PRINT_RULES_DEBUG_INFO标签的值以调整)",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "queryMaxAASamples",
+"translation": "启用最大抗锯齿采样数",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "maxAASamples",
+"translation": "最大抗锯齿采样数",
+"format": "数字",
+"note": "可被选择的最大值在此处设置",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "aaSamplesOverride",
+"translation": "覆盖抗锯齿采样数",
+"format": "数字",
+"note": "设置为大于等于0的值将覆盖启动器中的选项；仅在启动器中启用了抗锯齿时生效",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "screenScaleOverride",
+"translation": "覆盖窗口缩放比例",
+"format": "数字",
+"note": "设置为大于0的值将覆盖游戏内设置的缩放比率",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "enableLauncherWarnings",
+"translation": "启用启动器警告功能",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "allowJVMRestartFromLauncher",
+"translation": "允许从启动器重启JVM",
+"format": "布尔值",
+"note": "试验性特性；可能导致的问题包括:隐形船、光标发癫等。不过仅有部分设备反馈了此类问题",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "allowJVMRestartFromLauncherInDevMode",
+"translation": "允许在开发者模式下在启动器中重启JVM",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "baseMemoryRequired",
+"translation": "需要的基础内存",
+"format": "数字(单位:Mb)",
+"note": "仅在“allowJVMRestartFromLauncher”启用时生效",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxMemoryFractionOfTotal",
+"translation": "JVM内存占总内存的最大比例",
+"format": "数字(单位:比率)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxMemoryMB",
+"translation": "可占用的最大内存",
+"format": "数字(单位:Mb)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "doRAMandVRAMChecksWhenRunningWithMods",
+"translation": "在启用了Mod的状况下运行内存及虚拟内存检查",
+"format": "布尔值",
+"note": "将定期检查运行内存/虚拟内存状态并在剩余内存低下时提示玩家",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "memoryCheckVerbose",
+"translation": "详细内存检查",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "colorblindMode",
+"translation": "色盲模式",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "undecoratedWindow",
+"translation": "无边框窗口",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "alwaysUndecoratedAtFullscreen",
+"translation": "在全屏模式下始终为无边框窗口",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "enableSoundFilters",
+"translation": "启用降噪模式",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "resolutionOverride",
+"translation": "覆盖分辨率",
+"format": "数字(单位:像素)",
+"note": "",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "refreshRateOverride",
+"translation": "覆盖刷新率",
+"format": "数字(单位:帧)",
+"note": "",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "forceAspectRatio",
+"translation": "强制纵横比",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "windowLocationX",
+"translation": "窗口X轴位置",
+"format": "数字(单位:像素)",
+"note": "",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "windowLocationY",
+"translation": "窗口Y轴位置",
+"format": "数字(单位:像素)",
+"note": "",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "showEnemyWaypoints",
+"translation": "显示敌人路径点",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "allowForceQuitInIronMode",
+"translation": "允许在铁人模式中启用“退回主界面”",
+"format": "布尔值",
+"note": "ALt+F4和它的作用在铁人模式中其实差不多",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "useDefaultMouseCursor",
+"translation": "使用默认光标",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "useSoftwareMouseCursor",
+"translation": "使用软件虚拟光标",
+"format": "布尔值",
+"note": "当鼠标指针因某些未知原因消失时可以发挥作用",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "allowAnyJavaVersion",
+"translation": "允许任何Java版本",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "localeOverride",
+"translation": "覆盖默认语言设置",
+"format": "字符串(语言)",
+"note": "",
+"kind": "string",
+"deprecated": false
+},
+{
+"name": "cjkMode",
+"translation": "中日韩统一表意文字模式",
+"format": "布尔值",
+"note": "启用以使游戏在切换中文/日文/韩文字体时更加顺滑",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "writeInteractionTextToFile",
+"translation": "记录交互文本",
+"format": "布尔值",
+"note": "非常基本的辅助功能，将一些交互文本写入目录saves/common/interaction_text中的文件中。由于写入操作由主线程执行，因此对性能的影响很小",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "profilerEnabled",
+"translation": "启用Proflier性能分析器程序",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "forceNoVBO",
+"translation": "强制关闭顶点缓冲对象",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "useGLFlush",
+"translation": "使用glFlush函数",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "useGLFinish",
+"translation": "使用glFinish函数",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "idleWhileWindowNotVisible",
+"translation": "隐藏窗口时闲置程序",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "doNotIdleWhenUndecoratedFullcreen",
+"translation": "无边框全屏状态下禁止闲置程序",
+"format": "布尔值",
+"note": "在无边框全屏状态下闲置的程序可能在alt+tab切屏时出现问题",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "legacyLauncher",
+"translation": "传统启动器",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "oneClickJumpPoints",
+"translation": "通过超空间跃迁点时忽略确认界面",
+"format": "布尔值",
+"note": "这个选项不发挥作用，不要启用它",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "altMouseMoveToMassTransfer",
+"translation": "按住alt键快速转移货物",
+"format": "布尔值",
+"note": "编者:默认为真",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "combatSpeedMult",
+"translation": "战斗速度系数",
+"format": "数字(单位:倍率)",
+"note": "当值高于2到3时可能导致计算数据失真(编者:自行考虑与下一条搭配以取得优化)",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "combatStepsPerFrame",
+"translation": "每帧处理的战斗步骤数量",
+"format": "数字",
+"note": "仅支持整数；更高的值可以在不损失保真度的情况下提高战斗速度，但会以帧率为代价。大于1的值会使玩家无法正确控制座舰。仅适用于AI与AI的战斗",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "breakableShips",
+"translation": "舰船会四分五裂",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "renderDHullOverlay",
+"translation": "渲染舰船受损贴图(包括D插)",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "renderDHullOverlayForAllDebug",
+"translation": "为所有舰船渲染受损贴图(debug)",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "dHullOverlayShadowOpacity",
+"translation": "受损贴图渲染透明度",
+"format": "数字(单位:百分比)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "dHullOverlayMatchHullColor",
+"translation": "受损贴图颜色与舰船配色匹配",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "shipControlsTurnOffAutopilot",
+"translation": "是否可以手动关闭舰船的自动驾驶功能",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "convertedFighterBaysCanFastRelaunch",
+"translation": "通过转换机库获得的甲板可以快速修复并发射受损战机",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "impactSoundVolumeMult",
+"translation": "舰船碰撞时音量系数",
+"format": "数字(单位:倍率)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "combatMapBorderPadForWaypoints",
+"translation": "战术小地图中可以设置战术点的内边距",
+"format": "数字(单位:su)",
+"note": "可以设置的战术点将被限制在该内边距中",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "uiFadeSpeedMult",
+"translation": "ui渐变速度系数",
+"format": "数字(单位:倍率)",
+"note": "当值为1000或更高时，也会让超空间背景在切换时立即消失",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "showCNTranslationCredits",
+"translation": "显示汉化组感谢名单",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "cnTranslationCreditsStringOverride",
+"translation": "覆盖汉化组感谢名单字符内容",
+"format": "字符串",
+"note": "",
+"kind": "string",
+"deprecated": true
+},
+{
+"name": "processMessagesWhileSavingOrLoading",
+"translation": "在保存和加载时处理信息",
+"format": "布尔值",
+"note": "由于通过在主线程上进行保存/加载渲染绕过了该问题，已不再使用。设置为假也许能解决保存/加载游戏时图形驱动崩溃的问题。",
+"kind": "bool",
+"deprecated": true
+},
+{
+"name": "updateDisplayDuringSavingOrLoading",
+"translation": "保存或加载游戏时更新显示界面",
+"format": "布尔值",
+"note": "出于谨慎而添加的对象；*可能*（但不太一定）产生与上一条设置相同的影响。设置为假将完全阻止保存/加载进度条的渲染",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "fogOfWar",
+"translation": "战争迷雾",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "fogOfWarColor",
+"translation": "战争迷雾颜色",
+"format": "数组(RGBA)",
+"note": "",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "smallClouds",
+"translation": "启用小型云雾效果",
+"format": "布尔值",
+"note": "设置为真以提高星云渲染性能。设置为假为*也许*能解决驱动程序问题导致的苍鹭在搭载有护盾的战机时使用战术系统使帧率下降的状况",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "renderShieldJitterEffect",
+"translation": "渲染护盾抖动效果",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "compressSaveGameData",
+"translation": "压缩存档文件数据",
+"format": "布尔值",
+"note": "更小的存档文件，更快地保存/加载，但存档文件不再能够手动编辑",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "enableScriptCaching",
+"translation": "启用脚本缓存功能",
+"format": "布尔值",
+"note": "目前为禁用状态，在游戏启动读条时关闭游戏将导致问题。将编译后的脚本缓存在saves/cache中，使首次运行游戏后，后续启动游戏的速度加快",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "errorShipVariant",
+"translation": "错误舰船变体替代方案",
+"format": "字符串",
+"note": "当游戏因某种原因（即错误或模组不匹配）无法定位舰船变体时，将使用此功能避免崩溃",
+"kind": "string",
+"deprecated": false
+},
+{
+"name": "renderVersionAndIdle",
+"translation": "渲染版本信息和空闲画面",
+"format": "",
+"note": "",
+"kind": "string",
+"deprecated": false
+},
+{
+"name": "planetBGRightSide",
+"translation": "星球界面在右侧显示背景",
+"format": "",
+"note": "",
+"kind": "string",
+"deprecated": false
+},
+{
+"name": "planetBGDimOverlayAlpha",
+"translation": "",
+"format": "",
+"note": "",
+"kind": "string",
+"deprecated": false
+},
+{
+"name": "cloudColor",
+"translation": "气云颜色",
+"format": "数组(RGBA)",
+"note": "",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "enableUIStaticNoise",
+"translation": "启用界面静态噪点",
+"format": "布尔值",
+"note": "已由游戏内“游玩设置”中的相同选项替代",
+"kind": "bool",
+"deprecated": true
+},
+{
+"name": "noiseColor",
+"translation": "界面噪点颜色",
+"format": "数组(RGBA)",
+"note": "",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "tripadLineColor",
+"translation": "速子平板勾线颜色",
+"format": "数组(RGBA)",
+"note": "",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "enableShipExplosionWhiteout",
+"translation": "启用爆炸白屏效果",
+"format": "布尔值",
+"note": "已由游戏内“游玩设置”中的相同选项替代",
+"kind": "bool",
+"deprecated": true
+},
+{
+"name": "useOldShipExplosions",
+"translation": "使用旧款舰船爆炸效果",
+"format": "布尔值",
+"note": "为兼容GraphicsLib的舰船爆炸而添加的项",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "asteroidBeltMapColor",
+"translation": "小行星带在地图中的颜色",
+"format": "数组(RGBA)",
+"note": "",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "ringSystemMapColor",
+"translation": "星环在地图中的颜色",
+"format": "数组(RGBA)",
+"note": "",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "slipstreamUseGLLines",
+"translation": "使用gl渲染超空间滑流",
+"format": "布尔值",
+"note": "略微提高渲染速度，但根据驱动程序的不同，可能会出现一些渲染问题",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "allowShipControlWhilePaused",
+"translation": "允许暂停时操纵舰船",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "transferCommandCRCost",
+"translation": "转移指挥消耗的舰船战备值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "reservesPeakTimeMult",
+"translation": "峰值时间系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "fluxPerCapacitor",
+"translation": "每装配点辐能寄存器增加的容量",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "dissipationPerVent",
+"translation": "每装配点辐能耗散增加的耗散量",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "peakTimeWarningSeconds",
+"translation": "剩余峰值时间为x秒时警报",
+"format": "数字",
+"note": "当剩余x秒的峰值时间时发出信息/声音警告",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxLogisticsHullmods",
+"translation": "最大后勤船插数量",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxPermanentHullmods",
+"translation": "最大内置船插(S插)数量",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "drop_prob_officer_alpha_core",
+"translation": "由alpha核心指挥的舰船掉落该核心概率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "drop_prob_officer_beta_core",
+"translation": "由beta核心指挥的舰船掉落该核心概率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "drop_prob_officer_gamma_core",
+"translation": "由gamma核心指挥的舰船掉落该核心概率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "drop_prob_mult_ai_core_frigate",
+"translation": "护卫舰ai核心基础掉落率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "drop_prob_mult_ai_core_destroyer",
+"translation": "驱逐舰ai核心基础掉落率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "drop_prob_mult_ai_core_cruiser",
+"translation": "巡洋舰ai核心基础掉落率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "drop_prob_mult_ai_core_capital",
+"translation": "主力舰ai核心基础掉落率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "drop_prob_mult_ai_core_station",
+"translation": "空间站ai核心基础掉落率",
+"format": "数字",
+"note": "空间站总是会掉落它的指挥核心",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxArmorDamageReduction",
+"translation": "装甲最大减伤值",
+"format": "数字",
+"note": "生效的装甲不会低于这个减伤计算值，即便这个装甲格已经被完全摧毁(编者：参考论坛的装甲减伤科普自行理解)",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minArmorFraction",
+"translation": "装甲最小减伤值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "dpsToHitStrengthMult",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minRefireDelay",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "zeroFluxEngineBoost",
+"translation": "零辐能加速提供的额外航速",
+"format": "数字(单位:su)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minFluxVentFraction",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minVentTimeForWeaponReload",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minFighterReplacementRate",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "friendlyCollisionDamageMult",
+"translation": "友军碰撞伤害",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "nebulaSpeedFighter",
+"translation": "战机在星云中的航速",
+"format": "数字(单位:倍率)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "nebulaSpeedFrigate",
+"translation": "护卫舰在星云中的航速",
+"format": "数字(单位:倍率)",
+"note": "编者：已不再使用，现在战场中的星云地形不再造成任何减速效果",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "nebulaSpeedDestroyer",
+"translation": "驱逐舰在星云中的航速",
+"format": "数字(单位:倍率)",
+"note": "",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "nebulaSpeedCruiser",
+"translation": "巡洋舰在星云中的航速",
+"format": "数字(单位:倍率)",
+"note": "",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "nebulaSpeedCapital",
+"translation": "主力舰在星云中的航速",
+"format": "数字(单位:倍率)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "crLossMultForRefit",
+"translation": "太空中改装舰船损失的基础战备值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "crLossMultForRefitWeapons",
+"translation": "太空中改装舰船武器损失的战备值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "crLossMultForRefitHullmods",
+"translation": "太空中改装舰船插件损失的战备值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "fighterCrewLossBase",
+"translation": "战机被击坠时机组死亡基础概率",
+"format": "数字",
+"note": "编者：男人什么装罐我说曼巴出去",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxFXSources",
+"translation": "音效源的最大数量",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxUISources",
+"translation": "用户界面中音效源的最大数量",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "campaignMusicVolumeMult",
+"translation": "生涯模式背景音乐音量倍率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "campaignMusicFilterGain",
+"translation": "生涯模式背景音乐滤波增益倍率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "campaignMusicFilterGainHF",
+"translation": "生涯模式背景音乐高频滤波增益倍率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "campaignMaxPan",
+"translation": "立体声平移范围",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "campaignMaxObjectRangeAroundJumpPoint",
+"translation": "超空间跳跃点周围显示的物体最大范围",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "factionsClaimUnpopulatedCoreSystems",
+"translation": "ai势力会殖民核心星域中的无人星系",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "sectorWidth",
+"translation": "英仙座星域宽度",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "sectorHeight",
+"translation": "英仙座星域高度",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minNonCoreGatesInSector",
+"translation": "英仙座星域中生成的最小野生星门数量",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxNonCoreGatesInSector",
+"translation": "英仙座星域中生成的最大野生星门数量",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minGatesToAddOnSecondPass",
+"translation": "星域生成中第二阶段将添加的星门最小数量",
+"format": "数字",
+"note": "至少会添加这个数目的星门，它们与任何其它星门都相去甚远(编者：在地图初步生成后，游戏会基于这个设置值至少添加一定数量的跳跃门，以确保地图的连通性和探索性)",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "gateTransitFuelCostMult",
+"translation": "星门旅行消耗的燃料倍率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "showCampaignRadar",
+"translation": "生涯模式显示右下小地图",
+"format": "",
+"note": "",
+"kind": "string",
+"deprecated": false
+},
+{
+"name": "campaignRadarRadius",
+"translation": "生涯模式右下小地图半径",
+"format": "",
+"note": "",
+"kind": "string",
+"deprecated": false
+},
+{
+"name": "minCombatZoom",
+"translation": "战斗最小缩放倍率",
+"format": "数字",
+"note": "视角可以覆盖到多小的面积",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxCombatZoom",
+"translation": "战斗最大缩放倍率",
+"format": "数字",
+"note": "视角可以覆盖到多大的面积",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minCampaignZoom",
+"translation": "生涯地图界面最小缩放倍率",
+"format": "数字",
+"note": "视角可以覆盖到多小的面积",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxCampaignZoom",
+"translation": "生涯地图界面最大缩放倍率",
+"format": "数字",
+"note": "视角可以覆盖到多大的面积",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "easyPlayerDamageDealtMult",
+"translation": "简单模式下玩家造成的伤害",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "easyPlayerDamageTakenMult",
+"translation": "简单模式下玩家受到的伤害",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "easySensorBonus",
+"translation": "简单模式的传感器范围加成",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "easySalvageMult",
+"translation": "简单模式打捞资源加成",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "easyOfficerLevelMult",
+"translation": "简单模式军官等级乘数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "enableSpacerStart",
+"translation": "启用远星者模式",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "enableStipend",
+"translation": "启用Galatia学院津贴",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "genericRollingAverageFactor",
+"translation": "计算经济滚动平均值因子",
+"format": "数字",
+"note": "每个经济周期",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "creditsPerCostUnit",
+"translation": "星币与成本单位转换倍率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "industryBuildCostMult",
+"translation": "工业建筑建造成本乘数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "industryUpkeepMult",
+"translation": "工业建筑维护成本乘数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "industryIncomeMult",
+"translation": "工业设施盈利乘数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "exportIncomeMult",
+"translation": "出口盈利乘数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "industryRefundFraction",
+"translation": "拆除工业设施时的退款比例",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minUpkeepMult",
+"translation": "殖民地建筑最低维护成本",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "upkeepReductionFromInFactionImports",
+"translation": "从同阵营进口商品时的维护成本减免比例",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "storageFreeFraction",
+"translation": "殖民地存储产品的“空闲比例”",
+"format": "数字",
+"note": "相对于基础值的调整比例(编者：用于平衡资源的获取和消耗，确保游戏经济系统的稳定性和玩家的游戏体验)",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxIndustries",
+"translation": "星球工业设施最大数量",
+"format": "数组",
+"note": "",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "overMaxIndustriesPenalty",
+"translation": "超出星球工业建筑上限的惩罚",
+"format": "数字",
+"note": "稳定度惩罚",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxColonySize",
+"translation": "殖民地最大规模",
+"format": "数字",
+"note": "玩家殖民地能够增长到的最大规模值",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "rangeForMaxExoticDemand",
+"translation": "殖民地进口货物的最大搜索范围",
+"format": "数字(单位:光年)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "exoticUtilityMultAtMaxRange",
+"translation": "殖民地进口货物在最大范围内的效用乘数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "immigrationPerHazard",
+"translation": "每危险度对人口增长率产生的影响",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "immigrationHazardMultExtraPerColonySizeAbove3",
+"translation": "每危险度对规模大于3的殖民地人口增长率产生的影响",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "immigrationIncentiveCostPerPoint",
+"translation": "邀请移民花费星币",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "immigrationIncentivePointsAboveHazardPenalty",
+"translation": "每危险度对人口增长率产生的影响",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "baseStabilizeCost",
+"translation": "在殖民地界面进行稳定操作消耗的星币基础值",
+"format": "数字(单位:星币)",
+"note": "该值为规模3的殖民地需求量",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "allowRemoteIndustryItemManagement",
+"translation": "允许远程进行殖民地工业操作",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "economyEnabled",
+"translation": "启用经济系统",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "economyIntervalnGameDays",
+"translation": "每x游戏日完成一个经济循环",
+"format": "数字",
+"note": "实际上并不由经济系统直接调用，但由一些其它东西调用",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "economyIterPerMonth",
+"translation": "每个月经济迭代的次数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "economyMinDemandForPricing",
+"translation": "商品定价时考虑的最小需求量",
+"format": "数字",
+"note": "编者：避免不交火零元购",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "economyMinStockpileForPricing",
+"translation": "商品定价时考虑的最小库存量",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "economyNoDemandPriceMult",
+"translation": "商品需求量为零时的价格倍数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "economyGreedFraction",
+"translation": "控制市场在供需失衡时的价格调整机制",
+"format": "数字",
+"note": "编者：这个设置影响市场的“贪婪程度”，即市场在面对需求时愿意支付的价格以及在供应过剩时愿意降低的价格",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "economyDeficitPriceIncrPerUnit",
+"translation": "商品短缺时该商品价格的增加量",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "economyDeficitPriceMultMax",
+"translation": "市场供应不足时商品价格的最大倍数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "economyExcessPriceDecrPerUnit",
+"translation": "市场供应过剩时商品价格的减少量",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "economyExcessPriceMultMin",
+"translation": "市场供应过剩时商品价格的最小倍数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "stockpileMultProduction",
+"translation": "殖民地库存影响生产乘数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "stockpileMultExcess",
+"translation": "殖民地库存影响过剩的乘数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "stockpileMultImports",
+"translation": "殖民地库存影响进口的乘数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "stockpileMaxMonths",
+"translation": "殖民地库存的最大存储月数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "stockpileCostMult",
+"translation": "殖民地库存的成本乘数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "stockpileShortageCostMult",
+"translation": "殖民地库存短缺时的成本乘数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "stabilityBaseValue",
+"translation": "殖民地基础稳定性",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "accessibilityBaseValue",
+"translation": "殖民地流通性基础值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "accessibilityNoSpaceport",
+"translation": "殖民地无太空港时的流通性",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "accessibilitySameFactionBonus",
+"translation": "同派系的流通性加成",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "accessibilityDistFromCOM",
+"translation": "与其它殖民地距离对流通性的影响",
+"format": "数字",
+"note": "在与核心星域间隔过远时，将以-1作为流通性基准值",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "accessibilityPerUnitShipping",
+"translation": "每单位贸易舰队对流通性的影响",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "accessibilityLossWhenAllHostile",
+"translation": "周围殖民地全数敌对时损失的流通性",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "economyExceptionOnMissingMarketEntity",
+"translation": "市场缺失货物实体时是否报错",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "economyMaxPlayerSmugglingStabilityPenalty",
+"translation": "玩家走私行为对稳定性的最大惩罚",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "economyPlayerTradeImpactMult",
+"translation": "玩家贸易影响经济的倍数",
+"format": "数字",
+"note": "增加走私影响稳定性与贸易获取声望的量大小",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "economyPlayerSellIllegalImpactMult",
+"translation": "玩家贸易违禁品影响经济的倍数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "economyPlayerSellMilitaryImpactMult",
+"translation": "玩家贸易军备影响经济的倍数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "economyPlayerTradeVolumeForRepChangeMin",
+"translation": "玩家交易影响声誉的最小范围",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "economyPlayerTradeVolumeForRepChangeMax",
+"translation": "玩家交易影响声誉的最大范围",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "economyPlayerTradeVolumeForRepChangeIncr",
+"translation": "玩家单笔交易开始造成声望影响的星币数额",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "economyPlayerXPPerCreditOfProfit",
+"translation": "玩家从交易利润中获得的经验值比例",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "economyMaxRangeForNegativeTradeRepImpactLY",
+"translation": "玩家交易降低声誉的最大范围",
+"format": "数字",
+"note": "编者：在黑市交易逃开纠察队，因在黑市交易被发现而减少声望，能够被检查到的最大距离",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "profitMarginFlat",
+"translation": "固定利润加成",
+"format": "数字",
+"note": "已废弃",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "profitMarginMult",
+"translation": "利润乘数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxEconFleets",
+"translation": "最大贸易舰队数量",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minEconSpawnIntervalPerMarket",
+"translation": "每个市场生成贸易舰队的最小间隔计时器",
+"format": "数字",
+"note": "同一个市场不会在小于这个间隔的天数内连续生成贸易舰队",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "eventCheckInterval",
+"translation": "事件检测计时器",
+"format": "数字",
+"note": "单位为游戏日。大概率(或者永远？)不会再使用它了",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "HA_1_affects",
+"translation": "1级敌对活动(星系影响)",
+"format": "数组",
+"note": "[星系内因此生成的最小敌对舰队数量,星系的最低敌舰队生成权重]；已废弃",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "HA_2_affects",
+"translation": "2级敌对活动(星系影响)",
+"format": "数组",
+"note": "",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "HA_3_affects",
+"translation": "3级敌对活动(星系影响)",
+"format": "数组",
+"note": "",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "HA_4_affects",
+"translation": "4级敌对活动(星系影响)",
+"format": "数组",
+"note": "",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "HA_1_impact",
+"translation": "1级敌对活动(殖民地冲击)",
+"format": "数组",
+"note": "[稳定性影响权重,流通性影响权重]；已废弃",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "HA_2_impact",
+"translation": "2级敌对活动(殖民地冲击)",
+"format": "数组",
+"note": "",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "HA_3_impact",
+"translation": "3级敌对活动(殖民地冲击)",
+"format": "数组",
+"note": "",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "HA_4_impact",
+"translation": "4级敌对活动(殖民地冲击)",
+"format": "数组",
+"note": "",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "ha_maxMonthlyProgress",
+"translation": "每月的敌对活动增长值",
+"format": "数字(单位:威胁点)",
+"note": "每月增长的敌对活动不会超过这个值",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "ha_maxMonthlyProgressEasy",
+"translation": "简单模式的敌对活动每月增长值",
+"format": "数字(单位:威胁点)",
+"note": "简单模式适用",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "blowbackFraction",
+"translation": "敌对活动扩散回弹影响",
+"format": "数字",
+"note": "用于任何一次性负面因素",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "blowbackPerMonth",
+"translation": "每月扩散回弹值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "blowbackOnReset",
+"translation": "重置扩散回弹值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "pirateBaseProximityPoints",
+"translation": "海盗基地产生的临时点数",
+"format": "数组",
+"note": "",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "kantasWrathPoints",
+"translation": "激怒海盗王Kanta产生的点数",
+"format": "数组",
+"note": "",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "patherProgressMultNoCells",
+"translation": "星球无左径活动为敌对活动添加的系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "patherProgressMultSleeperCells",
+"translation": "星球左径狂信徒潜伏时为敌对活动添加的系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "patherProgressMultActiveCells",
+"translation": "星球左径活动剧烈时为敌对活动添加的系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "patherProgressUnit",
+"translation": "左径活跃度单位",
+"format": "数字",
+"note": "用于展现左径活跃度的非线性进展。\n从活跃度总数中删除单位，将其乘以左径因高科技造物产生的兴趣值系数，重复。\n例如，如果活跃度单位为10，兴趣系数为0.5，则增长进度为20:10+10/2",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "patherProgressMult",
+"translation": "左径活跃度系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "hegemonyProgressUnit",
+"translation": "霸主基础怀疑度",
+"format": "数字",
+"note": "用于展现霸主怀疑度的非线性进展。\n与左径的计算方法相同。",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "hegemonyProgressMult",
+"translation": "霸主怀疑度增长系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "hegemonyPointsAdmin",
+"translation": "对使用ai核心作为殖民地管理员时的怀疑度点数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "hegemonyPointsAlpha",
+"translation": "对安装了alpha核心的殖民地设施的怀疑度点数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "hegemonyPointsBeta",
+"translation": "对安装了beta核心的殖民地设施的怀疑度点数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "hegemonyPointsGamma",
+"translation": "对安装了gamma核心的殖民地设施的怀疑度点数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxHostileActivityFleetsPerSystem",
+"translation": "每星系中可同时存在的由“敌对活动”生成的敌舰队数目上限",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "luddicPathMaxFleets",
+"translation": "卢德左径最大舰队数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "perseanLeagueMaxFleets",
+"translation": "英仙座联盟最大舰队数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "triTachyonMaxFleets",
+"translation": "速子科技最大舰队数量",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "diktatMaxFleets",
+"translation": "辛达强权最大舰队数量",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "luddicChurchMaxFleets",
+"translation": "卢德教会最大舰队数量",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "hegemonyMaxFleets",
+"translation": "霸主最大舰队数量",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "pirateProtectionPaymentFraction",
+"translation": "支付给海盗的保护费比例",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "pirateProtectionMercSpawnChance",
+"translation": "赏金猎人生成几率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "pirateProtectionMercSpawnChanceMult",
+"translation": "赏金猎人生成几率系数",
+"format": "数字",
+"note": "每次生成赏金猎人后，下次生成的概率都将乘以这个值",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "pirateProtectionMercSpawnInterval",
+"translation": "赏金猎人生成计时器",
+"format": "数组",
+"note": "[生成的最小间隔,生成的最大间隔]",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "luddicPathSmallFleetProb",
+"translation": "小型左径舰队生成概率",
+"format": "数字",
+"note": "来自卢德左径的敌对活动",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "luddicPathSleeperCellsBase",
+"translation": "殖民地左径狂信徒潜伏时的左径活动基础系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "luddicPathSleeperCellsPerSize",
+"translation": "殖民地左径狂信徒潜伏时的左径活动基础系数(与殖民地规模相关联)",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "luddicPathActiveCellsBase",
+"translation": "殖民地左径破坏活跃时的左径活动基础系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "luddicPathActiveCellsPerSize",
+"translation": "殖民地左径破坏活跃时的左径活动基础系数(与殖民地规模相关联)",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "luddicPathPerPointOfInterest",
+"translation": "每兴趣点带来的左径活动系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "luddicPathTithePerPointOfInterestPerColonySize",
+"translation": "每单位兴趣点、每单位殖民地规模对什一税数额造成的影响",
+"format": "数字",
+"note": "上缴什一税以在一段时间内避免左径骚扰",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "luddicPathTitheDurationDays",
+"translation": "上缴什一税避免左径骚扰的生效时间",
+"format": "数字(单位:游戏日)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "perseanLeagueFeeFraction",
+"translation": "向英仙座联盟交保护费的状态",
+"format": "数字",
+"note": "来自英仙座联盟的敌对活动",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "houseHannanFeeFraction",
+"translation": "向Hannan氏族支付保护费的状态",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "triTachyonProgressPerUnitProdMult",
+"translation": "每单位殖民地生产值对速子威胁提升的影响",
+"format": "数字",
+"note": "来自速子科技的敌对活动",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "diktatProgressPerUnitProdMult",
+"translation": "每单位殖民地生产值对辛达强权威胁提升的影响",
+"format": "数字",
+"note": "来自辛达强权的敌对活动",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "diktatFuelFeeFraction",
+"translation": "向辛达强权支付油税的状态",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "diktatDefeatedExportBonus",
+"translation": "击败辛达强权后给予玩家最惠国待遇得到的出口优惠",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "hegemonyInvestigatorsFreq",
+"translation": "霸主ai审查频率",
+"format": "数字",
+"note": "来自霸主的敌对活动(ai核心点数与霸主审查舰队强度正相关)",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "hegemonyReconFreq",
+"translation": "霸主侦查频率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "hegemonyPerAICorePoint",
+"translation": "每个使用中ai核心对霸主产生的影响点数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "remnantNexusPointsDamaged",
+"translation": "损坏的余晖空间站",
+"format": "数字",
+"note": "来自星系内余晖空间站的敌对活动",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "remnantNexusPointsNormal",
+"translation": "完好的余晖空间站",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "HA_fleetPointsPerPoint",
+"translation": "摧毁每点数由敌对活动生成的舰队",
+"format": "数字",
+"note": "一些减少敌对活动进度的方式",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "HA_kantaProtection",
+"translation": "Kanta的保护",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "HA_pirateBase",
+"translation": "摧毁海盗基地(数组代表摧毁的空间站等级对应减少的威胁度)",
+"format": "数组",
+"note": "",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "HA_patherBaseFlat",
+"translation": "摧毁左径基地",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "HA_patherBasePerActiveCell",
+"translation": "殖民地中的卢德左径组织被根除",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "HA_patherBaseMax",
+"translation": "摧毁大型左径基地",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "HA_megaTithe",
+"translation": "支付什一税给卢德左径",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "HA_givePK",
+"translation": "将行星杀手交给卢德左径",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "HA_tacBombardKazeron",
+"translation": "战术轰炸英仙座联盟Kazeron星球",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "HA_tacBombardHesperus",
+"translation": "战术轰炸卢德教会Hesperus星球",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxMiscFleets",
+"translation": "生成的杂项舰队最大数目",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "miscFleetPilgrimMaxFleets",
+"translation": "生成的卢德朝圣者舰队最大数目",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "miscFleetAcademyMaxFleets",
+"translation": "生成的学院穿梭机舰队最大数目",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "miscSpawnTimeoutPerMarket",
+"translation": "有市场生成杂项舰队计时器",
+"format": "数组",
+"note": "[最小间隔,最大间隔]，对于某些市场而言",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "miscSpawnInterval",
+"translation": "杂项舰队生成计时器",
+"format": "数组",
+"note": "[最小间隔,最大间隔]，对于在各处随机生成的杂项舰队而言",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "miscFleetPilgrimFrequency",
+"translation": "卢德朝圣者舰队生成频率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "miscFleetAcademyFrequency",
+"translation": "学院穿梭机舰队生成频率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "blueprintPriceOriginalItemMult",
+"translation": "蓝图价格与原始物品价格之间的系数",
+"format": "数字(单位:倍率)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "blueprintBasePriceFrigate",
+"translation": "护卫舰蓝图基础价格",
+"format": "数字(单位:星币)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "blueprintBasePriceDestroyer",
+"translation": "驱逐舰蓝图基础价格",
+"format": "数字(单位:星币)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "blueprintBasePriceCruiser",
+"translation": "巡洋舰蓝图基础价格",
+"format": "数字(单位:星币)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "blueprintBasePriceCapital",
+"translation": "主力舰蓝图基础价格",
+"format": "数字(单位:星币)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "blueprintPriceOriginalShipMult",
+"translation": "蓝图价格与原始舰船价格之间的系数",
+"format": "数字(单位:倍率)",
+"note": "基于舰船规模有额外的系数",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxContacts",
+"translation": "最大联络人数目",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "contactMinMissions",
+"translation": "联络人提供的最小任务数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "contactMaxMissions",
+"translation": "联络人提供的最大任务数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "contactMaxMissionsWithPriorityBonus",
+"translation": "重要联络人提供的最大任务数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "contactMissionUpdateIntervalDays",
+"translation": "联络人任务更新时间计时器",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "priorityContactMaxNumMissionsBonus",
+"translation": "重要联络人提供的最大任务数加成",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "priorityContactMaxMissionQualityBonus",
+"translation": "重要联络人的任务质量加成",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "defaultPotentialContactProbability",
+"translation": "生成潜在联络人的基础概率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "potentialContactProbabilityAddPerFail",
+"translation": "每次生成潜在联络人判定失败后为下次生成时系数增加的值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "shipWeaponBaseValueMult",
+"translation": "舰船武器基础价值系数",
+"format": "数字",
+"note": "从weapon_data.csv加载基值时的直接乘数",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "fighterLPCBaseValueMult",
+"translation": "战机lpc基础价值系数",
+"format": "数字",
+"note": "从wing_data.csv加载基值时的直接乘数",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "shipWeaponBuyPriceMult",
+"translation": "舰船武器购入价格系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "shipWeaponSellPriceMult",
+"translation": "舰船武器售出价格系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "nonEconItemBuyPriceMult",
+"translation": "不参与经济循环的物品购入价格系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "nonEconItemSellPriceMult",
+"translation": "不参与经济循环的物品售出价格系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "shipBuyPriceMult",
+"translation": "舰船购入价格系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "shipSellPriceMult",
+"translation": "舰船销售价格系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "hullWithDModsSellPriceMult",
+"translation": "存在D插的舰船销售价值系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "productionCostMult",
+"translation": "生产成本系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "shipProductionCostBase",
+"translation": "生产舰船基础花费",
+"format": "数字",
+"note": "固定的额外成本，以确保销售带武器的非常小的廉价船只无利可图",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "productionCapacityPerSWUnit",
+"translation": "每单位船体生产的生产能力",
+"format": "数字",
+"note": "每月产量，以星币（成本）为量化单位，该值基于生产的船舶和武器，使用与市场收入/维护相同的规模比率",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "productionSuppliesBonusFraction",
+"translation": "运送补给到集结点的奖励",
+"format": "数字",
+"note": "交付至集合点的补给/燃料/船员的价值，作为订单价值的一部分",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "techMiningDecay",
+"translation": "技术挖掘衰减率",
+"format": "数字",
+"note": "每月技术挖掘都将使废墟剩余的可开发度乘以该数值",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "transponderOffMarketAwarenessMult",
+"translation": "应答器关闭时在市场交易的怀疑度系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "baseSystemBounty",
+"translation": "星系基础赏金系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minSystemBounties",
+"translation": "星系中可同时存在的最小赏金舰队数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxSystemBounties",
+"translation": "星系中可同时存在的最大赏金舰队数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "baseCommerceSystemBounty",
+"translation": "基础商业系统赏金系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "baseCustomBounty",
+"translation": "随机赏金基础报酬",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "personCustomBountyPerLevel",
+"translation": "基于玩家等级的随机赏金报酬提升值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "basePersonBounty",
+"translation": "斩首赏金基础报酬",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "personBountyPerLevel",
+"translation": "基于玩家等级的斩首赏金报酬提升值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minPersonBounties",
+"translation": "可同时存在的斩首赏金数最小值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxPersonBounties",
+"translation": "可同时存在的斩首赏金数最大值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "personBountyNoSpawnRangeAroundPlayerLY",
+"translation": "斩首赏金不会刷新在距离玩家半径x光年的范围",
+"format": "数字(单位:光年)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "pirateBaseBounty1",
+"translation": "1级海盗基地赏金",
+"format": "数字(单位:星币)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "pirateBaseBounty2",
+"translation": "2级海盗基地赏金",
+"format": "数字(单位:星币)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "pirateBaseBounty3",
+"translation": "3级海盗基地赏金",
+"format": "数字(单位:星币)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "pirateBaseBounty4",
+"translation": "4级海盗基地赏金",
+"format": "数字(单位:星币)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "pirateBaseBounty5",
+"translation": "5级海盗基地赏金",
+"format": "数字(单位:星币)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minPirateBases",
+"translation": "星域中可同时存在的海盗基地数量最小值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxPirateBases",
+"translation": "星域中可同时存在的海盗基地数量最大值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minLPBases",
+"translation": "星域中可同时存在的左径基地数量最小值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxLPBases",
+"translation": "星域中可同时存在的左径基地数量最大值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "pirateBaseDestroyedTimeoutMonths",
+"translation": "摧毁海盗基地逾期时间",
+"format": "数组",
+"note": "[最小持续时间,最大持续时间]",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "patherBaseDestroyedTimeoutMonths",
+"translation": "摧毁左径基地逾期时间",
+"format": "数组",
+"note": "",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "fastStartBaseExtraDays",
+"translation": "快速开始模式跳过的额外天数",
+"format": "数字(单位:游戏日)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "daysUntilFullTimeFactor",
+"translation": "任务或事件完成所需时间的倍数因子",
+"format": "数字(单位:游戏日)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "noPirateRaidDays",
+"translation": "游戏开始x天内不会发生海盗袭击事件",
+"format": "数字(单位:游戏日)",
+"note": "在游戏开始后这么长的时间中不会发生常规的海盗袭击事件",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "basePirateRaidTimeoutMonths",
+"translation": "海盗袭击自然消退月数",
+"format": "数组",
+"note": "[最小持续时间,最大持续时间]",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "pirateRaidTimeoutRaidDefeatedMaxExtraMonths",
+"translation": "击退海盗袭击后殖民地debuff消退的最大延迟月数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "pirateBaseMinMonthsForNextTier",
+"translation": "海盗基地自然升级的最小间隔月数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "playerRelatedPirateBaseCreationTimeoutMonths",
+"translation": "袭击玩家殖民地的海盗基地自然消失月数",
+"format": "数组",
+"note": "[最小持续时间,最大持续时间]",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "playerRelatedPirateBaseCreationTimeoutExtraAfterBaseDestroyed",
+"translation": "击毁袭击玩家殖民地的海盗基地后殖民地debuff自然消失月数",
+"format": "数组",
+"note": "",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "punExMaxConcurrent",
+"translation": "ai势力袭击玩家殖民地事件同时存在的最大数量",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "punExTimeoutDays",
+"translation": "ai袭击玩家殖民地事件逾期时间",
+"format": "数组(单位:游戏日",
+"note": "[最小持续时间,最大持续时间]",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "punExProbTimeoutPerExpedition",
+"translation": "每次远征后超时概率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "punExMinColonySizeForNonTerritorial",
+"translation": "ai势力对位置未处于自身宣称的星系中的玩家殖民地发动袭击的玩家殖民地最小规模要求",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "aiInspectionFrequencyMult",
+"translation": "ai审查概率系数",
+"format": "数字",
+"note": "假设一颗行星上大约有5-6个alpha核心，第一次审查将在8个月后一小段时间内进行\n#第二次的耗时是2倍，第三次（及以后）均为4倍",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "luddicPathCellsIncidentProbabilityPerMonth",
+"translation": "每月刷新左径狂信徒潜伏事件的概率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "luddicPathCellsIncidentWarningMinDays",
+"translation": "殖民地刷新左径狂信徒潜伏状态后弹出警告的最小时间间隔",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "luddicPathSabotageDays",
+"translation": "左径狂信徒破坏活动瘫痪建筑的时长",
+"format": "数组",
+"note": "[最小持续时间,最大持续时间]",
+"kind": "array",
+"deprecated": false
+},
+{
+"name": "patherCellDisruptionDuration",
+"translation": "左径狂信徒解散时间",
+"format": "数字",
+"note": "在为其提供支持的左径基地被摧毁后该星球上左径组织完全解散的时间",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "basePatherCellFraction",
+"translation": "左径生成基础因数",
+"format": "数字",
+"note": "有左径狂信徒活跃的市场占星域总市场数量的份额。往后的n个市场将获得左径狂信徒潜伏的标签",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minInterestForPatherCells",
+"translation": "生成“左径狂信徒潜伏”的最低兴趣值因数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "luddicPathBaseBountySmall",
+"translation": "小型卢德左径基地基础赏金",
+"format": "数字(单位:星币)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "luddicPathBaseBountyLarge",
+"translation": "大型卢德左径基地基础赏金",
+"format": "数字(单位:星币)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minGenericMissions",
+"translation": "通用任务最小生成数目",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxGenericMissions",
+"translation": "通用任务最大生成数目",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minBarEvents",
+"translation": "酒馆事件最小生成数目",
+"format": "数字",
+"note": "为酒馆事件同时存在的数量设置上下限",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxBarEvents",
+"translation": "酒馆事件最大生成数目",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "barEventProbOneMore",
+"translation": "额外生成酒馆事件的概率",
+"format": "数字",
+"note": "事件1生成概率:100%；事件2生成概率:100%乘以它；事件3生成概率：事件2的概率乘以它，以此类推",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxTotalBarEventsAsFractionOfEventTypes",
+"translation": "酒吧事件总数占全部事件类型的最大比例",
+"format": "数字",
+"note": "编者：可能与酒吧事件的多样性或事件类型的分布有关",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "missionMaxRewardMultFromRel",
+"translation": "任务奖励与关系值相关的最大乘数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "missionMinRewardMultFromRel",
+"translation": "任务奖励与关系值相关的最小乘数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "missionMinPossibleQualityBelowImportance",
+"translation": "任务质量低于其重要性的最小值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "missionMaxPossibleQualityAboveImportance",
+"translation": "任务质量高于其重要性的最大值",
+"format": "数字",
+"note": "编者：应该指生成舰队的总价值系数高于赏金价值对应的价值系数的情况；在这种情况下，最多能超出多少单位系数的价值。防止1万星币赏金刷出无敌舰队的情况",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "raidCooldownDays",
+"translation": "突袭冷却天数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "raidDefenderIncreasePerRaid",
+"translation": "突袭防御舰队在每波突袭增加的数目",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "raidDefenderIncreaseMax",
+"translation": "突袭防御舰队的最大数目",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "raidDefenderIncreaseFraction",
+"translation": "突袭防御舰队增加的比例",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "raidDefenderIncreaseMin",
+"translation": "每波突袭中防御舰队增加的最小数目",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "raidDisruptDurationPerMarineToken",
+"translation": "每陆战队员对突袭干扰持续时间的影响值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "punitiveExpeditionDisruptDurationMult",
+"translation": "惩戒舰队造成的扰乱持续时间因数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "bombardFuelFraction",
+"translation": "行星轰炸消耗燃料的最小值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "bombardDisruptDuration",
+"translation": "行星轰炸对星球造成干扰的持续时间",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "bombardTacticalStability",
+"translation": "战术轰炸对稳定度造成的影响",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "bombardSaturationStability",
+"translation": "饱和轰炸对稳定度造成的影响",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "bombardSaturationDestroySize",
+"translation": "饱和轰炸彻底抹除殖民地的规模阈值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "decivSamplingMonths",
+"translation": "文明丧失采样月份",
+"format": "数字",
+"note": "该殖民地需要在大多数时间中维持0稳定度，且第一个月必须为0稳定度",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "decivZeroStabilityMinFraction",
+"translation": "文明丧失维持0稳定度占总时长的最小比例",
+"format": "数字",
+"note": "维持0稳定度时长在文明丧失计时中的最小比例",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "decivMinStreak",
+"translation": "足以发生文明丧失的最小连续月份",
+"format": "数字",
+"note": "最近几个月连续维持0稳定度",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "decivProbPerMonthOverStreak",
+"translation": "超过最小持续时间后，每月发生文明丧失的概率",
+"format": "数字",
+"note": "每个月份超过文明丧失阈值时发生该事件的概率",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxCommSniffersBeforeChanceToLose",
+"translation": "能够稳定存在的通讯嗅探器最大数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "probToLoseSnifferPerMonthPerExtra",
+"translation": "每超出一个能够维持的通讯嗅探器，每月丢失一个嗅探器的概率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxMarketProcurementConcurrent",
+"translation": "市场采购任务同时存在的最大数目",
+"format": "数字",
+"note": "已停止使用：查看GenericMissionManager和GenericMissionCreator中的getMissionFrequencyWeight()函数",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxAnalyzeEntityConcurrent",
+"translation": "调查实体任务同时存在的最大数目",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxSurveyPlanetConcurrent",
+"translation": "调查行星任务同时存在的最大数目",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "targetNumTradeFleetNotifications",
+"translation": "提示贸易舰队的最大通知数目",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "factionCommissionBounty",
+"translation": "派系委托赏金",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "factionCommissionStipendBase",
+"translation": "雇佣协议津贴",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "factionCommissionStipendPerLevel",
+"translation": "雇佣协议津贴每级增长值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "factionCommissionResignPenalty",
+"translation": "辞去雇佣协议扣除的罚款",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "factionCommissionResignPenaltyInPerson",
+"translation": "本人辞去雇佣协议时的罚款",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "factionCommissionRestoredRelationshipPenalty",
+"translation": "恢复雇佣协议时的罚款",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxFactionHostilitiesMult",
+"translation": "势力敌对行为最大系数",
+"format": "数字",
+"note": "再乘以对应势力的值",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minFactionHostilitiesMult",
+"translation": "势力敌对行为最小系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "distressCallEventRangeLY",
+"translation": "捕捉到求救信号半径距离",
+"format": "数字(单位:光年)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "distressCallFuelCost",
+"translation": "求救信号所需燃料成本",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "salvageValuePerFP",
+"translation": "每部署点的打捞价值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "salvageFractionCreditsMin",
+"translation": "打捞直接获取星币的最小比例",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "salvageFractionCreditsMax",
+"translation": "打捞直接获取星币的最大比例",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "salvageCargoFraction",
+"translation": "打捞获得的货物比例",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "salvageDebrisFieldFraction",
+"translation": "打捞生成残骸场的比例",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minSalvageValueForDebrisField",
+"translation": "形成残骸场所需的最小打捞价值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "shipRecoveryDialogShowBothListsAtOnce",
+"translation": "同时显示敌我双方的可恢复舰船",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "baseShipRecoveryChance",
+"translation": "恢复舰船基础概率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "baseOwnShipRecoveryChance",
+"translation": "恢复己方舰船基础概率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "baseRestoreCostMult",
+"translation": "基础修复成本系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "baseRestoreCostMultPerDMod",
+"translation": "修复D插的成本系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "probNonOwnNonRecoverablePerDMod",
+"translation": "非己方舰船每D插不可恢复的概率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "probNonOwnNonRecoverablePerAlreadyRecoverable",
+"translation": "非己方舰船在通过恢复判定后再次变为不可恢复的概率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "probNonOwnNonRecoverableMax",
+"translation": "非己方舰船无法恢复的最大概率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "baseProbLessDModsOnRecoverableEnemyShip",
+"translation": "可恢复的敌舰上产生D插的基础值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "lessDModsOnRecoverableEnemyShipMultNext",
+"translation": "可恢复的敌舰产生更少D插的概率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxDModsAddedByCombat",
+"translation": "通过战斗造成的D插最大数目",
+"format": "数字",
+"note": "如果舰船上有无法通过常规手段消除的D插，则可以超过该值",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "salvageOwnWeaponProb",
+"translation": "打捞到己方被击沉舰船上武器的概率",
+"format": "数字",
+"note": "已废弃，现在总是能打捞到己方在战斗中无法恢复的舰船上安装的全部武器和战机lpc",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "salvageOwnWingProb",
+"translation": "打捞到己方被击沉舰船上战机lpc的概率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "salvageWeaponProb",
+"translation": "打捞到武器的概率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "salvageWingProb",
+"translation": "打捞到战机lpc的概率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "salvageHullmodProb",
+"translation": "打捞到船插的概率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "baseSurveyXP",
+"translation": "星球勘探基础经验",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "averagePatrolSpawnInterval",
+"translation": "巡逻队生成平均间隔时间",
+"format": "数字(单位:游戏日)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxDoctrineNumShipsMult",
+"translation": "舰队学说对舰船数量的影响",
+"format": "数字",
+"note": "点满5点舰队规模与1点时的对比",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "doctrineFleetQualityPerPoint",
+"translation": "舰队学说对舰船质量的影响",
+"format": "数字",
+"note": "乘以(舰船质量 减 1)",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "qualityPerDMod",
+"translation": "每个D插对质量值的补正",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "qualityPerSMod",
+"translation": "每个S插对质量值的补正",
+"format": "数字",
+"note": "用于自动计算近似强度和其它类似问题",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "qualityPenaltyForImports",
+"translation": "进口生成原料对舰船质量的惩罚",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minFleetSpawnChanceMult",
+"translation": "生成舰队几率的最小值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minFleetSpawnChanceRangeLY",
+"translation": "生成舰队距离的最小值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxPirateFleets",
+"translation": "海盗舰队数目最大值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxMercFleets",
+"translation": "雇佣兵舰队数目最大值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minMarketExistenceDaysForMercs",
+"translation": "新建立的殖民地存在x天后方可生产雇佣兵舰队",
+"format": "数字(单位:游戏日)",
+"note": "此处的时间是指在这么多天后才有几率生成雇佣兵舰队",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minMarketSizeForMercs",
+"translation": "生成雇佣兵舰队的最小殖民地规模",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "allowPriceViewAtAnyColony",
+"translation": "允许在任何殖民地查看商品价格",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "autoresolveBaseInterval",
+"translation": "ai自动战斗基础计时",
+"format": "数字(单位:游戏日)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "autoresolveDamageMult",
+"translation": "ai自动战斗伤害系数",
+"format": "数字",
+"note": "每场自动战斗造成多少伤害",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "battleDetectabilityMult",
+"translation": "战斗时传感器截面系数",
+"format": "数字",
+"note": "乘以战斗中舰队的传感器截面系数",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "battleDetectabilityFlat",
+"translation": "战斗时传感器截面系数固定值",
+"format": "数字",
+"note": "战斗中舰队的传感器截面系数修正值",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "battleJoinRange",
+"translation": "附近舰队可以加入战斗的距离",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "battleJoinRangePlayerFactionBonus",
+"translation": "附近舰队判定加入玩家发起的战斗的距离补正",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "playerMaxLevel",
+"translation": "玩家最大等级",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "skillPointsPerLevel",
+"translation": "每升一级获得的技能点数量",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "storyPointsPerLevel",
+"translation": "每升一级获得的故事点数量",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "bonusXPUseMultAtMaxLevel",
+"translation": "满级后的额外经验使用系数",
+"format": "数字",
+"note": "必须为整数",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "startingCommandPoints",
+"translation": "开始战斗时的基础指挥点数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "baseSecondsPerCommandPoint",
+"translation": "获得每指挥点数所需的秒数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "commandFrequencyOpenDuration",
+"translation": "打开指挥频段延迟",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "xpGainMult",
+"translation": "经验获取倍率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "tier1StationOfficerLevel",
+"translation": "1级空间站指挥官等级",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "tier2StationOfficerLevel",
+"translation": "2级空间站指挥官等级",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "tier3StationOfficerLevel",
+"translation": "3级空间站指挥官等级",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "adminMaxHireable",
+"translation": "行星管理员最大雇佣数量",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "adminHireTier0",
+"translation": "招募0级管理员所需星币",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "adminHireTier1",
+"translation": "招募1级管理员所需星币",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "adminHireTier2",
+"translation": "招募2级管理员所需星币",
+"format": "数字",
+"note": "暂时需要保留此数值",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "adminSalaryTier0",
+"translation": "0级管理员月薪",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "adminSalaryTier1",
+"translation": "1级管理员月薪",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "adminSalaryTier2",
+"translation": "2级管理员月薪",
+"format": "数字",
+"note": "暂时需要保留此数值",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "idleAdminSalaryMult",
+"translation": "空闲的管理员薪水系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "baseMaxOutposts",
+"translation": "可建设前哨站的最大值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "baseMaxAdmins",
+"translation": "玩家可以同时管理的最多殖民地数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "colonyOverMaxPenalty",
+"translation": "超出最大值时的稳定度惩罚",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "officerMaxHireable",
+"translation": "可以雇佣的军官最大数量",
+"format": "数字",
+"note": "全星域所有可雇佣军官的数目",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "officerMercFraction",
+"translation": "可以雇佣的佣兵军官最大数量",
+"format": "数字",
+"note": "军官中佣兵军官的占比(固定等级，双倍薪水，不占用军官雇佣数上限，需要故事点雇佣)",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "officerBaseProb",
+"translation": "刷新可雇佣军官基础概率",
+"format": "数字",
+"note": "如果生成了一个军官，则生成下一个军官的概率将乘以该数",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "officerProbPerColonySize",
+"translation": "每殖民地规模对刷新军官的概率补正",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "officerAdditionalBaseProb",
+"translation": "生成额外军官的基础概率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "officerBaseMercProb",
+"translation": "生成佣兵军官的基础概率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "adminBaseProb",
+"translation": "生成殖民地管理员的基础概率",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "adminProbPerColonySize",
+"translation": "每殖民地规模生成管理员的概率补正",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxOfficerPromoteProb",
+"translation": "军官晋升最大概率",
+"format": "数字",
+"note": "战斗后计算",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "officerPromoteProbMult",
+"translation": "军官晋升概率系数",
+"format": "数字",
+"note": "战斗后计算；应用于摧毁的部署点与玩家舰队部署点之比的乘数",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "officerMercMinLevel",
+"translation": "佣兵军官的最小等级",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "officerMercMaxLevel",
+"translation": "佣兵军官的最大等级",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "officerMercPayMult",
+"translation": "佣兵军官契约合同系数",
+"format": "数字",
+"note": "雇佣与薪水的额外花费",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "officerMercContractDur",
+"translation": "佣兵军官雇佣时间",
+"format": "数字",
+"note": "佣兵军官试图离开玩家的最小间隔时间",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "officerXPRequiredMult",
+"translation": "军官经验需求系数",
+"format": "数字",
+"note": "更高的数字将降低军官升级速度",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "officerMaxLevel",
+"translation": "军官最大等级",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "officerMaxEliteSkills",
+"translation": "军官最大精英技能数目",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "officerAIMax",
+"translation": "由ai核心指挥的最大舰船数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "standardSleeperPodsOfficerLevel",
+"translation": "冻肉军官默认等级",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "exceptionalSleeperPodsOfficerLevel",
+"translation": "特殊冻肉军官等级",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "exceptionalSleeperPodsOfficerEliteSkills",
+"translation": "特殊冻肉军官精英技能数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxExceptionalSleeperPodsOfficers",
+"translation": "特殊冻肉军官最大精英技能数",
+"format": "数字",
+"note": "每星域生成数量，也可在遗弃舰中生成，因此必然能够找到这么多特殊冻肉军官",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "probSleeperPodsOfficerIsExceptional",
+"translation": "休眠仓开出特殊冻肉军官概率",
+"format": "数字",
+"note": "总共有20个特殊冻肉军官模版",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "probSleeperPodsUnexceptionalOfficerUseTemplate",
+"translation": "休眠仓开出非特殊冻肉军官套用标准模版",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxAIFleetCommanderLevel",
+"translation": "ai舰队军官的最大等级",
+"format": "数字(单位:等级)",
+"note": "编者：不特指余晖舰队",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "commanderLevelForTwoSkills",
+"translation": "拥有两个技能的军官等级",
+"format": "数字(单位:等级)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "commanderLevelForOneSkill",
+"translation": "拥有一个技能的军官等级",
+"format": "数字(单位:等级)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "baseFPPerAICore",
+"translation": "每ai核心军官对自动战斗点数产生的基础系数",
+"format": "数字",
+"note": "特指余晖舰队",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "baseFPPerOfficer",
+"translation": "每军官对自动战斗点数产生的基础系数",
+"format": "数字",
+"note": "当舰队学说中把军官质量拉满时系数减半；不适用于由ai核心指挥的舰队",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "baseCombatShipsPerOfficer",
+"translation": "每艘拥有军官的舰船的自动战斗点数基础值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "baseCombatShipsForMaxOfficerLevel",
+"translation": "拥有满级军官的舰船计入自动战斗点数的基础值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "officerAIMaxMercsMult",
+"translation": "ai舰队存在佣兵军官上限的系数",
+"format": "数字",
+"note": "可被添加进ai舰队的“超限”佣兵军官上限，与舰队学说的军官质量相乘(编者：即ai舰队也会使用不占用军官位的佣兵军官超过自己的设定军官上限)",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "officerAIMercsStartingFP",
+"translation": "ai舰队中佣兵军官起始自动战斗点数",
+"format": "数字",
+"note": "超过这个军官数时达成添加佣兵军官的阈值；已废弃",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "baseNumOfficers",
+"translation": "玩家麾下军官数量上限基础值",
+"format": "数字",
+"note": "与绿系技能“军官管理”相关",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "crewSalary",
+"translation": "每船员月薪",
+"format": "数字(单位:星币)",
+"note": "每船员的月薪",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "marineSalary",
+"translation": "每陆战队员月薪",
+"format": "数字(单位:星币)",
+"note": "每陆战队员月薪",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "officerSalaryBase",
+"translation": "军官基础月薪",
+"format": "数字(单位:星币)",
+"note": "每军官月薪",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "officerSalaryPerLevel",
+"translation": "每级军官提升的月薪数量",
+"format": "数字(单位:星币)",
+"note": "每军官每升一级为其增加的月薪",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "baseRepairRateFrigate",
+"translation": "护卫舰基础维修速度",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "baseRepairRateDestroyer",
+"translation": "驱逐舰基础维修速度",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "baseRepairRateCruiser",
+"translation": "驱逐舰基础维修速度",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "baseRepairRateCapital",
+"translation": "主力舰基础维修速度",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "suppliesPerMarinePerDay",
+"translation": "每陆战队员每天消耗的补给",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "suppliesPerCrewPerDay",
+"translation": "每船员每天消耗的补给",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "suppliesPerCargoUnitOverCapacity",
+"translation": "每超出一单位货仓所需的额外补给",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "suppliesPerFuelUnitOverCapacity",
+"translation": "每超出一单位燃料仓所需的额外补给",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "suppliesPerPersonnelUnitOverCapacity",
+"translation": "每超出一单位宿舍容量所需的额外补给",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxSuppliesPerDayForOverCapacity",
+"translation": "超出货仓上限后添加的额外补给消耗最大值",
+"format": "数字",
+"note": "每个种类的存储条独立计算，所以最大增加值为50*3=150",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "supplyConsumptionMothballedMult",
+"translation": "舰船处于封存状态下的补给消耗补正",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "suppliesPerShipOverMaxInFleet",
+"translation": "舰队中每超出一艘船消耗的额外补给",
+"format": "数字(单位:百分比)",
+"note": "这实际上是加上舰队总维护成本的一定比例，即：该舰每月消耗补给乘以（舰队实际船舶总数减去文件中允许的舰队最大数目）",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "showMaxShipsWidgetAtShips",
+"translation": "在大地图中显示的最大船只数量",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxShipsInFleet",
+"translation": "玩家舰队中可以同时编入的最大舰船数量",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxShipsInAIFleet",
+"translation": "ai舰队中可编入舰船的最大舰船数量",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxOfficersInAIFleet",
+"translation": "ai舰队中拥有军官指挥的舰船的最大数量",
+"format": "数字",
+"note": "应当与一个满级玩家所能够指挥的军官数相匹配",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "campaignSpeedupMult",
+"translation": "启用时间加速时的速度倍数",
+"format": "",
+"note": "当在大地图中使用“时间加速”时此处的值必须大于等于2；设置为过大的值可能会在加速时导致掉帧",
+"kind": "string",
+"deprecated": false
+},
+{
+"name": "minTravelSpeed",
+"translation": "舰队最低航行速度",
+"format": "数字",
+"note": "在舰队航速为0时的保底速度",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "baseTravelSpeed",
+"translation": "舰队基础航行速度",
+"format": "数字",
+"note": "每像素单位每现实秒(1游戏日为10现实秒)(编者：即默认状态下1点舰队航速为20像素/秒)",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "speedPerBurnLevel",
+"translation": "每等级航速的速度加成",
+"format": "数字",
+"note": "舰队航速等级的速度提升，每像素单位每现实秒(1游戏日为10现实秒)",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxStormStrikeBurn",
+"translation": "通过超空间风暴助推能够达成的最高速度",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxSneakBurnLevel",
+"translation": "隐匿行动航行速度上限",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "sneakBurnMult",
+"translation": "隐匿行动航速系数",
+"format": "数字(单位:倍率)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minTerrainEffectMult",
+"translation": "特殊地形对舰队速度减益的最大值",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "standardBurnPenaltyMult",
+"translation": "舰队标准航速减益系数",
+"format": "数字",
+"note": "特殊地形对最大规模舰队的航速造成的最大减益值，设置值为1则为最大减益",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "unitsPerLightYear",
+"translation": "x个像素单位代表1光年",
+"format": "数字(单位:像素)",
+"note": "1像素单位即缩放倍率为1的情况下1像素的大小(超空间中)",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxRelayRangeInHyperspace",
+"translation": "信号在超空间中的最大传播半径",
+"format": "数字(单位:光年)",
+"note": "单位为光年，表示位于星系外的“超空间中继器”建筑能够在超空间中传播信号的最大范围",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "commRelayRangeAroundSystem",
+"translation": "信号由星系内传出的最大传播半径",
+"format": "数字(单位:光年)",
+"note": "单位为光年，表示位于星系内的“超空间中继器”建筑能够在超空间中传播信号的最大范围",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "baseFleetSelectionRadius",
+"translation": "舰队范围基础边线半径",
+"format": "数字(单位:像素)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "fleetSelectionRadiusPerUnitSize",
+"translation": "每增长1舰队规模对边线圆圈大小的影响系数",
+"format": "数字(单位:倍率)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxFleetSelectionRadius",
+"translation": "舰队的最大边线半径",
+"format": "数字(单位:像素)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "sensorRangeBase",
+"translation": "传感器基础探测距离",
+"format": "数字",
+"note": "舰队探测距离=基础值+传感器截面+基础值+传感器强度",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "baseSensorFrigate",
+"translation": "护卫舰传感器基础探测距离",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "baseSensorDestroyer",
+"translation": "驱逐舰传感器基础探测距离",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "baseSensorCruiser",
+"translation": "巡洋舰传感器基础探测距离",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "baseSensorCapital",
+"translation": "主力舰传感器基础探测距离",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxSensorShips",
+"translation": "用于计算传感器强度值的最大舰船数",
+"format": "数字",
+"note": "舰队中被用于计算传感器截面/强度的舰船最大数量",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "sensorRangeMax",
+"translation": "传感器最大探测距离",
+"format": "数字",
+"note": "溢出值不予处理",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "sensorRangeMaxHyper",
+"translation": "在超空间中的传感器最大探测距离",
+"format": "数字",
+"note": "溢出值不予处理",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "sensorStrengthMin",
+"translation": "最低传感器强度",
+"format": "数字",
+"note": "已废弃，“低速航行”带来的加成最多能减少至这个值",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "detectionRangeTransponderMult",
+"translation": "打开应答器的探测距离系数补正",
+"format": "数字",
+"note": "将其乘以探测距离(而不是传感器截面)，仅当双方舰队均开启应答器时生效",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "detectionRangeDetailsMult",
+"translation": "点亮舰队系数",
+"format": "数字",
+"note": "对于某关闭应答器的舰队，该舰队由噪点变为可查看详细信息的舰队的最大范围的系数补正",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "detectionRangeDetailsAlwaysMult",
+"translation": "点亮舰队常数系数",
+"format": "数字",
+"note": "对于某关闭应答器的舰队，该舰队由噪点变为可查看详细信息的舰队的最大范围的常数系数补正",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "detectionRangeDetailsAlwaysMin",
+"translation": "强制点亮舰队距离",
+"format": "数字",
+"note": "舰队由噪点变为详细信息状态的最小距离",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "detectionRangeDetailsAlwaysNonFleet",
+"translation": "强制点亮太空实体的系数",
+"format": "数字",
+"note": "某太空实体被点亮的最大探测范围比例",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minBattleSize",
+"translation": "最小战场规模",
+"format": "数字(单位:部署点)",
+"note": "按照部署所需补给计算的值，游戏内设置滑块的最小值",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "defaultBattleSize",
+"translation": "默认战场规模",
+"format": "数字(单位:部署点)",
+"note": "按照部署所需补给计算的值，游戏内设置滑块的默认值",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxBattleSize",
+"translation": "最大战场规模",
+"format": "数字(单位:部署点)",
+"note": "按照部署所需补给计算的值，游戏内设置滑块的最大值",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "stationDeploymentBonusMult",
+"translation": "空间站部署点系数",
+"format": "数字(单位:倍率)",
+"note": "空间站的实际部署点由它乘以空间站部署点决定",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "minFractionOfBattleSizeForSmallerSide",
+"translation": "战斗中舰船数量劣势方的最小部署点比例",
+"format": "数字(单位:倍率)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxDisengageSize",
+"translation": "舰队脱离战斗阈值",
+"format": "数字(单位:部署点)",
+"note": "当舰队的部署点(部署所需补给)总和高于此数值时舰队不能脱离战斗",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxDisengageFraction",
+"translation": "舰队脱战阈值比例系数",
+"format": "数字",
+"note": "当舰队的部署点(部署所需补给)总和高于此数值时舰队不能脱离战斗，这个值是相对于当前战场规模而言的",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "showDisengageStatusInFleetScreen",
+"translation": "在舰队交战交互界面显示脱战选项",
+"format": "布尔值",
+"note": "",
+"kind": "bool",
+"deprecated": false
+},
+{
+"name": "cleanDisengageFraction",
+"translation": "撤退不被追击的阈值比例系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "cleanDisengageMaxPoints",
+"translation": "撤退不被追击的阈值",
+"format": "数字(单位:部署点)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "escapeStartDistance",
+"translation": "舰船可以撤出战场的起始判定距离",
+"format": "数字(单位:su)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "escapeFlankDistance",
+"translation": "舰船可以从侧翼撤出战场的起始判定距离",
+"format": "数字(单位:su)",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "maxNoObjectiveBattleSize",
+"translation": "没有战斗目标时的最大战场规模",
+"format": "数字",
+"note": "没有战斗目标时，部署点总和劣势方可以投入的最大部署点数量",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "noDeployCRPercent",
+"translation": "战备值小于等于此值的舰船无法部署",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "noDeployCrewPercent",
+"translation": "在役船员需求小于等于此百分比的舰船无法部署",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "emergencyRepairsMaxDPValue",
+"translation": "紧急修复能够恢复的最大防御点系数",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "historianSpecialItemBase",
+"translation": "历史学家提供特殊物品基础几率",
+"format": "数字",
+"note": "历史学家提供特殊物品时消耗的故事点会高于1。对于连续的重复物品则会将其加倍",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "industryImproveBase",
+"translation": "改善殖民地建筑所需的故事点基础数目",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "createStableLocation",
+"translation": "在星系中创建一处稳定点所需的故事点数目",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "permModCapital",
+"translation": "往主力舰内置船插",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "permModCruiser",
+"translation": "往巡洋舰内置船插",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "permModDestroyer",
+"translation": "往驱逐舰内置船插",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "permModFrigate",
+"translation": "往护卫舰内置船插",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "permModNoBonusXPOPThreshold",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "permModMaxBonusXP",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": true
+},
+{
+"name": "mentorOfficer",
+"translation": "指导军官",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "retrainOfficer",
+"translation": "重新训练军官",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "pickEliteSkillForOfficer",
+"translation": "为军官训练精英技能",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "fullyIntegrateAICore",
+"translation": "为舰船完全植入一颗ai核心",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "promoteCrewMember",
+"translation": "对船员发表激励演讲",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "hireMerc",
+"translation": "雇佣佣兵军官",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "convinceMerc",
+"translation": "说服雇佣兵军官继续加入",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "recoverOwnedShip",
+"translation": "打捞界面强制恢复已有的舰船",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "recoverNoBonusXPDeploymentPoints",
+"translation": "恢复此部署点以上的舰船时不会得到额外经验增益",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "historianBP",
+"translation": "让历史学家说出一个蓝图的位置",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "avoidCargoScan",
+"translation": "避免巡逻队货柜扫描",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "cleanDisengage",
+"translation": "通过一系列机动摆脱敌人舰队",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "emergencyRepairs",
+"translation": "再次交战时紧急维修一部分舰船",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "forceBattle",
+"translation": "迫使敌人舰队与自己发生一场激战",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "noRepPenaltyRaid",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "bribeAICoreInspection",
+"translation": "完全植入一颗ai核心军官",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "bribePunitiveExpedition",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "suspendContact",
+"translation": "与一名联络人暂停联系",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "developContactOverMax",
+"translation": "扩容联络人上限",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "negotiateLoanRate",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "negotiateDeliveryFee",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "patherJoinFleet",
+"translation": "说服左径泄密者加入自己的舰队",
+"format": "数字",
+"note": "编者：酒馆事件，说出支持该星球左径活动的基地位置或招募该泄密者",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "gaData_bluff",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "gaData_avoidCombat",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "gaDA_kantaSentMe",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "gaDA_scavBluff",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "gaCO_convince",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "gaProbe_confront",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "gaVIP_pirateBluff",
+"translation": "VIP护送-对海盗虚张声势",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "gaVIP_revTrick",
+"translation": "VIP护送-耍个把戏",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "gaOp_negConvince",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "gaBA_bluffPather",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "gaBA_bluffPirate",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "gaRR_negotiateChurch",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "anh_diktatPatrolBluff",
+"translation": "对辛达巡逻队虚张声势",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "sdtu_patrolConvinceMutiny",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "sdtu_patrolForAPrice",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "sdtu_umbraTrickVIP",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "pwi_bluff",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "pwi2_bluff",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "fwt_bluffPirate",
+"translation": "对海盗虚张声势",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "fwt_bluffPather",
+"translation": "对左径虚张声势",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "extr_storyOption",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "rsom_avoidCombat",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "gaKA_storyPatrol",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "gaFC_patherAmbushBluff1",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "gaPZSellFakes3",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "gaPZ_hegHubVanish",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "gaATG_hegFleetStory4",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "gaATG_luddicScan32",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "gaATG_pirateScanReason3",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "soe_duelPrepStudied",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "lpp_volturnOfficialLie1",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "lkeEpiphanyVIPnonhostile",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "lke_mazBarAgentRespSiyavong",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "lke_patherFleetSP",
+"translation": "左径舰队交谈界面的故事点选项",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "kpGiftFavor",
+"translation": "将行星杀手交给卢德左径让他们欠个人情",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "makeDealWithPirateBase",
+"translation": "与海盗基地达成一项交易",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "pskMerc_story",
+"translation": "",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "pk_hackStory",
+"translation": "行星杀手故事线选择骇入",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+},
+{
+"name": "LCP_notEnoughLie",
+"translation": "某物不足时选择说谎",
+"format": "数字",
+"note": "",
+"kind": "number",
+"deprecated": false
+}
+]

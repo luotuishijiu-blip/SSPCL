@@ -1,0 +1,77 @@
+<UserControl x:Class="Sspcl.App.Views.DownloadPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Resources>
+        <DataTemplate x:Key="StoreItemTemplate">
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,10" Padding="14,12">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.Column="0" Width="38" Height="38" CornerRadius="19" Background="{StaticResource Accent.Dim}" VerticalAlignment="Top">
+                        <TextBlock Text="{Binding Initial}" FontSize="16" FontWeight="SemiBold" Foreground="White"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" Margin="12,0,12,0">
+                        <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource Text.Primary}"/>
+                        <TextBlock Text="{Binding Meta}" FontSize="12" Foreground="{StaticResource Text.Tertiary}" Margin="0,4,0,0" TextTrimming="CharacterEllipsis"/>
+                        <TextBlock Text="{Binding Summary}" FontSize="12" Foreground="{StaticResource Text.Secondary}"
+                                   TextWrapping="Wrap" MaxHeight="34" TextTrimming="CharacterEllipsis" Margin="0,6,0,0"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Content="打开主页" Style="{StaticResource SecondaryButton}" Tag="{Binding}" Click="OpenHome_Click" Margin="0,0,6,0"/>
+                        <Button Content="下载安装" Style="{StaticResource PrimaryButton}" Tag="{Binding}" Click="Download_Click"
+                                Visibility="{Binding HasDirectDownload, Converter={StaticResource BoolToVis}}"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid Margin="25,12,25,12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- 头部 -->
+        <Grid Grid.Row="0" Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock Text="下载" FontSize="19" FontWeight="SemiBold" Foreground="{StaticResource Text.Primary}"/>
+                <TextBlock Text="仅收录远行星号中文论坛（fossic.org）的 Mod。" FontSize="12" Foreground="{StaticResource Text.Tertiary}" Margin="0,4,0,0"/>
+            </StackPanel>
+            <Button Grid.Column="1" Content="下载游戏原版" Style="{StaticResource PrimaryButton}" Click="DownloadVanilla_Click"
+                    ToolTip="前往官网获取远行星号本体"/>
+        </Grid>
+
+        <!-- 搜索 -->
+        <TextBox Grid.Row="1" x:Name="SearchBox" Style="{StaticResource SearchBoxStyle}" TextChanged="SearchBox_TextChanged"
+                 Margin="0,0,0,8" ToolTip="搜索 Mod 名称 / 作者 / 分类 / 简介"/>
+
+        <!-- 列表 -->
+        <Grid Grid.Row="2">
+            <ListBox x:Name="StoreList" Background="Transparent" BorderThickness="0"
+                     ItemTemplate="{StaticResource StoreItemTemplate}"
+                     VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling"
+                     ScrollViewer.CanContentScroll="True">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Setter Property="Padding" Value="0"/>
+                        <Setter Property="Focusable" Value="False"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
+            <TextBlock x:Name="StatusText" Text="正在加载 Mod 索引…" FontSize="14" Foreground="{StaticResource Text.Secondary}"
+                       HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="600"/>
+        </Grid>
+    </Grid>
+</UserControl>

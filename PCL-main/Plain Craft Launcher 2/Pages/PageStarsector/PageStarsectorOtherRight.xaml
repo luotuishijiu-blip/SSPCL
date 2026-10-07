@@ -1,0 +1,63 @@
+<local:MyPageRight x:Class="PageStarsectorOtherRight"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:PCL" PanScroll="PanBack">
+    <local:MyScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" x:Name="PanBack">
+        <StackPanel x:Name="PanMain" Margin="25,25,25,10">
+            <!-- 帮助 -->
+            <StackPanel x:Name="PanHelp">
+                <local:MyCard Title="帮助" Margin="0,0,0,15">
+                    <StackPanel Margin="20,38,20,18">
+                        <TextBlock FontSize="13" Foreground="{DynamicResource ColorBrush1}" TextWrapping="Wrap"
+                                   Text="使用说明：&#xa;• 启动：检测安装并启动游戏（直接启动 / 启动器启动）&#xa;• 版本选择：多版本共存，选择文件夹后点「使用此版本」切换&#xa;• 版本设置：启动选项 / 内存分配 / 概览 / Mod 管理 / 导出 / settings 文件&#xa;• 下载：从中文论坛拉取 mod 并下载到 mod 池&#xa;• Mod 管理：从 mod 池勾选要启用的 mod（自动复制到游戏 mods 目录）"/>
+                    </StackPanel>
+                </local:MyCard>
+            </StackPanel>
+            <!-- 关于与鸣谢 -->
+            <StackPanel x:Name="PanAbout" Visibility="Collapsed">
+                <local:MyCard Title="关于与鸣谢" Margin="0,0,0,15">
+                    <StackPanel Margin="20,38,20,18">
+                        <TextBlock FontSize="13" Foreground="{DynamicResource ColorBrush1}" TextWrapping="Wrap"
+                                   Text="sspcl · 远行星号启动器&#xa;基于 PCL2（Plain Craft Launcher 2）改造，保留 PCL 的原版美化与交互。&#xa;远行星号（Starsector）相关逻辑由 sspcl.Core 提供。&#xa;&#xa;鸣谢：PCL2 作者龙腾猫跃（Hex-Dragon）；Starsector 社区。"/>
+                    </StackPanel>
+                </local:MyCard>
+            </StackPanel>
+            <!-- 百宝箱 -->
+            <StackPanel x:Name="PanToolbox" Visibility="Collapsed">
+                <local:MyCard Title="百宝箱" Margin="0,0,0,15">
+                    <StackPanel Margin="20,38,20,18">
+                        <TextBlock Text="内置工具" FontSize="13" Foreground="{DynamicResource ColorBrush1}"/>
+                        <local:MyButton x:Name="BtnAiLoadout" Text="AI 配装（舰船自动装配器）" Padding="14,6" Margin="0,10,0,0" HorizontalAlignment="Left"/>
+                        <TextBlock Text="自制工具（运行 exe / bat / cmd）" FontSize="13" Foreground="{DynamicResource ColorBrush1}" Margin="0,16,0,0"/>
+                        <local:MyButton x:Name="BtnAddTool" Text="添加工具" Padding="14,6" Margin="0,10,0,0" HorizontalAlignment="Left"/>
+                        <StackPanel x:Name="PanToolList" Margin="0,12,0,0"/>
+                    </StackPanel>
+                </local:MyCard>
+            </StackPanel>
+            <!-- 反馈 -->
+            <StackPanel x:Name="PanFeedback" Visibility="Collapsed">
+                <local:MyCard Title="反馈" Margin="0,0,0,15">
+                    <StackPanel Margin="20,38,20,18">
+                        <TextBlock Text="遇到问题或想提建议？填写后发送给开发者。" FontSize="14" Foreground="{DynamicResource ColorBrush1}" TextWrapping="Wrap"/>
+                        <TextBlock Text="接收地址（Discord Webhook 或任意 POST 接口）" FontSize="12" Foreground="{DynamicResource ColorBrushGray3}" Margin="0,10,0,0"/>
+                        <local:MyTextBox x:Name="UrlBox" Margin="0,6,0,0"/>
+                        <TextBlock Text="反馈内容" FontSize="12" Foreground="{DynamicResource ColorBrushGray3}" Margin="0,10,0,0"/>
+                        <local:MyTextBox x:Name="BoxFeedback" Margin="0,6,0,0" Height="140" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+                        <local:MyButton x:Name="BtnSend" Text="发送反馈" Padding="14,6" Margin="0,12,0,0" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </local:MyCard>
+            </StackPanel>
+            <!-- 新功能投票 -->
+            <StackPanel x:Name="PanVote" Visibility="Collapsed">
+                <local:MyCard Title="新功能投票" Margin="0,0,0,15">
+                    <StackPanel Margin="20,38,20,18">
+                        <TextBlock FontSize="13" Foreground="{DynamicResource ColorBrush1}" TextWrapping="Wrap"
+                                   Text="新功能投票需要联网服务，暂未接入。可以到「反馈」里提出你想要的功能。"/>
+                    </StackPanel>
+                </local:MyCard>
+            </StackPanel>
+        </StackPanel>
+    </local:MyScrollViewer>
+</local:MyPageRight>
