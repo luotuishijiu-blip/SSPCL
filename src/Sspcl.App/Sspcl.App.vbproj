@@ -585,32 +585,21 @@
     <None Include="Resources\NAudio.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Heads\LTCat.jpg" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Newtonsoft.Json.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Blocks\Anvil.png" />
-    <Resource Include="Images\Blocks\CobbleStone.png" />
-    <Resource Include="Images\Blocks\CommandBlock.png" />
-    <Resource Include="Images\Blocks\Grass.png" />
-    <Resource Include="Images\Blocks\RedstoneBlock.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Blocks\GrassPath.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Blocks\Egg.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Heads\Hao_Tian.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Skins\Steve.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Skins\Alex.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Themes\5.png" />
@@ -631,7 +620,6 @@
     <Resource Include="Images\Themes\10.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Heads\Patrick.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Themes\11.png" />
@@ -640,7 +628,6 @@
     <Resource Include="Images\Themes\12.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Blocks\GoldBlock.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Themes\13.png" />
@@ -652,11 +639,8 @@
     <Resource Include="Images\Themes\42.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Blocks\RedstoneLampOff.png" />
-    <Resource Include="Images\Blocks\RedstoneLampOn.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Blocks\Fabric.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\forge-installer.jar" />
@@ -668,51 +652,32 @@
     <None Include="Resources\transformer.jar" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\ReleaseTypes\Alpha.png" />
-    <Resource Include="Images\ReleaseTypes\Beta.png" />
-    <Resource Include="Images\ReleaseTypes\Release.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Icons\NoIcon.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Heads\sspcl.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Heads\00ll00.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Heads\bangbang93.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Heads\wiki.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Blocks\OptiFabric.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\java-wrapper.jar" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Skins\Ari.png" />
-    <Resource Include="Images\Skins\Efe.png" />
-    <Resource Include="Images\Skins\Kai.png" />
-    <Resource Include="Images\Skins\Makena.png" />
-    <Resource Include="Images\Skins\Noor.png" />
-    <Resource Include="Images\Skins\Sunny.png" />
-    <Resource Include="Images\Skins\Zuri.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Icons\Disabled.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Heads\MCBBS.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Blocks\NeoForge.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Heads\z0z0r4.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Imazen.WebP.dll" />
@@ -734,7 +699,6 @@
     <None Include="Resources\System.Net.Http.Formatting.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Heads\EasyTier.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\lwjgl-unsafe-agent.jar" />
@@ -773,8 +737,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Heads\ChongQing.png" />
-    <Resource Include="Images\Heads\HerobrineXia.png" />
 
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
