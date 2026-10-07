@@ -223,7 +223,7 @@ Public Class FormMain
                 '    FeatureList.Add(New KeyValuePair(Of Integer, String)(3, "优化：使用离线登录也可以直接加入联机房间了"))
                 '    FeatureList.Add(New KeyValuePair(Of Integer, String)(3, "优化：会从所有共享节点中自动选择负载最低的进行中继连接"))
                 '    FeatureList.Add(New KeyValuePair(Of Integer, String)(2, "优化：若复制了邀请码，则可以直接快速加入房间"))
-                '    FeatureList.Add(New KeyValuePair(Of Integer, String)(2, "优化：关闭 PCL 时总是会提示是否退出联机，防止在关闭 PCL 时无意地关闭或退出了房间"))
+                '    FeatureList.Add(New KeyValuePair(Of Integer, String)(2, "优化：关闭 Sspcl 时总是会提示是否退出联机，防止在关闭 Sspcl 时无意地关闭或退出了房间"))
                 '    FeatureList.Add(New KeyValuePair(Of Integer, String)(2, "新增：允许自定义要连接的节点"))
                 'End If
                 FeatureCount += 9
@@ -253,8 +253,8 @@ Public Class FormMain
         '输出更新日志
         RunInNewThread(
         Sub()
-            If MyMsgBox(Content, "PCL 已更新至" & VersionDisplay, "确定", "完整更新日志") = 2 Then
-                OpenWebsite("https://meloong.com/afd/a/LTCat?tab=feed")
+            If MyMsgBox(Content, "sspcl 已更新至 " & VersionDisplay, "确定", "完整更新日志") = 2 Then
+                OpenWebsite("https://github.com/luotuishijiu-blip/SSPCL/releases")
             End If
         End Sub, "UpdateLog Output")
     End Sub
@@ -283,13 +283,13 @@ Public Class FormMain
         '版本隔离设置迁移
         If Not Settings.HasSaved("LaunchArgumentIndieV2") Then
             If Settings.HasSaved("LaunchArgumentIndie") Then
-                Logger.Info("从老 PCL 迁移版本隔离")
+                Logger.Info("从老 Sspcl 迁移版本隔离")
                 Settings.Set("LaunchArgumentIndieV2", Settings.Get(Of Integer)("LaunchArgumentIndie"))
             ElseIf HasIniKey("Setup", "LaunchVersionSelect") Then
-                Logger.Info("从老 PCL 升级，但此前未调整版本隔离，使用老的版本隔离默认值")
+                Logger.Info("从老 Sspcl 升级，但此前未调整版本隔离，使用老的版本隔离默认值")
                 Settings.Set("LaunchArgumentIndieV2", Settings.GetDefault("LaunchArgumentIndie"))
             Else
-                Logger.Info("全新的 PCL，使用新的版本隔离默认值")
+                Logger.Info("全新的 Sspcl，使用新的版本隔离默认值")
                 Settings.Set("LaunchArgumentIndieV2", Settings.GetDefault("LaunchArgumentIndieV2"))
             End If
         End If
@@ -321,8 +321,8 @@ Public Class FormMain
         PageRight = FrmStarsectorRight
         FrmStarsectorRight.PageState = MyPageRight.PageStates.ContentStay
         '模式提醒
-        If BuildType = BuildTypes.Debug Then Hint("[开发者模式] PCL 正以开发者模式运行，这可能会造成严重的性能下降，请务必立即向开发者反馈此问题！", HintType.Red)
-        If ModeDebug Then Hint("[调试模式] PCL 正以调试模式运行，这可能会导致性能下降，若无必要请不要开启！")
+        If BuildType = BuildTypes.Debug Then Hint("[开发者模式] Sspcl 正以开发者模式运行，这可能会造成严重的性能下降，请务必立即向开发者反馈此问题！", HintType.Red)
+        If ModeDebug Then Hint("[调试模式] Sspcl 正以调试模式运行，这可能会导致性能下降，若无必要请不要开启！")
         '尽早执行的加载池
         McFolderListLoader.Start(0) '为了让下载已存在文件检测可以正常运行，必须跑一次；为了让启动按钮尽快可用，需要尽早执行；为了与 PageLaunchLeft 联动，需要为 0 而不是 GetUuid
 
@@ -387,7 +387,7 @@ Public Class FormMain
             Sub()
                 PanBack.RenderTransform = Nothing
                 IsWindowLoadFinished = True
-                Logger.Info($"DPI：{DPI}，系统版本：{Environment.OSVersion.VersionString}，PCL 位置：{PathExe}")
+                Logger.Info($"DPI：{DPI}，系统版本：{Environment.OSVersion.VersionString}，Sspcl 位置：{PathExe}")
             End Sub, , True)
         }, "Form Show")
         'Timer 启动
@@ -400,7 +400,7 @@ Public Class FormMain
             Try
                 JavaInit()
                 Thread.Sleep(100)
-                DlClientListMojangLoader.Start(1) 'PCL 会同时根据这里的加载结果决定是否使用官方源进行下载
+                DlClientListMojangLoader.Start(1) 'Sspcl 会同时根据这里的加载结果决定是否使用官方源进行下载
                 RunCountSub()
                 ServerLoader.Start()
                 RunInNewThread(AddressOf TryClearTaskTemp, "TryClearTaskTemp", ThreadPriority.BelowNormal)
@@ -409,7 +409,7 @@ Public Class FormMain
             End Try
             '清理自动更新文件
             Try
-                FileUtils.Delete(Paths.Base & "PCL\Sspcl.exe")
+                FileUtils.Delete(Paths.Base & "Sspcl\Sspcl.exe")
             Catch ex As Exception
                 Logger.Warn(ex, "清理自动更新文件失败")
             End Try
@@ -445,8 +445,8 @@ Public Class FormMain
             Settings.Set("UiLauncherThemeHide2", UnlockedTheme.Distinct.ToList.Join("|"c))
         End If
         '移动自定义皮肤
-        If LastVersionCode <= 161 AndAlso FileUtils.Exists(Paths.Base & "PCL\CustomSkin.png") AndAlso Not FileUtils.Exists(Paths.AppDataThenName & "CustomSkin.png") Then
-            FileUtils.Copy(Paths.Base & "PCL\CustomSkin.png", Paths.AppDataThenName & "CustomSkin.png")
+        If LastVersionCode <= 161 AndAlso FileUtils.Exists(Paths.Base & "Sspcl\CustomSkin.png") AndAlso Not FileUtils.Exists(Paths.AppDataThenName & "CustomSkin.png") Then
+            FileUtils.Copy(Paths.Base & "Sspcl\CustomSkin.png", Paths.AppDataThenName & "CustomSkin.png")
             Logger.Info("已移动离线自定义皮肤 (162)")
         End If
         If LastVersionCode <= 263 AndAlso FileUtils.Exists(PathTemp & "CustomSkin.png") AndAlso Not FileUtils.Exists(Paths.AppDataThenName & "CustomSkin.png") Then
@@ -557,11 +557,11 @@ Public Class FormMain
         If ReturnCode = ProcessReturnValues.Exception Then
             If Not IsLogShown Then
                 FeedbackInfo()
-                Logger.Info("请在 https://github.com/Meloong-Git/PCL/issues 提交错误报告，以便于作者解决此问题！")
+                Logger.Info("请在 https://github.com/Meloong-Git/Sspcl/issues 提交错误报告，以便于作者解决此问题！")
                 IsLogShown = True
-                StartProcess(Paths.Base & "PCL\Log1.txt")
+                StartProcess(Paths.Base & "Sspcl\Log1.txt")
             End If
-            Thread.Sleep(500) '防止 PCL 在记事本打开前就被掐掉
+            Thread.Sleep(500) '防止 Sspcl 在记事本打开前就被掐掉
         End If
         Logger.Info($"程序已退出，返回值：{ReturnCode}")
         ConfigUtils.SaveAll()
@@ -714,7 +714,7 @@ Public Class FormMain
                     FrmSetupUI.PanLogoChange.Visibility = Visibility.Visible
                 End If
                 Try
-                    ImageTitleLogo.Source = Paths.Base & "PCL\Logo.png"
+                    ImageTitleLogo.Source = Paths.Base & "Sspcl\Logo.png"
                 Catch ex As Exception
                     ImageTitleLogo.Source = Nothing
                     Logger.Error(ex, "显示标题栏图片失败", LogBehavior.Alert)
@@ -722,7 +722,7 @@ Public Class FormMain
         End Select
         FrmSetupUI?.CardLogo.TriggerForceResize()
         '标题栏文本
-        LabTitleLogo.Text = If(String.IsNullOrWhiteSpace(Settings.Get(Of String)("UiLogoText")), "SSPCL", Settings.Get(Of String)("UiLogoText"))
+        LabTitleLogo.Text = If(String.IsNullOrWhiteSpace(Settings.Get(Of String)("UiLogoText")), "SSSspcl", Settings.Get(Of String)("UiLogoText"))
         '标题栏文本是否居左
         PanTitleMain.ColumnDefinitions(0).Width = New GridLength(If(Settings.Get(Of Boolean)("UiLogoLeft") AndAlso Settings.Get(Of Integer)("UiLogoType") = 0, 0, 1), GridUnitType.Star)
     End Sub
@@ -975,12 +975,12 @@ Public Class FormMain
             Dim Extension As String = FilePath.AfterLast(".").Lower
             If Extension = "xaml" Then
                 Logger.Info("文件后缀为 XAML，作为主页加载")
-                If FileUtils.Exists(Paths.Base & "PCL\Custom.xaml") Then
+                If FileUtils.Exists(Paths.Base & "Sspcl\Custom.xaml") Then
                     If MyMsgBox("已存在一个主页文件，是否要将它覆盖？", "覆盖确认", "覆盖", "取消") = 2 Then
                         Return
                     End If
                 End If
-                FileUtils.Copy(FilePath, Paths.Base & "PCL\Custom.xaml")
+                FileUtils.Copy(FilePath, Paths.Base & "Sspcl\Custom.xaml")
                 RunInUi(
                 Sub()
                     Settings.Set("UiCustomType", 1)
@@ -993,7 +993,7 @@ Public Class FormMain
             If PageInstanceMod.InstallMods(PathList) Then Return
             'RAR 处理
             If Extension = "rar" Then
-                Hint("PCL 无法处理 rar 格式的压缩包，请在解压后重新压缩为 zip 格式再试！")
+                Hint("Sspcl 无法处理 rar 格式的压缩包，请在解压后重新压缩为 zip 格式再试！")
                 Return
             End If
             '错误报告分析
@@ -1009,7 +1009,7 @@ Public Class FormMain
                 Logger.Error(ex, "自主错误报告分析失败")
             End Try
             '未知操作
-            Hint("PCL 无法确定应当执行的文件拖拽操作……")
+            Hint("Sspcl 无法确定应当执行的文件拖拽操作……")
         End Sub, "文件拖拽")
     End Sub
 

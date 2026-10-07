@@ -2,14 +2,14 @@
 
 Friend Module ModSecret
 
-    '标注 PCL 的不同分支，仅用于替换标记
+    '标注 Sspcl 的不同分支，仅用于替换标记
     Public Const VersionBranchMain As String = "OpenSource"
     '在开源版的注册表与常规版的注册表隔离，以防数据冲突
     Public Const RegFolder As String = "Sspcl"
     '用于微软登录的 ClientId
-    Public OAuthClientId As String = If(Environment.GetEnvironmentVariable("PCL_MS_CLIENT_ID"), "")
+    Public OAuthClientId As String = If(Environment.GetEnvironmentVariable("Sspcl_MS_CLIENT_ID"), "")
     'CurseForge API Key
-    Public CurseForgeAPIKey As String = If(Environment.GetEnvironmentVariable("PCL_CURSEFORGE_API_KEY"), "")
+    Public CurseForgeAPIKey As String = If(Environment.GetEnvironmentVariable("Sspcl_CURSEFORGE_API_KEY"), "")
     '用于匿名数据收集的腾讯云日志服务上报 URL，形如 https://{region}.cls.tencentcs.com/track?topic_id={topic_id}
     Public Const ClsBaseUrl As String = ""
 
@@ -27,9 +27,9 @@ Friend Module ModSecret
             If Url.Contains("baidupcs.com") OrElse Url.Contains("baidu.com") Then
                 Req.Headers.Add("User-Agent", "LogStatistic")  '#4951
             ElseIf SimulateBrowserHeaders Then
-                Req.Headers.Add("User-Agent", $"PCL2/{VersionBaseName}.{CInt(BuildType)} Mozilla/5.0 AppleWebKit/537.36 Chrome/63.0.3239.132 Safari/537.36")
+                Req.Headers.Add("User-Agent", $"sspcl/{VersionBaseName}.{CInt(BuildType)} Mozilla/5.0 AppleWebKit/537.36 Chrome/63.0.3239.132 Safari/537.36")
             Else
-                Req.Headers.Add("User-Agent", $"PCL2/{VersionBaseName}.{CInt(BuildType)}")
+                Req.Headers.Add("User-Agent", $"sspcl/{VersionBaseName}.{CInt(BuildType)}")
             End If
         End If
         If Not SimulateBrowserHeaders Then Req.Headers.Add("Referer", $"http://{VersionCode}.open.pcl2.server/")
@@ -155,10 +155,10 @@ Friend Module ModSecret
     End Sub
 
     ''' <summary>
-    ''' 确保 PathTemp/Latest.exe 是最新正式版的 PCL，它会被用于整合包打包。
+    ''' 确保 PathTemp/Latest.exe 是最新正式版的 Sspcl，它会被用于整合包打包。
     ''' 如果不是，则下载一个。
     ''' </summary>
-    Friend Sub DownloadLatestPCL(Optional LoaderToSyncProgress As LoaderBase = Nothing)
+    Friend Sub DownloadLatestSspcl(Optional LoaderToSyncProgress As LoaderBase = Nothing)
         '注意：如果要自行实现这个功能，请换用另一个文件路径，以免与官方版本冲突
     End Sub
 
@@ -172,7 +172,7 @@ Friend Module ModSecret
     ''' </summary>
     Public ServerConfig As JObject
 
-    Public ServerLoader As New LoaderTask(Of Integer, Integer)("PCL 配置更新", Sub() Logger.Info("该版本中不包含更新通知功能……"), Priority:=ThreadPriority.BelowNormal) With
+    Public ServerLoader As New LoaderTask(Of Integer, Integer)("Sspcl 配置更新", Sub() Logger.Info("该版本中不包含更新通知功能……"), Priority:=ThreadPriority.BelowNormal) With
         {.ReloadTimeout = 1000 * 60 * 60} '超时 1 小时
 
 #End Region

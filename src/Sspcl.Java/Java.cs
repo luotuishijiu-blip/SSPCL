@@ -135,7 +135,7 @@ public static class JavaUtils {
     /// </summary>
     internal static readonly Lazy<List<string>> CandidateFolders = new(() => {
         List<string> folders = [
-            Paths.AppData + @".minecraft\runtime\", // 这也是 PCL 下载 Java 的路径
+            Paths.AppData + @".minecraft\runtime\", // 这也是 Sspcl 下载 Java 的路径
             Paths.AppData + @".hmcl\java\",
             Paths.AppData + @"ATLauncher\runtimes\minecraft\",
             Paths.AppData + @"ModrinthApp\meta\java_versions\",
@@ -202,7 +202,7 @@ public static class JavaUtils {
                         string targetFolder = PathUtils.AddSlashSuffix(PathUtils.ForCompare(PathUtils.RemoveLastPart(file)));
                         // 判断文件夹是否包含重解析点（例如符号链接）
                         static bool HasReparsePoint(FileSystemInfo info) {
-                            if (PathUtils.IsParentOf(Paths.AppData + @".minecraft\runtime\", info.FullName)) return false; // 不筛查 PCL 的下载路径（#8928）
+                            if (PathUtils.IsParentOf(Paths.AppData + @".minecraft\runtime\", info.FullName)) return false; // 不筛查 Sspcl 的下载路径（#8928）
                             do {
                                 if (info.Attributes.HasFlagF(FileAttributes.ReparsePoint)) return true;
                                 info = info is FileInfo fileInfo ? fileInfo.Directory : ((DirectoryInfo) info).Parent;

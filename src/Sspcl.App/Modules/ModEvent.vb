@@ -187,7 +187,7 @@ Public Class CustomEvent
     ''' </summary>
     Public Shared Function GetAbsoluteUrls(RelativeUrl As String, Type As EventType) As String()
         If RelativeUrl Is Nothing Then RelativeUrl = ""
-        Return {RelativeUrl, Paths.Base & "PCL"}
+        Return {RelativeUrl, Paths.Base & "Sspcl"}
     End Function
 
 End Class

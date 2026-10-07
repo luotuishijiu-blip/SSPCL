@@ -515,11 +515,11 @@ EndHint:
         ''' </summary>
         Public ShowInSearch As Boolean = True
         ''' <summary>
-        ''' 是否在公开版的 PCL 中显示（这会影响主页与搜索）。默认为 True。
+        ''' 是否在公开版的 Sspcl 中显示（这会影响主页与搜索）。默认为 True。
         ''' </summary>
         Public ShowInPublic As Boolean = True
         ''' <summary>
-        ''' 是否在快照版的 PCL 中显示（这会影响主页与搜索）。默认为 True。
+        ''' 是否在快照版的 Sspcl 中显示（这会影响主页与搜索）。默认为 True。
         ''' </summary>
         Public ShowInSnapshot As Boolean = True
 
@@ -632,8 +632,8 @@ EndHint:
                 Try
                     Dim IgnoreList As New List(Of String)
                     '读取自定义文件
-                    If DirectoryUtils.Exists(Paths.Base & "PCL\Help\") Then
-                        For Each File In DirectoryUtils.EnumerateFiles(Paths.Base & "PCL\Help\", True)
+                    If DirectoryUtils.Exists(Paths.Base & "Sspcl\Help\") Then
+                        For Each File In DirectoryUtils.EnumerateFiles(Paths.Base & "Sspcl\Help\", True)
                             Select Case PathUtils.GetExtension(File)
                                 Case "helpignore"
                                     '加载忽略列表
@@ -649,7 +649,7 @@ EndHint:
                             End Select
                         Next
                     End If
-                    Logger.Info($"已扫描 PCL 文件夹下的帮助文件，目前总计 {FileList.Count} 条")
+                    Logger.Info($"已扫描 Sspcl 文件夹下的帮助文件，目前总计 {FileList.Count} 条")
                     '读取自带文件
                     For Each File In DirectoryUtils.EnumerateFiles(PathTemp & "Help", True)
                         '跳过非 json 文件与以 . 开头的文件夹
@@ -837,7 +837,7 @@ NextFile:
 #Region "系统"
 
     ''' <summary>
-    ''' 把某个 PCL 窗口拖到最前面。
+    ''' 把某个 Sspcl 窗口拖到最前面。
     ''' </summary>
     Public Sub ShowWindowToTop(Handle As IntPtr)
         Try
@@ -973,7 +973,7 @@ NextFile:
             IsTaskTempClearing = True
             Try
                 Logger.Info("开始清理任务缓存文件夹")
-                DirectoryUtils.Delete($"{OsDrive}ProgramData\PCL\TaskTemp\")
+                DirectoryUtils.Delete($"{OsDrive}ProgramData\Sspcl\TaskTemp\")
                 DirectoryUtils.Delete($"{PathTemp}TaskTemp\")
                 Logger.Info("已清理任务缓存文件夹")
             Catch ex As Exception
@@ -1006,7 +1006,7 @@ NextFile:
         Catch
         End Try
         '使用备用路径
-        ResultFolder = $"{OsDrive}ProgramData\PCL\TaskTemp\{GetUuid()}-{RandomInteger(0, 1000000)}\"
+        ResultFolder = $"{OsDrive}ProgramData\Sspcl\TaskTemp\{GetUuid()}-{RandomInteger(0, 1000000)}\"
         DirectoryUtils.Create(ResultFolder)
         CheckPermission(ResultFolder)
         Return ResultFolder
@@ -1021,9 +1021,9 @@ NextFile:
         On Error Resume Next
         FeedbackInfo()
         If ForceOpenLog OrElse (ShowMsgbox AndAlso MyMsgBox("若你在汇报一个 Bug，请点击 打开文件夹 按钮，并上传 Log(1~5).txt 中包含错误信息的文件。" & vbCrLf & "游戏崩溃一般与启动器无关，请不要因为游戏崩溃而提交反馈。", "反馈提交提醒", "打开文件夹", "不需要") = 1) Then
-            OpenExplorer(Paths.Base & "PCL\Log1.txt")
+            OpenExplorer(Paths.Base & "Sspcl\Log1.txt")
         End If
-        OpenWebsite("https://github.com/Meloong-Git/PCL/issues/")
+        OpenWebsite("https://github.com/Meloong-Git/Sspcl/issues/")
     End Sub
     ''' <summary>
     ''' 在日志中输出系统诊断信息。
@@ -1149,7 +1149,7 @@ NextFile:
         End Try
     End Sub
 
-    ''' <summary>淡出关闭启动动画（仿照 PCL 原版），完成后执行回调。</summary>
+    ''' <summary>淡出关闭启动动画（仿照 Sspcl 原版），完成后执行回调。</summary>
     Public Sub CloseSplashImage(Optional afterFade As Action = Nothing)
         Try
             If FrmSplashImage Is Nothing Then

@@ -47,7 +47,7 @@ Public Module ModBase
     ''' <summary>
     ''' 程序的缓存文件夹路径，以 \ 结尾。
     ''' </summary>
-    Public PathTemp As String = If(Settings.Get(Of String)("SystemSystemCache") = "", Path.GetTempPath() & "PCL\", Settings.Get(Of String)("SystemSystemCache")).ToString.Replace("/", "\").TrimEnd("\") & "\"
+    Public PathTemp As String = If(Settings.Get(Of String)("SystemSystemCache") = "", Path.GetTempPath() & "Sspcl\", Settings.Get(Of String)("SystemSystemCache")).ToString.Replace("/", "\").TrimEnd("\") & "\"
     ''' <summary>
     ''' 当前程序的语言。
     ''' </summary>
@@ -473,7 +473,7 @@ Public Module ModBase
     ''' </summary>
     ''' <param name="FileName">文件完整路径或简写文件名。简写将会使用“ApplicationName\文件名.ini”作为路径。</param>
     Public Sub IniClearCache(FileName As String)
-        If Not FileName.Contains(":\") Then FileName = $"{Paths.Base}PCL\{FileName}.ini"
+        If Not FileName.Contains(":\") Then FileName = $"{Paths.Base}Sspcl\{FileName}.ini"
         IniCache.Remove(FileName)
     End Sub
     ''' <summary>
@@ -484,7 +484,7 @@ Public Module ModBase
     Private Function IniGetContent(FileName As String) As ConcurrentDictionary(Of String, String)
         Try
             '还原文件路径
-            If Not FileName.Contains(":\") Then FileName = $"{Paths.Base}PCL\{FileName}.ini"
+            If Not FileName.Contains(":\") Then FileName = $"{Paths.Base}Sspcl\{FileName}.ini"
             '检索缓存
             Dim Cache As ConcurrentDictionary(Of String, String) = Nothing
             If IniCache.TryGetValue(FileName, Cache) Then Return Cache
@@ -558,7 +558,7 @@ Public Module ModBase
                 FileContent.Append(Pair.Value)
                 FileContent.Append(vbCrLf)
             Next
-            If Not FileName.Contains(":\") Then FileName = $"{Paths.Base}PCL\{FileName}.ini"
+            If Not FileName.Contains(":\") Then FileName = $"{Paths.Base}Sspcl\{FileName}.ini"
             '处理相对路径
             FileName = If(FileName.Contains(":\"), FileName, Paths.Base & FileName)
             FileUtils.Write(FileName, FileContent.ToString)
@@ -583,7 +583,7 @@ Public Module ModBase
             FileUtils.Delete(TestFilePath)
             Return True
         Catch ex As Exception
-            Logger.Warn(ex, $"没有对文件夹 {Folder} 的权限，请尝试以管理员权限运行 PCL")
+            Logger.Warn(ex, $"没有对文件夹 {Folder} 的权限，请尝试以管理员权限运行 Sspcl")
             Return False
         End Try
     End Function
@@ -791,13 +791,13 @@ Public Module ModBase
     Public PathPure As Lazy(Of String) = New Lazy(Of String)(
     Function()
         If Paths.Base.IsAsciiOnly() Then
-            Return Paths.Base & "PCL\"
+            Return Paths.Base & "Sspcl\"
         ElseIf Paths.AppDataThenName.IsAsciiOnly() Then
             Return Paths.AppDataThenName
         ElseIf PathTemp.IsAsciiOnly() Then
             Return PathTemp
         Else
-            Return OsDrive & "ProgramData\PCL\"
+            Return OsDrive & "ProgramData\Sspcl\"
         End If
     End Function)
 
@@ -996,7 +996,7 @@ Public Module ModBase
         Catch ex As Exception
             Logger.Warn(ex, $"无法打开网页（{Url}）")
             ClipboardSet(Url, False)
-            MyMsgBox("可能由于浏览器未正确配置，PCL 无法为你打开网页。" & vbCrLf & "网址已经复制到剪贴板，若有需要可以手动粘贴访问。" & vbCrLf &
+            MyMsgBox("可能由于浏览器未正确配置，Sspcl 无法为你打开网页。" & vbCrLf & "网址已经复制到剪贴板，若有需要可以手动粘贴访问。" & vbCrLf &
                      $"网址：{Url}", "无法打开网页")
         End Try
     End Sub

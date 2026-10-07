@@ -7,7 +7,7 @@
 ' I hereby re-license this file under the Apache License 2.0 for use in the Plain Craft Launcher project.
 '
 ' This file is contributed under the spirit of good faith and open cooperation.
-' It does not implement any core launcher functions of PCL.
+' It does not implement any core launcher functions of Sspcl.
 '
 ' Description:
 ' Provides a WPF clipboard handling fix to avoid OpenClipboard exceptions

@@ -1,5 +1,5 @@
 ' 远行星号版：McInstance / McVersion 的最小占位类型。
-' 原 PCL 的 Minecraft 版本实例已移除，这里仅保留让 Settings / 文本变量替换等基础设施能够编译的最小成员。
+' 原 Sspcl 的 Minecraft 版本实例已移除，这里仅保留让 Settings / 文本变量替换等基础设施能够编译的最小成员。
 
 Public Class McVersion
     Public Property VanillaName As String = ""

@@ -676,7 +676,7 @@
     <Resource Include="Images\Icons\NoIcon.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Heads\PCL2.png" />
+    <Resource Include="Images\Heads\sspcl.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Heads\00ll00.png" />

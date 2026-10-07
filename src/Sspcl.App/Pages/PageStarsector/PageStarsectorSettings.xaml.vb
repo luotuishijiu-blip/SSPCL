@@ -6,7 +6,7 @@ Public Class PageStarsectorSettings
     Private Sub Init() Handles Me.Loaded
         PanBack.ScrollToHome()
         ShowTab(0)
-        ' 内存实时刷新（照抄 PCL 原版：每 1 秒刷新一次内存占用显示）
+        ' 内存实时刷新（照抄 Sspcl 原版：每 1 秒刷新一次内存占用显示）
         _ramTimer = New System.Windows.Threading.DispatcherTimer With {.Interval = TimeSpan.FromSeconds(1)}
         AddHandler _ramTimer.Tick, Sub()
                                      If PanLaunch.Visibility = Visibility.Visible Then UpdateMemoryDisplay()
@@ -93,7 +93,7 @@ Public Class PageStarsectorSettings
         End Try
     End Function
 
-    ''' <summary>获取当前内存分配值（GB），算法与 PCL 原版一致。</summary>
+    ''' <summary>获取当前内存分配值（GB），算法与 Sspcl 原版一致。</summary>
     Private Function GetRamGB() As Double
         If Settings.Get(Of Integer)("StarsectorRamType") = 1 Then
             Dim v = SliderRam.Value
@@ -102,7 +102,7 @@ Public Class PageStarsectorSettings
             If v <= 33 Then Return (v - 25) * 1 + 8
             Return (v - 33) * 2 + 16
         End If
-        ' 自动配置（PCL 算法：按剩余内存分阶段分配，Mod 越多需求越高）
+        ' 自动配置（Sspcl 算法：按剩余内存分阶段分配，Mod 越多需求越高）
         Dim ramAvailable As Double = My.Computer.Info.AvailablePhysicalMemory / 1024 / 1024 / 1024
         Dim modCount = GetModCount()
         Dim ramMinimum = 0.5 + modCount / 150
@@ -131,7 +131,7 @@ RamDone:
         Return Math.Max(ramGive, ramMinimum)
     End Function
 
-    ''' <summary>滑块最大值随主机内存动态计算（PCL 算法）。</summary>
+    ''' <summary>滑块最大值随主机内存动态计算（Sspcl 算法）。</summary>
     Private Sub UpdateSliderMax()
         Dim ramTotal = My.Computer.Info.TotalPhysicalMemory / 1024 / 1024 / 1024
         If ramTotal <= 1.5 Then

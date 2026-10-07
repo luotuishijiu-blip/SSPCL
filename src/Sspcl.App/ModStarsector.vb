@@ -1,7 +1,7 @@
 ' =====================================================================
-' 远行星号（Starsector）功能封装 —— 桥接 sspcl.Core 与 PCL2
+' 远行星号（Starsector）功能封装 —— 桥接 sspcl.Core 与 sspcl
 ' 本模块把 sspcl.Core 的 .NET Standard 2.0 程序集封装成 VB.NET 函数，
-' 供 PCL2 的界面直接调用。
+' 供 sspcl 的界面直接调用。
 ' =====================================================================
 
 Imports System.Collections.Generic

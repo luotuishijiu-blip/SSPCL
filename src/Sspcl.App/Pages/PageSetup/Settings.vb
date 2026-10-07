@@ -88,7 +88,7 @@ Public Class Settings
         New Setting("LaunchFolderSelect", ""),
         New Setting("LaunchFolders", "", Source:=Sources.Registry),
         New Setting("LaunchArgumentTitle", ""),
-        New Setting("LaunchArgumentInfo", "PCL"),
+        New Setting("LaunchArgumentInfo", "Sspcl"),
         New Setting("LaunchArgumentJavaSelect", "", Source:=Sources.Registry),
         New Setting("LaunchArgumentJavaAll", "[]", Source:=Sources.Registry),
         New Setting("LaunchArgumentIndie", 0),
@@ -127,7 +127,7 @@ Public Class Settings
         New Setting("ToolUpdateSnapshot", False, Source:=Sources.Registry),
         New Setting("ToolUpdateReleaseLast", "", Source:=Sources.Registry),
         New Setting("ToolUpdateSnapshotLast", "", Source:=Sources.Registry),
-        New Setting("UiLauncherTransparent", 600, OnChanged:=Sub(Value As Integer) If FrmMain IsNot Nothing Then FrmMain.Opacity = Value / 1000 + 0.4), '避免与 PCL1 设置冲突（UiLauncherOpacity）
+        New Setting("UiLauncherTransparent", 600, OnChanged:=Sub(Value As Integer) If FrmMain IsNot Nothing Then FrmMain.Opacity = Value / 1000 + 0.4), '避免与 Sspcl1 设置冲突（UiLauncherOpacity）
         New Setting("UiLauncherHue", 180),
         New Setting("UiLauncherSat", 80),
         New Setting("UiLauncherDelta", 90),
@@ -271,7 +271,7 @@ Public Class Settings
             If Encrypted Then
                 Try
                     If Value Is Nothing Then Value = ""
-                    Value = DesEncrypt(Value, "PCL" & Identify)
+                    Value = DesEncrypt(Value, "Sspcl" & Identify)
                 Catch ex As Exception
                     Logger.Warn(ex, $"加密设置失败：{Key}")
                 End Try
@@ -287,7 +287,7 @@ Public Class Settings
                     End Try
                 Case Sources.Instance
                     If Instance Is Nothing Then Throw New Exception($"保存版本独立设置 {Key} 时未提供目标版本")
-                    WriteIni(Instance.PathVersion & "PCL\Setup.ini", Key, Value)
+                    WriteIni(Instance.PathVersion & "Sspcl\Setup.ini", Key, Value)
             End Select
         End Sub
 
@@ -345,7 +345,7 @@ Public Class Settings
         '正常读取
         Try
             Dim GotValue As String = Nothing '先用 String 储存，避免类型转换
-            Dim DefaultValue As String = If(Entry.Encrypted, DesEncrypt(Entry.DefaultValue, "PCL" & Identify), Entry.DefaultValue)
+            Dim DefaultValue As String = If(Entry.Encrypted, DesEncrypt(Entry.DefaultValue, "Sspcl" & Identify), Entry.DefaultValue)
             Select Case Entry.Source
                 Case Sources.Normal
                     GotValue = ReadIni("Setup", Key, DefaultValue)
@@ -355,7 +355,7 @@ Public Class Settings
                     If Instance Is Nothing Then
                         Throw New Exception($"读取版本设置 {Key} 时未提供目标版本")
                     Else
-                        GotValue = ReadIni(Instance.PathVersion & "PCL\Setup.ini", Key, DefaultValue)
+                        GotValue = ReadIni(Instance.PathVersion & "Sspcl\Setup.ini", Key, DefaultValue)
                     End If
             End Select
             If Entry.Encrypted Then
@@ -363,7 +363,7 @@ Public Class Settings
                     GotValue = Entry.DefaultValue
                 Else
                     Try
-                        GotValue = DesDecrypt(GotValue, "PCL" & Identify)
+                        GotValue = DesDecrypt(GotValue, "Sspcl" & Identify)
                     Catch ex As Exception
                         Logger.Warn(ex, $"解密设置失败：{Key}")
                         GotValue = Entry.DefaultValue
@@ -416,7 +416,7 @@ Public Class Settings
                     End Try
                 Case Sources.Instance
                     If Instance Is Nothing Then Throw New Exception($"重置版本设置 {Key} 时未提供目标版本")
-                    DeleteIniKey(Instance.PathVersion & "PCL\Setup.ini", Key)
+                    DeleteIniKey(Instance.PathVersion & "Sspcl\Setup.ini", Key)
             End Select
             '触发改变事件
             If Entry.OnChanged IsNot Nothing Then Entry.OnChanged.Invoke(Entry.DefaultValue)
@@ -449,7 +449,7 @@ Public Class Settings
                 End Try
             Case Else 'Source.Instance
                 If Instance Is Nothing Then Throw New Exception($"判断版本设置 {Key} 是否存在时未提供目标版本")
-                Return HasIniKey(Instance.PathVersion & "PCL\Setup.ini", Key)
+                Return HasIniKey(Instance.PathVersion & "Sspcl\Setup.ini", Key)
         End Select
     End Function
 

@@ -1,7 +1,7 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!-- ============ PCL 官方蓝主题（浅色）============ -->
+    <!-- ============ Sspcl 官方蓝主题（浅色）============ -->
     <SolidColorBrush x:Key="Bg.Base" Color="#EAF2FE"/>
     <SolidColorBrush x:Key="Bg.Surface" Color="#FFFFFF"/>
     <SolidColorBrush x:Key="Bg.SurfaceAlt" Color="#F4F7FD"/>
