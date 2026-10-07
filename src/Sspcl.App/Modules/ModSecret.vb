@@ -177,18 +177,7 @@ Friend Module ModSecret
 
 #End Region
 
-#Region "赞助等级"
-
-    Public ReadOnly Property CurrentRank As DonationRank
-        Get
-            Return DonationRank.None
-        End Get
-    End Property
-
-    Public Sub InputPotatoCode(IsUpdating As Boolean)
-    End Sub
-    Friend Sub GeneratePotatoCode()
-    End Sub
+#Region "设备识别"
 
     ''' <summary>
     ''' 获取设备识别码。

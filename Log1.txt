@@ -1,0 +1,44 @@
+16:25:04.908 I <3 · Logger> [Logger] 开始轮转日志文件
+16:25:04.909 I <4 · Logger> [Logger] BaseLogger 日志初始化结束
+16:25:04.916 I <3 · Logger> [Logger] PclLogger 日志初始化结束
+16:25:05.171 I [Application] 程序版本：快照版 2.13.1.1 (410)
+16:25:05.171 I [Application] 识别码：0000-0000-0000-0000，已解锁反馈主题
+16:25:05.171 I [Application] 程序路径：C:\Users\啼南山\Desktop\ssmc\Sspcl.exe
+16:25:05.171 I [Application] 系统编码：gb2312 (936, GBK=True)
+16:25:05.171 I [Application] 管理员权限：False
+16:25:05.171 I [Application] 第一阶段加载用时：276 ms
+16:25:05.217 I [FormMain] 全新的 Sspcl，使用新的版本隔离默认值
+16:25:05.239 I [ModLoader] 加载器 LoaderTask`2 MC stub 状态改变：Loading
+16:25:05.239 I [FormMain] 第二阶段加载用时：65 ms
+16:25:05.240 I <5 · L/MC stub> [ModLoader] 加载器 LoaderTask`2 MC stub 状态改变：Finished
+16:25:05.266 I [FormMain] 从设置更新背景图片与标题栏样式
+16:25:05.285 I [FormMain] 窗口已置顶，位置：(318.4, 136.8), 900 x 550.4
+16:25:05.288 I <6 · Animation> [ModAnimation] 动画线程开始
+16:25:05.288 I [FormMain] 第三阶段加载用时：23 ms
+16:25:05.394 I <8 · 初始化> [ModLoader] 加载器 LoaderTask`2 MC stub 状态改变：Loading
+16:25:05.394 I <9 · L/MC stub> [ModLoader] 加载器 LoaderTask`2 MC stub 状态改变：Finished
+16:25:05.395 I <8 · 初始化> [ModLoader] 加载器 LoaderTask`2 Sspcl 配置更新 状态改变：Loading
+16:25:05.396 I <10 · L/Sspcl 配置更新> [ModSecret] 该版本中不包含更新通知功能……
+16:25:05.396 I <10 · L/Sspcl 配置更新> [ModLoader] 加载器 LoaderTask`2 Sspcl 配置更新 状态改变：Finished
+16:25:05.396 I <11 · TryClearTaskTemp> [ModMain] 开始清理任务缓存文件夹
+16:25:05.396 I <11 · TryClearTaskTemp> [ModMain] 已清理任务缓存文件夹
+16:25:05.623 I [ModAnimation] 两个动画帧间隔 324 ms
+16:25:06.006 I [FormMain] DPI：120，系统版本：Microsoft Windows NT 10.0.19045.0，Sspcl 位置：C:\Users\啼南山\Desktop\ssmc\Sspcl.exe
+16:25:07.191 I [MyButton] 按下按钮：版本设置
+16:25:07.204 I [] TabCheck tag=
+16:25:07.220 I [FormMain] 切换主要页面：InstanceSetup, SetupLaunch
+16:25:07.321 I [PageStarsectorInstanceRight] ShowTab tag=2
+16:25:09.394 I [MyIconButton] 按下图标按钮：BtnTitleInner
+16:25:09.395 I [FormMain] 切换主要页面：Launch, -1
+16:25:10.117 I [MyRadioButton] 按下单选按钮：更多
+16:25:10.124 I [FormMain] 切换主要页面：Setup, -1
+16:25:10.975 I [MyListItem] 按下单选列表项：关于与鸣谢
+16:25:15.374 I [MyListItem] 按下单选列表项：百宝箱
+16:25:16.239 I [MyListItem] 按下单选列表项：反馈
+16:25:17.296 I [MyListItem] 按下单选列表项：新功能投票
+16:25:18.656 I [MyListItem] 按下单选列表项：帮助
+16:25:21.353 I [MyRadioButton] 按下单选按钮：设置
+16:25:21.356 I [FormMain] 切换主要页面：Link, -1
+16:25:22.467 I [MyRadioButton] 按下单选按钮：更多
+16:25:22.468 I [FormMain] 切换主要页面：Setup, -1
+16:25:24.087 I [ModAnimation] 两个动画帧间隔 111 ms
