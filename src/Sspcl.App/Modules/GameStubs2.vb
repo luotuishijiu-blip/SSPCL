@@ -240,7 +240,7 @@ Module ModGameStubs
     End Sub
     Public Sub GameLoginNoop(l As LoaderTask(Of LoginInput, LoginOutput))
     End Sub
-    Public Function HasRunningMinecraft() As Boolean
+    Public Function HasRunningGame() As Boolean
         Return False
     End Function
     Public Sub JavaInit()

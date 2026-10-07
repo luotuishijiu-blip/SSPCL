@@ -468,9 +468,9 @@ EndHint:
     Public DlClientListMojangLoader As LoaderBase = New LoaderTask(Of Integer, Integer)("MC stub", AddressOf GameLoaderNoop)
     Public GameFolderListLoader As LoaderBase = New LoaderTask(Of Integer, Integer)("MC stub", AddressOf GameLoaderNoop)
     Public GameInstanceListLoader As LoaderBase = New LoaderTask(Of Integer, Integer)("MC stub", AddressOf GameLoaderNoop)
-    Public McLaunchLoader As LoaderBase = New LoaderTask(Of Integer, Integer)("MC stub", AddressOf GameLoaderNoop)
-    Public McLaunchLoaderReal As LoaderBase = New LoaderTask(Of Integer, Integer)("MC stub", AddressOf GameLoaderNoop)
-    Public McLoginLoader As LoaderTask(Of LoginInput, LoginOutput) = New LoaderTask(Of LoginInput, LoginOutput)("MC stub", AddressOf GameLoginNoop)
+    Public GameLaunchLoader As LoaderBase = New LoaderTask(Of Integer, Integer)("MC stub", AddressOf GameLoaderNoop)
+    Public GameLaunchLoaderReal As LoaderBase = New LoaderTask(Of Integer, Integer)("MC stub", AddressOf GameLoaderNoop)
+    Public GameLoginLoader As LoaderTask(Of LoginInput, LoginOutput) = New LoaderTask(Of LoginInput, LoginOutput)("MC stub", AddressOf GameLoginNoop)
     Public GameFolderList As List(Of GameFolder)
     Public GameFolderSelected As GameFolder
     Public GameWatcherList As List(Of GameWatcher)
@@ -929,10 +929,10 @@ NextFile:
             Text = Text.Replace("{liteloader}", Replacer(Nothing))
         End If
         '登录信息
-        If McLoginLoader.State = LoadState.Finished Then
-            Text = Text.Replace("{user}", Replacer(McLoginLoader.Output.Name))
-            Text = Text.Replace("{uuid}", Replacer(McLoginLoader.Output.Uuid?.Lower))
-            Select Case McLoginLoader.Input.Type
+        If GameLoginLoader.State = LoadState.Finished Then
+            Text = Text.Replace("{user}", Replacer(GameLoginLoader.Output.Name))
+            Text = Text.Replace("{uuid}", Replacer(GameLoginLoader.Output.Uuid?.Lower))
+            Select Case GameLoginLoader.Input.Type
                 Case LoginType.Legacy
                     Text = Text.Replace("{login}", Replacer("离线"))
                 Case LoginType.Ms

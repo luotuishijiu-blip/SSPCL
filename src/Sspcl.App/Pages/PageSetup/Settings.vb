@@ -99,7 +99,7 @@ Public Class Settings
         New Setting("LaunchArgumentWindowHeight", 480),
         New Setting("LaunchArgumentWindowType", 1),
         New Setting("LaunchArgumentRam", False, Source:=Sources.Registry),
-        New Setting("LaunchAdvanceJvm", "-XX:-OmitStackTraceInFastThrow -Djdk.lang.Process.allowAmbiguousCommands=True -Dfml.ignoreInvalidMinecraftCertificates=True -Dfml.ignorePatchDiscrepancies=True"),
+        New Setting("LaunchAdvanceJvm", "-XX:-OmitStackTraceInFastThrow -Djdk.lang.Process.allowAmbiguousCommands=True"),
         New Setting("LaunchAdvanceGame", ""),
         New Setting("LaunchAdvanceRun", ""),
         New Setting("LaunchAdvanceRunWait", True),

@@ -505,7 +505,7 @@ Public Class FormMain
 
         '按 ESC：启动中则取消启动，否则返回上一级
         If e.Key = Key.Escape Then
-            If McLaunchLoader.State = LoadState.Loading Then
+            If GameLaunchLoader.State = LoadState.Loading Then
                 GameLaunchCancel()
             Else
                 TriggerPageBack()
@@ -1342,7 +1342,7 @@ Public Class FormMain
     '关闭 Minecraft
     Public Sub BtnExtraShutdown_Click() Handles BtnExtraShutdown.Click
         Try
-            If McLaunchLoaderReal IsNot Nothing Then McLaunchLoaderReal.Cancel()
+            If GameLaunchLoaderReal IsNot Nothing Then GameLaunchLoaderReal.Cancel()
             For Each Watcher In GameWatcherList
                 Watcher.Kill()
             Next
@@ -1352,7 +1352,7 @@ Public Class FormMain
         End Try
     End Sub
     Public Function BtnExtraShutdown_ShowCheck() As Boolean
-        Return HasRunningMinecraft
+        Return HasRunningGame
     End Function
 
     ''' <summary>

@@ -259,14 +259,14 @@ End Class
 Public Class ValidateFolderName
     Inherits Validate
     Public Property Folder As String
-    Public Property UseMinecraftCharCheck As Boolean = True
+    Public Property UseGameCharCheck As Boolean = True
     Private ReadOnly PathIgnore As IEnumerable(Of String)
     Private ReadOnly IgnoreList As List(Of String)
     Public Sub New()
     End Sub
-    Public Sub New(Folder As String, Optional UseMinecraftCharCheck As Boolean = True, Optional IgnoreList As List(Of String) = Nothing)
+    Public Sub New(Folder As String, Optional UseGameCharCheck As Boolean = True, Optional IgnoreList As List(Of String) = Nothing)
         Me.Folder = Folder
-        Me.UseMinecraftCharCheck = UseMinecraftCharCheck
+        Me.UseGameCharCheck = UseGameCharCheck
         On Error Resume Next
         PathIgnore = DirectoryUtils.EnumerateDirectories(Folder)
         Me.IgnoreList = IgnoreList
@@ -285,7 +285,7 @@ Public Class ValidateFolderName
             '检查尾部小数点
             If Str.EndsWithF(".") Then Return "文件夹名不能以小数点结尾！"
             '检查特殊字符
-            Dim CharactCheck As String = New ValidateExcept(Path.GetInvalidFileNameChars() & If(UseMinecraftCharCheck, "!;", ""), "文件夹名不可包含 % 字符！").Validate(Str)
+            Dim CharactCheck As String = New ValidateExcept(Path.GetInvalidFileNameChars() & If(UseGameCharCheck, "!;", ""), "文件夹名不可包含 % 字符！").Validate(Str)
             If CharactCheck <> "" Then Return CharactCheck
             '检查特殊字符串
             Dim InvalidStrCheck As String = New ValidateExceptSame({"CON", "PRN", "AUX", "CLOCK$", "NUL", "COM0", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT0", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"}, "文件夹名不可为 %！", True).Validate(Str)
@@ -317,16 +317,16 @@ End Class
 Public Class ValidateFileName
     Inherits Validate
     Public Property Name As String
-    Public Property UseMinecraftCharCheck As Boolean = True
+    Public Property UseGameCharCheck As Boolean = True
     Public Property IgnoreCase As Boolean = True
     Public Property ParentFolder As String = Nothing
     Public Property RequireParentFolderExists = True
     Public Sub New()
     End Sub
-    Public Sub New(Name As String, Optional UseMinecraftCharCheck As Boolean = True, Optional IgnoreCase As Boolean = True)
+    Public Sub New(Name As String, Optional UseGameCharCheck As Boolean = True, Optional IgnoreCase As Boolean = True)
         Me.Name = Name
         Me.IgnoreCase = IgnoreCase
-        Me.UseMinecraftCharCheck = UseMinecraftCharCheck
+        Me.UseGameCharCheck = UseGameCharCheck
     End Sub
     Public Overrides Function Validate(Str As String) As String
         Try
@@ -342,7 +342,7 @@ Public Class ValidateFileName
             '检查尾部小数点
             If Str.EndsWithF(".") Then Return "文件名不能以小数点结尾！"
             '检查特殊字符
-            Dim CharactCheck As String = New ValidateExcept(Path.GetInvalidFileNameChars() & If(UseMinecraftCharCheck, "!;", ""), "文件名不可包含 % 字符！").Validate(Str)
+            Dim CharactCheck As String = New ValidateExcept(Path.GetInvalidFileNameChars() & If(UseGameCharCheck, "!;", ""), "文件名不可包含 % 字符！").Validate(Str)
             If CharactCheck <> "" Then Return CharactCheck
             '检查特殊字符串
             Dim InvalidStrCheck As String = New ValidateExceptSame({"CON", "PRN", "AUX", "CLOCK$", "NUL", "COM0", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT0", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"}, "文件名不可为 %！", True).Validate(Str)
@@ -373,11 +373,11 @@ End Class
 ''' </summary>
 Public Class ValidateFolderPath
     Inherits Validate
-    Public Property UseMinecraftCharCheck As Boolean = True
+    Public Property UseGameCharCheck As Boolean = True
     Public Sub New()
     End Sub
-    Public Sub New(UseMinecraftCharCheck As Boolean)
-        Me.UseMinecraftCharCheck = UseMinecraftCharCheck
+    Public Sub New(UseGameCharCheck As Boolean)
+        Me.UseGameCharCheck = UseGameCharCheck
     End Sub
     Public Overrides Function Validate(Str As String) As String
         '去除尾部斜线，统一为 \
@@ -408,7 +408,7 @@ Fin:
             Dim SubLengthCheck As String = New ValidateNullOrWhiteSpace().Validate(SubStr)
             If Not SubLengthCheck = "" Then Return "文件夹路径存在错误！"
             '检查特殊字符
-            Dim CharactCheck As String = New ValidateExcept(Path.GetInvalidFileNameChars() & If(UseMinecraftCharCheck, "!;", ""), "路径中存在无效字符！").Validate(SubStr)
+            Dim CharactCheck As String = New ValidateExcept(Path.GetInvalidFileNameChars() & If(UseGameCharCheck, "!;", ""), "路径中存在无效字符！").Validate(SubStr)
             If Not CharactCheck = "" Then Return CharactCheck
             '检查头部空格
             If SubStr.StartsWithF(" ") Then Return "文件夹名不能以空格开头！"
