@@ -22,21 +22,14 @@
 
 ## 构建
 
-依赖：Visual Studio 2022+（含 .NET Framework 4.8 目标包）与 .NET 8 SDK。
+依赖：Windows、Visual Studio 2022+（含 .NET Framework 4.8 目标包）、.NET 8 SDK 和 PowerShell 7。
 
 ```powershell
-# 1) 还原依赖并构建 C# 核心库（Sspcl.Core，netstandard2.0），复制 DLL 到主程序 Resources 目录
-dotnet restore Sspcl.sln
-dotnet build src\Sspcl.Core\Sspcl.Core.csproj -c Release
-Copy-Item src\Sspcl.Core\bin\Release\netstandard2.0\Sspcl.Core.dll `
-  "src\Sspcl.App\Resources\Sspcl.Core.dll" -Force
-
-# 2) 构建主程序（单文件 exe）
-$msb = "C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Current\Bin\MSBuild.exe"
-& $msb "src\Sspcl.App\Sspcl.App.vbproj" -t:Build -p:Configuration=Debug
+pwsh -File eng\check-structure.ps1
+pwsh -File eng\build.ps1 -Configuration Release
 ```
 
-产物：`src\Sspcl.App\bin\Sspcl.exe`（DLL 已内嵌，单文件可分发）。
+也可以使用 `-Target Legacy` 或 `-Target Desktop` 只构建一个桌面入口。旧版主程序会自动从核心库源码生成并嵌入 `netstandard2.0` DLL，不需要手工复制。主要产物为 `src\Sspcl.App\bin\Sspcl.exe` 与 `src\Sspcl.Desktop\bin\Release\net8.0-windows\Sspcl.Desktop.exe`。
 
 ---
 
@@ -44,15 +37,20 @@ $msb = "C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Current\Bi
 
 ```
 ├─ src\Sspcl.App\                 主程序（VB.NET / WPF）
-│   ├─ Pages\PageStarsector\      远行星号各页面（启动/设置/实例/百宝箱）
-│   ├─ ModStarsector.vb           游戏封装（扫描、配装、启动）
-│   └─ Modules\ModMain.vb         启动器入口逻辑
+│   ├─ Framework\               旧版通用控件与服务
+│   ├─ Features\Starsector\     游戏页面与适配层
+│   ├─ Features\Settings\       设置模块
+│   ├─ Shell\                   主窗口与导航
+│   ├─ Infrastructure\          宿主集成
+│   └─ Compatibility\           PCL2 兼容代码
 ├─ src\Sspcl.Foundation\          基础库（.NET Standard 2.0）
 ├─ src\Sspcl.Foundation.Wpf\      WPF 基础库（.NET Framework 4.8）
 ├─ src\Sspcl.Java\                Java 启动封装库（.NET Framework 4.8）
 ├─ src\Sspcl.Core\                核心库（Install/Launch/Mods/Saves/…）
 ├─ src\Sspcl.Cli\                 命令行工具
 ├─ src\Sspcl.Desktop\             演示桌面应用（.NET 8 WPF）
+├─ eng\                           构建与结构检查脚本
+├─ docs\ARCHITECTURE.md          分层与依赖规则
 └─ Sspcl.sln
 ```
 

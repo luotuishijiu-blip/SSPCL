@@ -513,7 +513,7 @@ Public Class FormMain
         End If
         '更改隐藏版本可见性
         If e.Key = Key.F11 AndAlso PageCurrent = FormMain.PageType.InstanceSelect Then
-            FrmSelectRight.ShowHidden = Not FrmSelectRight.ShowHidden
+            PageSelectRight.ShowHidden = Not PageSelectRight.ShowHidden
             LoaderFolderRun(GameInstanceListLoader, GameFolderSelected, LoaderFolderRunType.ForceRun, MaxDepth:=1, ExtraPath:="versions\")
             Return
         End If

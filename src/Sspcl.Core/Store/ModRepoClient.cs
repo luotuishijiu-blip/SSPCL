@@ -36,7 +36,7 @@ public sealed class StoreItem
         }.Where(s => !string.IsNullOrEmpty(s)));
 
     public bool HasDirectDownload =>
-        !string.IsNullOrEmpty(DirectDownloadUrl) && IsArchiveUrl(DirectDownloadUrl);
+        DirectDownloadUrl is { Length: > 0 } url && IsArchiveUrl(url);
 
     private static bool IsArchiveUrl(string url)
     {

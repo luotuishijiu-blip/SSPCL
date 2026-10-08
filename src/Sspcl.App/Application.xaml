@@ -6,7 +6,7 @@
     xmlns:core="clr-namespace:Sspcl.Foundation;assembly=Sspcl.Foundation"
     xmlns:corewpf="clr-namespace:Sspcl.Foundation.Wpf;assembly=Sspcl.Foundation.Wpf"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
-    StartupUri="FormMain.xaml"
+    StartupUri="Shell/FormMain.xaml"
     ShutdownMode="OnExplicitShutdown">
     <Application.Resources>
         <ResourceDictionary>

@@ -17,6 +17,7 @@ Setup.ini
 sspcl-*.zip
 release/
 Sspcl.exe
+src/Sspcl.App/Resources/Sspcl.Core.dll
 
 # 系统
 Thumbs.db

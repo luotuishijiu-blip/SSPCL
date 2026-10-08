@@ -236,167 +236,167 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Controls\Behaviors\ClipboardInterceptor.vb" />
-    <Compile Include="Controls\Behaviors\Interfaces.vb" />
-    <Compile Include="Controls\Behaviors\LazyLoadBehavior.vb" />
-    <Compile Include="Controls\MyComboBox.vb" />
-    <Compile Include="Controls\MyComboBoxItem.vb" />
-    <Compile Include="Controls\MyCard.vb" />
-    <Compile Include="Controls\MyExtraTextButton.xaml.vb">
+    <Compile Include="Framework\Controls\Behaviors\ClipboardInterceptor.vb" />
+    <Compile Include="Framework\Controls\Behaviors\Interfaces.vb" />
+    <Compile Include="Framework\Controls\Behaviors\LazyLoadBehavior.vb" />
+    <Compile Include="Framework\Controls\MyComboBox.vb" />
+    <Compile Include="Framework\Controls\MyComboBoxItem.vb" />
+    <Compile Include="Framework\Controls\MyCard.vb" />
+    <Compile Include="Framework\Controls\MyExtraTextButton.xaml.vb">
       <DependentUpon>MyExtraTextButton.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\MyImage.vb" />
-    <Compile Include="Controls\MyPageRight.vb" />
-    <Compile Include="Controls\MyPageLeft.vb" />
-    <Compile Include="Controls\MyIconTextButton.xaml.vb">
+    <Compile Include="Framework\Controls\MyImage.vb" />
+    <Compile Include="Framework\Controls\MyPageRight.vb" />
+    <Compile Include="Framework\Controls\MyPageLeft.vb" />
+    <Compile Include="Framework\Controls\MyIconTextButton.xaml.vb">
       <DependentUpon>MyIconTextButton.xaml</DependentUpon>
     </Compile>
 
 
 
-    <Compile Include="Controls\MyVirtualizingElement.vb" />
-    <Compile Include="Modules\Base\PclLogger.vb" />
-    <Compile Include="Modules\ThirdParty\DragHelper.vb" />
+    <Compile Include="Framework\Controls\MyVirtualizingElement.vb" />
+    <Compile Include="Framework\Services\PclLogger.vb" />
+    <Compile Include="Framework\Interop\DragHelper.vb" />
     <Compile Include="My Project\Resources.Designer.vb">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Controls\MyExtraButton.xaml.vb">
+    <Compile Include="Framework\Controls\MyExtraButton.xaml.vb">
       <DependentUpon>MyExtraButton.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\MyHint.xaml.vb">
+    <Compile Include="Framework\Controls\MyHint.xaml.vb">
       <DependentUpon>MyHint.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\MyLoading.xaml.vb">
+    <Compile Include="Framework\Controls\MyLoading.xaml.vb">
       <DependentUpon>MyLoading.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\MyMenuItem.vb" />
-    <Compile Include="Controls\MyMsg\MyMsgInput.xaml.vb">
+    <Compile Include="Framework\Controls\MyMenuItem.vb" />
+    <Compile Include="Framework\Controls\MyMsg\MyMsgInput.xaml.vb">
       <DependentUpon>MyMsgInput.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\MyMsg\MyMsgSelect.xaml.vb">
+    <Compile Include="Framework\Controls\MyMsg\MyMsgSelect.xaml.vb">
       <DependentUpon>MyMsgSelect.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\MyScrollBar.vb" />
-    <Compile Include="Controls\MyScrollViewer.vb" />
-    <Compile Include="Controls\MySearchBox.xaml.vb">
+    <Compile Include="Framework\Controls\MyScrollBar.vb" />
+    <Compile Include="Framework\Controls\MyScrollViewer.vb" />
+    <Compile Include="Framework\Controls\MySearchBox.xaml.vb">
       <DependentUpon>MySearchBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\MyTextBox.vb" />
-    <Compile Include="Controls\MyTextButton.vb" />
+    <Compile Include="Framework\Controls\MyTextBox.vb" />
+    <Compile Include="Framework\Controls\MyTextButton.vb" />
     <Compile Include="GlobalSuppressions.vb" />
-    <Compile Include="Modules\ModSecret.vb" />
-    <Compile Include="Controls\MyDropShadow.vb" />
-    <Compile Include="Modules\Base\ModLoader.vb" />
-    <Compile Include="Modules\Base\ModNet.vb" />
-    <Compile Include="Modules\Base\ModValidate.vb" />
-    <Compile Include="Pages\PageStarsector\PageStarsectorRight.xaml.vb">
+    <Compile Include="Infrastructure\ModSecret.vb" />
+    <Compile Include="Framework\Controls\MyDropShadow.vb" />
+    <Compile Include="Framework\Services\ModLoader.vb" />
+    <Compile Include="Framework\Services\ModNet.vb" />
+    <Compile Include="Framework\Services\ModValidate.vb" />
+    <Compile Include="Features\Starsector\Views\PageStarsectorRight.xaml.vb">
       <DependentUpon>PageStarsectorRight.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\PageStarsector\PageStarsectorLeft.xaml.vb">
+    <Compile Include="Features\Starsector\Views\PageStarsectorLeft.xaml.vb">
       <DependentUpon>PageStarsectorLeft.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\PageStarsector\PageStarsectorDownload.xaml.vb">
+    <Compile Include="Features\Starsector\Views\PageStarsectorDownload.xaml.vb">
       <DependentUpon>PageStarsectorDownload.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\PageStarsector\PageStarsectorSettings.xaml.vb">
+    <Compile Include="Features\Starsector\Views\PageStarsectorSettings.xaml.vb">
       <DependentUpon>PageStarsectorSettings.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\PageStarsector\PageStarsectorSettingsLeft.xaml.vb">
+    <Compile Include="Features\Starsector\Views\PageStarsectorSettingsLeft.xaml.vb">
       <DependentUpon>PageStarsectorSettingsLeft.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\PageStarsector\PageStarsectorOtherLeft.xaml.vb">
+    <Compile Include="Features\Starsector\Views\PageStarsectorOtherLeft.xaml.vb">
       <DependentUpon>PageStarsectorOtherLeft.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\PageStarsector\PageStarsectorOtherRight.xaml.vb">
+    <Compile Include="Features\Starsector\Views\PageStarsectorOtherRight.xaml.vb">
       <DependentUpon>PageStarsectorOtherRight.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\PageStarsector\PageStarsectorToolbox.xaml.vb">
+    <Compile Include="Features\Starsector\Views\PageStarsectorToolbox.xaml.vb">
       <DependentUpon>PageStarsectorToolbox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\PageStarsector\PageStarsectorFeedback.xaml.vb">
+    <Compile Include="Features\Starsector\Views\PageStarsectorFeedback.xaml.vb">
       <DependentUpon>PageStarsectorFeedback.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\PageStarsector\PageStarsectorInstanceLeft.xaml.vb">
+    <Compile Include="Features\Starsector\Views\PageStarsectorInstanceLeft.xaml.vb">
       <DependentUpon>PageStarsectorInstanceLeft.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\PageStarsector\PageStarsectorInstanceRight.xaml.vb">
+    <Compile Include="Features\Starsector\Views\PageStarsectorInstanceRight.xaml.vb">
       <DependentUpon>PageStarsectorInstanceRight.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\PageStarsector\PageStarsectorSelectLeft.xaml.vb">
+    <Compile Include="Features\Starsector\Views\PageStarsectorSelectLeft.xaml.vb">
       <DependentUpon>PageStarsectorSelectLeft.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\PageStarsector\PageStarsectorSelectRight.xaml.vb">
+    <Compile Include="Features\Starsector\Views\PageStarsectorSelectRight.xaml.vb">
       <DependentUpon>PageStarsectorSelectRight.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\PageSetup\Settings.vb" />
-    <Compile Include="Pages\PageSetup\SettingService.vb" />
-    <Page Include="Controls\MyExtraTextButton.xaml">
+    <Compile Include="Features\Settings\Settings.vb" />
+    <Compile Include="Features\Settings\SettingService.vb" />
+    <Page Include="Framework\Controls\MyExtraTextButton.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Controls\MyExtraButton.xaml">
+    <Page Include="Framework\Controls\MyExtraButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\MyHint.xaml">
+    <Page Include="Framework\Controls\MyHint.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\MyListItem.xaml">
+    <Page Include="Framework\Controls\MyListItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\MyButton.xaml">
+    <Page Include="Framework\Controls\MyButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\MyCheckBox.xaml">
+    <Page Include="Framework\Controls\MyCheckBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\MyIconButton.xaml">
+    <Page Include="Framework\Controls\MyIconButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\MyLoading.xaml">
+    <Page Include="Framework\Controls\MyLoading.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\MyMsg\MyMsgInput.xaml">
+    <Page Include="Framework\Controls\MyMsg\MyMsgInput.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Controls\MyMsg\MyMsgSelect.xaml">
+    <Page Include="Framework\Controls\MyMsg\MyMsgSelect.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\MyMsg\MyMsgText.xaml">
+    <Page Include="Framework\Controls\MyMsg\MyMsgText.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\MyRadioBox.xaml">
+    <Page Include="Framework\Controls\MyRadioBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\MyIconTextButton.xaml">
+    <Page Include="Framework\Controls\MyIconTextButton.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Controls\MySearchBox.xaml">
+    <Page Include="Framework\Controls\MySearchBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\MySlider.xaml">
+    <Page Include="Framework\Controls\MySlider.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\MyRadioButton.xaml">
+    <Page Include="Framework\Controls\MyRadioButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="FormMain.xaml">
+    <Page Include="Shell\FormMain.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -404,33 +404,37 @@
       <DependentUpon>Application.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ModStarsector.vb" />
-    <Compile Include="Controls\MyListItem.xaml.vb">
+    <Compile Include="Features\Starsector\ModStarsector.vb" />
+    <Compile Include="Features\Starsector\ModStarsector.ShipCatalog.vb" />
+    <Compile Include="Features\Starsector\ModStarsector.LoadoutHeuristics.vb" />
+    <Compile Include="Features\Starsector\ModStarsector.ShipAssets.vb" />
+    <Compile Include="Features\Starsector\ModStarsector.LoadoutPlanner.vb" />
+    <Compile Include="Framework\Controls\MyListItem.xaml.vb">
       <DependentUpon>MyListItem.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\MyButton.xaml.vb">
+    <Compile Include="Framework\Controls\MyButton.xaml.vb">
       <DependentUpon>MyButton.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\MyCheckBox.xaml.vb">
+    <Compile Include="Framework\Controls\MyCheckBox.xaml.vb">
       <DependentUpon>MyCheckBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\MyIconButton.xaml.vb">
+    <Compile Include="Framework\Controls\MyIconButton.xaml.vb">
       <DependentUpon>MyIconButton.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\MyMsg\MyMsgText.xaml.vb">
+    <Compile Include="Framework\Controls\MyMsg\MyMsgText.xaml.vb">
       <DependentUpon>MyMsgText.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\MyRadioBox.xaml.vb">
+    <Compile Include="Framework\Controls\MyRadioBox.xaml.vb">
       <DependentUpon>MyRadioBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\MyResizer.vb" />
-    <Compile Include="Controls\MySlider.xaml.vb">
+    <Compile Include="Framework\Controls\MyResizer.vb" />
+    <Compile Include="Framework\Controls\MySlider.xaml.vb">
       <DependentUpon>MySlider.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\MyRadioButton.xaml.vb">
+    <Compile Include="Framework\Controls\MyRadioButton.xaml.vb">
       <DependentUpon>MyRadioButton.xaml</DependentUpon>
     </Compile>
-    <Compile Include="FormMain.xaml.vb">
+    <Compile Include="Shell\FormMain.xaml.vb">
       <DependentUpon>FormMain.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
@@ -439,55 +443,55 @@
     <None Include="Resources\Custom.xaml">
       <SubType>Designer</SubType>
     </None>
-    <Page Include="Pages\PageStarsector\PageStarsectorRight.xaml">
+    <Page Include="Features\Starsector\Views\PageStarsectorRight.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Pages\PageStarsector\PageStarsectorLeft.xaml">
+    <Page Include="Features\Starsector\Views\PageStarsectorLeft.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Pages\PageStarsector\PageStarsectorDownload.xaml">
+    <Page Include="Features\Starsector\Views\PageStarsectorDownload.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Pages\PageStarsector\PageStarsectorSettings.xaml">
+    <Page Include="Features\Starsector\Views\PageStarsectorSettings.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Pages\PageStarsector\PageStarsectorSettingsLeft.xaml">
+    <Page Include="Features\Starsector\Views\PageStarsectorSettingsLeft.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Pages\PageStarsector\PageStarsectorOtherLeft.xaml">
+    <Page Include="Features\Starsector\Views\PageStarsectorOtherLeft.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Pages\PageStarsector\PageStarsectorOtherRight.xaml">
+    <Page Include="Features\Starsector\Views\PageStarsectorOtherRight.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Pages\PageStarsector\PageStarsectorToolbox.xaml">
+    <Page Include="Features\Starsector\Views\PageStarsectorToolbox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Pages\PageStarsector\PageStarsectorFeedback.xaml">
+    <Page Include="Features\Starsector\Views\PageStarsectorFeedback.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Pages\PageStarsector\PageStarsectorInstanceLeft.xaml">
+    <Page Include="Features\Starsector\Views\PageStarsectorInstanceLeft.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Pages\PageStarsector\PageStarsectorInstanceRight.xaml">
+    <Page Include="Features\Starsector\Views\PageStarsectorInstanceRight.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Pages\PageStarsector\PageStarsectorSelectLeft.xaml">
+    <Page Include="Features\Starsector\Views\PageStarsectorSelectLeft.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Pages\PageStarsector\PageStarsectorSelectRight.xaml">
+    <Page Include="Features\Starsector\Views\PageStarsectorSelectRight.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -525,13 +529,13 @@
     <Import Include="ThrottleDebounce" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Modules\Base\ModAnimation.vb" />
-    <Compile Include="Modules\Base\MyBitmap.vb" />
-    <Compile Include="Modules\ModMain.vb" />
-    <Compile Include="Modules\ModEvent.vb" />
-    <Compile Include="Modules\GameStub.vb" />
-    <Compile Include="Modules\GameStubs2.vb" />
-    <Compile Include="Modules\Base\ModBase.vb" />
+    <Compile Include="Framework\Services\ModAnimation.vb" />
+    <Compile Include="Framework\Services\MyBitmap.vb" />
+    <Compile Include="Shell\ModMain.vb" />
+    <Compile Include="Shell\ModEvent.vb" />
+    <Compile Include="Compatibility\GameStub.vb" />
+    <Compile Include="Compatibility\GameStubs2.vb" />
+    <Compile Include="Framework\Services\ModBase.vb" />
     <Compile Include="My Project\AssemblyInfo.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -733,5 +737,15 @@
   <ItemGroup>
 
   </ItemGroup>
+  <!-- Legacy executable embeds Core via Resources.resx; always refresh it from the source project. -->
+  <Target Name="BuildCoreForLegacyApp" BeforeTargets="PrepareForBuild"
+          Condition="'$(MSBuildProjectName)' == 'Sspcl.App'">
+    <MSBuild Projects="..\Sspcl.Core\Sspcl.Core.csproj"
+             Targets="Build"
+             Properties="Configuration=$(Configuration);TargetFramework=netstandard2.0" />
+    <Copy SourceFiles="..\Sspcl.Core\bin\$(Configuration)\netstandard2.0\Sspcl.Core.dll"
+          DestinationFiles="Resources\Sspcl.Core.dll"
+          SkipUnchangedFiles="true" />
+  </Target>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>
