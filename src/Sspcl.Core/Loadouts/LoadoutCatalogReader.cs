@@ -113,6 +113,7 @@ public static class LoadoutCatalogReader
                 OrdnancePoints = (int)GameDataReader.GetNumber(stats, "OPs"), Range = GameDataReader.GetNumber(stats, "range"),
                 Dps = GameDataReader.GetNumber(stats, "damage/second"), DamageType = GameDataReader.Get(stats, "type"),
                 FluxPerSecond = GameDataReader.GetNumber(stats, "energy/second"), PointDefense = hints.Split(',').Any(h => h.Trim() == "PD" || h.Trim() == "PD_ONLY"),
+                FluxPerShot = GameDataReader.GetNumber(stats, "energy/shot"), AmmoCapacity = GameDataReader.GetNumber(stats, "ammo"), AmmoRegeneration = GameDataReader.GetNumber(stats, "ammo/sec"),
                 Restricted = !listed || hints.Split(',').Any(h => h.Trim() == "SYSTEM") || tags.Split(',').Any(t => t.Trim() == "restricted"),
                 Recommendable = !hints.Split(',').Any(h => h.Trim() == "BOMB") && !(tags.Split(',').Any(t => t.Trim() == "no_drop") && tags.Split(',').Any(t => t.Trim() == "no_sell")),
                 TurretSprite = ResolveAsset(GameDataReader.Text(spec["turretSprite"]), roots), HardpointSprite = ResolveAsset(GameDataReader.Text(spec["hardpointSprite"]), roots),

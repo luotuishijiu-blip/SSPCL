@@ -23,7 +23,7 @@ public static class LoadoutPlanner
                 if (hull.FluxDissipation <= 0) return true; // 未知散幅不作假设。
                 int affordableVents = Math.Min(hull.FluxUpgradeLimit, plan.Vents + Math.Max(0, remaining - weapon.OrdnancePoints));
                 double capacity = hull.FluxDissipation + affordableVents * 10;
-                double projected = flux + (weapon.Type == "MISSILE" ? 0 : weapon.FluxPerSecond);
+                double projected = flux + (weapon.Type == "MISSILE" ? 0 : weapon.SustainedFluxPerSecond);
                 return projected <= capacity * (style == LoadoutStyle.Assault ? 1.3 : 1.05);
             }
             var candidates = weapons.Where(w => w.Recommendable && LoadoutRules.Fits(slot, w) && w.OrdnancePoints > 0 && w.OrdnancePoints <= remaining && Sustainable(w)).ToList();
@@ -37,7 +37,7 @@ public static class LoadoutPlanner
                 if (weapon.DamageType == "KINETIC" && kinetic <= explosive) score += 2;
                 if (weapon.DamageType == "HIGH_EXPLOSIVE" && explosive < kinetic) score += 2;
                 if (weapon.PointDefense) score += pd < (style == LoadoutStyle.Defense ? 4 : 2) && slot.Size == "SMALL" ? 4 : -3;
-                if (weapon.Type != "MISSILE" && hull.FluxDissipation > 0 && flux + weapon.FluxPerSecond > (hull.FluxDissipation + plan.Vents * 10) * 1.25) score -= 5;
+                if (weapon.Type != "MISSILE" && hull.FluxDissipation > 0 && flux + weapon.SustainedFluxPerSecond > (hull.FluxDissipation + plan.Vents * 10) * 1.25) score -= 5;
                 if (weapon.Type == "MISSILE" && style == LoadoutStyle.Assault) score += 2;
                 return score;
             }
@@ -45,7 +45,7 @@ public static class LoadoutPlanner
             if (selected == null) continue;
             plan.Weapons[slot.Id] = selected.Id;
             remaining -= selected.OrdnancePoints;
-            if (selected.Type != "MISSILE") flux += selected.FluxPerSecond;
+            if (selected.Type != "MISSILE") flux += selected.SustainedFluxPerSecond;
             if (selected.DamageType == "KINETIC") kinetic++;
             if (selected.DamageType == "HIGH_EXPLOSIVE") explosive++;
             if (selected.PointDefense) pd++;

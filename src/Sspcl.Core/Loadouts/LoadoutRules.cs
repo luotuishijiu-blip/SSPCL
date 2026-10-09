@@ -25,7 +25,7 @@ public static class LoadoutRules
         var result = new LoadoutEvaluation();
         var index = weapons.GroupBy(w => w.Id, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
         foreach (string id in hull.BuiltInWeapons.Values)
-            if (index.TryGetValue(id, out var builtin) && builtin.Type != "MISSILE") result.WeaponFlux += builtin.FluxPerSecond;
+            if (index.TryGetValue(id, out var builtin) && builtin.Type != "MISSILE") result.WeaponFlux += builtin.SustainedFluxPerSecond;
         if (plan.HullId != hull.Id) result.Errors.Add("方案与舰船不匹配。");
         foreach (var assignment in plan.Weapons)
         {
@@ -34,7 +34,7 @@ public static class LoadoutRules
             if (!index.TryGetValue(assignment.Value, out var weapon)) { result.Errors.Add("未知武器：" + assignment.Value); continue; }
             if (!Fits(slot, weapon) || weapon.OrdnancePoints < 0) { result.Errors.Add(slot.Id + " 无法安装 " + weapon.Name); continue; }
             result.WeaponOp += weapon.OrdnancePoints;
-            if (weapon.Type != "MISSILE") result.WeaponFlux += weapon.FluxPerSecond;
+            if (weapon.Type != "MISSILE") result.WeaponFlux += weapon.SustainedFluxPerSecond;
         }
         if (plan.Vents < 0 || plan.Capacitors < 0 || plan.Vents > hull.FluxUpgradeLimit || plan.Capacitors > hull.FluxUpgradeLimit)
             result.Errors.Add("电容或通风超过该舰船的上限。");

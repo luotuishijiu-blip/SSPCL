@@ -149,7 +149,7 @@ Public Partial Class LoadoutWorkbench
         OpBar.Value = check.TotalOp
         OpBar.Foreground = If(check.Valid, New SolidColorBrush(Color.FromRgb(40, 102, 219)), Brushes.IndianRed)
         LabFlux.Text = "武器幅能 " & Math.Round(check.WeaponFlux) & " / 散幅 " & Math.Round(_hull.FluxDissipation + _plan.Vents * 10)
-        LabFlux.ToolTip = "估算持续射击幅能，包含已知内置武器，不含导弹；散幅含通风。不模拟船插和脚本。"
+        LabFlux.ToolTip = "估算长期射击幅能，考虑弹药再生上限，包含已知内置武器，不含导弹；散幅含通风。不模拟船插和脚本。"
         Dim dissipation = _hull.FluxDissipation + _plan.Vents * 10
         LabFlux.Foreground = If(dissipation > 0 AndAlso check.WeaponFlux > dissipation * 1.3, Brushes.IndianRed, Brushes.SlateGray)
         LabExplanation.Text = If(_plan.Explanation = "", "手工安装会锁定槽位。通风、电容各最多 " & _hull.FluxUpgradeLimit & "。滚轮缩放，中键拖动。", _plan.Explanation)

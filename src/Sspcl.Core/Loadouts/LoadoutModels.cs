@@ -61,6 +61,11 @@ public sealed class WeaponDefinition
     public double Range { get; set; }
     public double Dps { get; set; }
     public double FluxPerSecond { get; set; }
+    public double FluxPerShot { get; set; }
+    public double AmmoCapacity { get; set; }
+    public double AmmoRegeneration { get; set; }
+    public double SustainedFluxPerSecond => AmmoCapacity > 0 && AmmoRegeneration > 0 && FluxPerShot > 0
+        ? Math.Min(FluxPerSecond, AmmoRegeneration * FluxPerShot) : FluxPerSecond;
     public bool PointDefense { get; set; }
     public bool Restricted { get; set; }
     public bool Recommendable { get; set; } = true;

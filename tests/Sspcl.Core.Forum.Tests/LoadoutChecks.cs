@@ -61,6 +61,8 @@ static class LoadoutChecks
         var overload = new WeaponDefinition { Id = "overload", Type = "BALLISTIC", Size = "MEDIUM", OrdnancePoints = 1, Range = 1200, Dps = 100000, FluxPerSecond = 10000 };
         var sustainable = LoadoutPlanner.Generate(hull, new[] { overload, ordinary }, new LoadoutPlan { HullId = hull.Id }, LoadoutStyle.Balanced);
         Check(sustainable.Weapons["WS 001"] == "ordinary", "High DPS cannot defeat sustained flux budget");
+        var regenerating = new WeaponDefinition { FluxPerSecond = 750, FluxPerShot = 150, AmmoCapacity = 20, AmmoRegeneration = 1 };
+        Check(regenerating.SustainedFluxPerSecond == 150, "Ammo regeneration bounds sustained builtin flux");
         string json = LoadoutVariant.Serialize(hull, catalog.Weapons, generated, "test_sspcl");
         var data = JsonNode.Parse(json)!;
         Check(data["weaponGroups"]!.AsArray().SelectMany(g => g!["weapons"]!.AsObject()).Any(p => p.Key == "WS 003" && p.Value!.ToString() == "a"), "Built-in export group");

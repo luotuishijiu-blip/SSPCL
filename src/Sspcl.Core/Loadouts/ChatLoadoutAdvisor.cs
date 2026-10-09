@@ -26,7 +26,7 @@ public static class ChatLoadoutAdvisor
             slots = hull.Slots.Where(s => s.CanEquip).Select(s => new { id = s.Id, type = s.Type, size = s.Size, angle = s.Angle, arc = s.Arc,
                 pinned = original.PinnedSlots.Contains(s.Id), current = original.Weapons.TryGetValue(s.Id, out var id) ? id : "" }),
             weapons = allowed.Select(w => new { id = w.Id, name = w.Name, type = w.Type, size = w.Size, op = w.OrdnancePoints,
-                range = w.Range, dps = w.Dps, flux = w.FluxPerSecond, damage = w.DamageType, pd = w.PointDefense })
+                range = w.Range, dps = w.Dps, flux = w.SustainedFluxPerSecond, burstFlux = w.FluxPerSecond, ammo = w.AmmoCapacity, regeneration = w.AmmoRegeneration, damage = w.DamageType, pd = w.PointDefense })
         };
         string instructions = "你是远行星号武器装配助手。只返回 JSON 对象 {\"weapons\":{\"槽位ID\":\"武器ID\"},\"vents\":0,\"capacitors\":0,\"explanation\":\"中文理由\"}。"
             + "仅使用输入中的精确 ID。空槽省略。锁定槽位必须保持（锁定空槽必须为空）。武器尺寸不得超过槽位，匹配类型；HYBRID弹道/能量，COMPOSITE弹道/导弹，SYNERGY能量/导弹，UNIVERSAL任意。"
