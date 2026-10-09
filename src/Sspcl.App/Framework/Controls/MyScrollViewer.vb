@@ -6,6 +6,20 @@ Public Class MyScrollViewer
     Private RealOffset As Double
     Private Sub MyScrollViewer_PreviewMouseWheel(sender As Object, e As MouseWheelEventArgs) Handles Me.PreviewMouseWheel
         If e.Delta = 0 OrElse ActualHeight = 0 OrElse ScrollableHeight = 0 Then Return
+        '让内部列表先使用自己的滚动条；到达边缘后才滚动外层页面。
+        Dim node = TryCast(e.OriginalSource, DependencyObject)
+        While node IsNot Nothing AndAlso node IsNot Me
+            Dim nested = TryCast(node, ScrollViewer)
+            If nested IsNot Nothing AndAlso nested.ScrollableHeight > 0 AndAlso
+                ((e.Delta > 0 AndAlso nested.VerticalOffset > 0) OrElse
+                 (e.Delta < 0 AndAlso nested.VerticalOffset < nested.ScrollableHeight)) Then Return
+            If TypeOf node Is Visual OrElse TypeOf node Is Media.Media3D.Visual3D Then
+                node = VisualTreeHelper.GetParent(node)
+            Else
+                Dim contentNode = TryCast(node, FrameworkContentElement)
+                node = If(contentNode Is Nothing, Nothing, contentNode.Parent)
+            End If
+        End While
         Dim SourceType = e.Source.GetType
         If Content.TemplatedParent Is Nothing AndAlso (
                 (GetType(ComboBox).IsAssignableFrom(SourceType) AndAlso CType(e.Source, ComboBox).IsDropDownOpen) OrElse

@@ -1,99 +1,137 @@
 using System.IO.Compression;
 using System.Text.Json;
+using Sspcl.Core.Install;
 using Sspcl.Core.Mods;
 
 namespace Sspcl.Core.Modpack;
 
 public sealed class ExportOptions
 {
-    public bool IncludeEnabledMods { get; set; } = true;
-    public bool IncludeDisabledMods { get; set; }
-    public bool IncludeModSettings { get; set; } = true;
+    public bool IncludeModList { get; set; } = true;
     public bool IncludeGameSettings { get; set; } = true;
+    public bool IncludeGameVersion { get; set; } = true;
+    public bool IncludePackName { get; set; } = true;
     public bool IncludeSaves { get; set; }
 }
+public sealed class PackModReference
+{
+    public string Id { get; set; } = "";
+    public string Name { get; set; } = "";
+    public string Version { get; set; } = "";
+}
+public sealed class PackManifest
+{
+    public int FormatVersion { get; set; } = 1;
+    public string Format { get; set; } = "sspcl-list-pack";
+    public string? Name { get; set; }
+    public string? GameVersion { get; set; }
+    public List<PackModReference>? Mods { get; set; }
+    public bool HasSettings { get; set; }
+    public bool HasSaves { get; set; }
+}
 
-/// <summary>把某个安装打包成可分享的整合包 zip（不含游戏本体）。</summary>
+/// <summary>仅分享清单、配置和存档；没有 MOD/游戏文件导出选项。</summary>
 public static class ModpackExporter
 {
-    public static string Export(string installPath, string outZipPath, string packName, string packVersion, ExportOptions opts)
+    internal static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
+    public static string Export(string installPath, string outZipPath, string packName, ExportOptions opts, CancellationToken token = default)
     {
-        var tmp = Path.Combine(Path.GetTempPath(), "sspcl-pack-" + Guid.NewGuid().ToString("N"));
-        Directory.CreateDirectory(tmp);
+        var installation = InstallationDetector.Detect(installPath);
+        if (!installation.IsValid) throw new InvalidOperationException("请选择有效的游戏目录。");
+        var manifest = new PackManifest { Name = opts.IncludePackName ? packName.Trim() : null,
+            GameVersion = opts.IncludeGameVersion ? installation.Version : null,
+            HasSettings = opts.IncludeGameSettings, HasSaves = opts.IncludeSaves };
+        if (opts.IncludeGameVersion && string.IsNullOrWhiteSpace(installation.Version))
+            throw new InvalidOperationException("无法识别游戏版本，请取消游戏版本选项或选择有效的游戏目录。");
+        if (opts.IncludeModList)
+        {
+            var mods = ModScanner.Scan(Path.Combine(installPath, "mods"));
+            manifest.Mods = EnabledModsFile.Read(installPath).Distinct().Select(id => {
+                var mod = mods.FirstOrDefault(m => m.Id == id);
+                return new PackModReference { Id = id, Name = mod?.Name ?? id, Version = mod?.VersionRaw ?? "" };
+            }).ToList();
+        }
+        var destination = Path.GetFullPath(outZipPath);
+        if (!new[] { ".zip", ".sspack" }.Contains(Path.GetExtension(destination).ToLowerInvariant()))
+            throw new ArgumentException("整合包文件扩展名必须是 .sspack 或 .zip。", nameof(outZipPath));
+        Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
+        string temporary = destination + "." + Guid.NewGuid().ToString("N") + ".tmp";
         try
         {
-            var enabled = new HashSet<string>(EnabledModsFile.Read(installPath), StringComparer.Ordinal);
-            var mods = ModScanner.Scan(Path.Combine(installPath, "mods"));
-
-            if (opts.IncludeEnabledMods || opts.IncludeDisabledMods)
+            using (var zip = ZipFile.Open(temporary, ZipArchiveMode.Create))
             {
-                var modsOut = Path.Combine(tmp, "mods");
-                Directory.CreateDirectory(modsOut);
-                foreach (var m in mods)
+                using (var writer = new StreamWriter(zip.CreateEntry("pack.json").Open()))
+                    writer.Write(JsonSerializer.Serialize(manifest, JsonOptions));
+                if (opts.IncludeGameSettings)
                 {
-                    bool isEnabled = enabled.Contains(m.Id);
-                    if (isEnabled && opts.IncludeEnabledMods)
-                        CopyDir(m.Path, Path.Combine(modsOut, m.Folder));
-                    else if (!isEnabled && opts.IncludeDisabledMods)
-                        CopyDir(m.Path, Path.Combine(modsOut, m.Folder));
+                    AddFile(zip, Path.Combine(installPath, "starsector-core/data/config/settings.json"), "settings/settings.json", token);
+                    foreach (var folder in new[] { "config", "LunaSettings" })
+                    {
+                        string root = Path.Combine(installPath, "saves/common", folder);
+                        if (!Directory.Exists(root)) continue;
+                        foreach (var file in PackFiles.Enumerate(root))
+                        {
+                            string entry = "settings/common/" + folder + "/" + PackFiles.Relative(root, file);
+                            if (PackFiles.IsSetting(entry)) AddFile(zip, file, entry, token);
+                        }
+                    }
                 }
-                if (opts.IncludeEnabledMods)
-                {
-                    var list = enabled.Where(id => mods.Any(m => m.Id == id)).ToList();
-                    File.WriteAllText(Path.Combine(tmp, "enabled_mods.json"),
-                        JsonSerializer.Serialize(new { enabledMods = list }, new JsonSerializerOptions { WriteIndented = true }));
-                }
+                if (opts.IncludeSaves && Directory.Exists(Path.Combine(installPath, "saves")))
+                    foreach (var save in Directory.EnumerateDirectories(Path.Combine(installPath, "saves")))
+                    {
+                        if (!File.Exists(Path.Combine(save, "descriptor.xml"))) continue;
+                        foreach (var file in PackFiles.Enumerate(save))
+                        {
+                            string entry = "saves/" + Path.GetFileName(save) + "/" + PackFiles.Relative(save, file);
+                            if (!PackFiles.IsSave(entry)) throw new InvalidDataException("存档中含有不支持的文件：" + Path.GetFileName(file));
+                            AddFile(zip, file, entry, token);
+                        }
+                    }
             }
-
-            if (opts.IncludeGameSettings)
-            {
-                var vm = Path.Combine(installPath, "vmparams");
-                if (File.Exists(vm)) File.Copy(vm, Path.Combine(tmp, "vmparams"));
-            }
-
-            if (opts.IncludeModSettings)
-            {
-                var cfg = Path.Combine(installPath, "saves", "common", "config");
-                if (Directory.Exists(cfg)) CopyDir(cfg, Path.Combine(tmp, "mod_config"));
-                var luna = Path.Combine(installPath, "saves", "common", "LunaSettings");
-                if (Directory.Exists(luna)) CopyDir(luna, Path.Combine(tmp, "LunaSettings"));
-            }
-
-            if (opts.IncludeSaves)
-            {
-                var saves = Path.Combine(installPath, "saves");
-                if (Directory.Exists(saves)) CopyDir(saves, Path.Combine(tmp, "saves"));
-            }
-
-            File.WriteAllText(Path.Combine(tmp, "pack.json"),
-                JsonSerializer.Serialize(new
-                {
-                    name = packName,
-                    version = packVersion,
-                    gameVersion = "0.98a-RC8",
-                    sspcl = true,
-                    exportedAt = DateTime.Now.ToString("O"),
-                }, new JsonSerializerOptions { WriteIndented = true }));
-
-            if (File.Exists(outZipPath)) File.Delete(outZipPath);
-            ZipFile.CreateFromDirectory(tmp, outZipPath, CompressionLevel.Optimal, includeBaseDirectory: false);
-            return outZipPath;
+            token.ThrowIfCancellationRequested();
+            ModpackImporter.Inspect(temporary);
+            if (File.Exists(destination)) File.Replace(temporary, destination, null);
+            else File.Move(temporary, destination);
+            return destination;
         }
-        finally
-        {
-            try { Directory.Delete(tmp, true); } catch { }
-        }
+        finally { if (File.Exists(temporary)) File.Delete(temporary); }
     }
-
-    private static void CopyDir(string src, string dst)
+    private static void AddFile(ZipArchive zip, string file, string entry, CancellationToken token)
     {
-        Directory.CreateDirectory(dst);
-        foreach (var f in Directory.EnumerateFiles(src, "*", SearchOption.AllDirectories))
+        token.ThrowIfCancellationRequested();
+        if (!File.Exists(file)) return;
+        if ((File.GetAttributes(file) & FileAttributes.ReparsePoint) != 0) throw new IOException("不支持链接文件。");
+        using var input = File.OpenRead(file);
+        using var output = zip.CreateEntry(entry, CompressionLevel.Optimal).Open();
+        PackFiles.Copy(input, output, token);
+    }
+}
+
+internal static class PackFiles
+{
+    internal static string Relative(string root, string file) => file.Substring(root.TrimEnd(Path.DirectorySeparatorChar).Length + 1).Replace('\\', '/');
+    internal static IEnumerable<string> Enumerate(string root)
+    {
+        if ((File.GetAttributes(root) & FileAttributes.ReparsePoint) != 0) throw new IOException("不支持链接目录。");
+        foreach (var file in Directory.EnumerateFiles(root))
         {
-            string rel = f.Substring(src.Length).TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-            string df = Path.Combine(dst, rel);
-            Directory.CreateDirectory(Path.GetDirectoryName(df)!);
-            File.Copy(f, df, overwrite: true);
+            if ((File.GetAttributes(file) & FileAttributes.ReparsePoint) != 0) throw new IOException("不支持链接文件。");
+            yield return file;
         }
+        foreach (var directory in Directory.EnumerateDirectories(root))
+            foreach (var file in Enumerate(directory)) yield return file;
+    }
+    internal static bool IsSetting(string path) => path == "settings/settings.json" ||
+        ((path.StartsWith("settings/common/config/", StringComparison.Ordinal) || path.StartsWith("settings/common/LunaSettings/", StringComparison.Ordinal)) &&
+         new[] { ".json", ".ini", ".cfg", ".xml", ".properties", ".txt" }.Contains(Path.GetExtension(path).ToLowerInvariant()));
+    internal static bool IsSave(string path) => path.StartsWith("saves/", StringComparison.Ordinal) && path.Split('/').Length >= 3 &&
+        !path.Split('/')[1].Equals("common", StringComparison.OrdinalIgnoreCase) && !Path.GetFileName(path).Equals("mod_info.json", StringComparison.OrdinalIgnoreCase) &&
+        new[] { ".xml", ".xml.gz", ".xml.bak", ".xml.gz.bak", ".json" }.Any(suffix => path.EndsWith(suffix, StringComparison.OrdinalIgnoreCase));
+    internal static void Copy(Stream input, Stream output, CancellationToken token)
+    {
+        var buffer = new byte[81920];
+        int count;
+        while ((count = input.Read(buffer, 0, buffer.Length)) > 0)
+        { token.ThrowIfCancellationRequested(); output.Write(buffer, 0, count); }
     }
 }

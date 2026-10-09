@@ -4,7 +4,14 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Sspcl" PanScroll="PanBack">
-    <local:MyScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" x:Name="PanBack">
-        <StackPanel x:Name="PanMain" Margin="25,25,25,10"/>
-    </local:MyScrollViewer>
+    <Grid>
+        <local:MyScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" x:Name="PanBack">
+            <StackPanel x:Name="PanMain" Margin="25,25,25,80"/>
+        </local:MyScrollViewer>
+        <Border x:Name="BtnDownloadGame" Width="40" Height="40" CornerRadius="20"
+                Background="{DynamicResource ColorBrush2}" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                Margin="0,0,24,24" Cursor="Hand" ToolTip="下载游戏" MouseLeftButtonUp="DownloadGame_Click">
+            <TextBlock Text="+" Foreground="White" FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-2,0,0" IsHitTestVisible="False"/>
+        </Border>
+    </Grid>
 </local:MyPageRight>

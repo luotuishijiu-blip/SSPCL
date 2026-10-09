@@ -110,18 +110,7 @@ public static class ModInstaller
         Directory.CreateDirectory(tmp);
         try
         {
-            if (ext == ".zip")
-            {
-                ZipFile.ExtractToDirectory(archivePath, tmp);
-            }
-            else if (ext is ".7z" or ".rar")
-            {
-                ExtractWithExternalTool(archivePath, tmp);
-            }
-            else
-            {
-                return new InstallResult { Error = "仅支持 .zip / .7z / .rar 压缩包" };
-            }
+            ExtractArchive(archivePath, tmp);
 
             var modRoot = FindModRoot(tmp);
             if (modRoot == null)
@@ -137,6 +126,14 @@ public static class ModInstaller
         {
             try { Directory.Delete(tmp, true); } catch { }
         }
+    }
+
+    internal static void ExtractArchive(string archivePath, string destination)
+    {
+        string extension = Path.GetExtension(archivePath).ToLowerInvariant();
+        if (extension == ".zip") ZipFile.ExtractToDirectory(archivePath, destination);
+        else if (extension is ".7z" or ".rar") ExtractWithExternalTool(archivePath, destination);
+        else throw new InvalidDataException("仅支持 .zip / .7z / .rar 压缩包");
     }
 
     private static string? FindModRoot(string dir)

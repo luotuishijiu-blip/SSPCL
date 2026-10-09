@@ -330,6 +330,8 @@
     <Compile Include="Features\Starsector\Views\PageStarsectorSelectRight.xaml.vb">
       <DependentUpon>PageStarsectorSelectRight.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Features\Starsector\Views\PackOptionsWindow.vb" />
+    <Compile Include="Features\Starsector\Views\ModUpdateWindow.vb" />
     <Compile Include="Features\Settings\Settings.vb" />
     <Compile Include="Features\Settings\SettingService.vb" />
     <Page Include="Framework\Controls\MyExtraTextButton.xaml">
@@ -548,11 +550,15 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <EmbeddedResource Include="My Project\Resources.resx">
+    <None Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.vb</LastGenOutput>
+    </None>
+    <EmbeddedResource Include="$(IntermediateOutputPath)Sspcl.Resources.resources">
+      <LogicalName>Sspcl.Resources.resources</LogicalName>
+      <GenerateResource>false</GenerateResource>
     </EmbeddedResource>
     <None Include="My Project\app.manifest" />
     <None Include="My Project\Settings.settings">
@@ -748,4 +754,13 @@
           SkipUnchangedFiles="true" />
   </Target>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
+  <!-- Build byte-only resources without ResX type deserialization. Keep the designer source. -->
+  <Target Name="CompileByteResources" BeforeTargets="PrepareResources"
+          DependsOnTargets="BuildCoreForLegacyApp;ResolveProjectReferences"
+          Condition="'$(MSBuildProjectName)' == 'Sspcl.App'">
+    <Exec Command="powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\..\..\eng\compile-legacy-resources.ps1&quot; -ProjectDirectory &quot;$(MSBuildProjectDirectory)&quot; -OutputFile &quot;$(IntermediateOutputPath)Sspcl.Resources.resources&quot;" />
+    <ItemGroup>
+      <FileWrites Include="$(IntermediateOutputPath)Sspcl.Resources.resources" />
+    </ItemGroup>
+  </Target>
 </Project>

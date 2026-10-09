@@ -1134,9 +1134,6 @@ Public Class FormMain
                                                                                     FrmStarsectorSelectRight.AddFolder()
                                                                                     FrmStarsectorSelectLeft.RefreshList()
                                                                                 End Sub
-                        AddHandler FrmStarsectorSelectLeft.FolderSelected, Sub(p)
-                                                                              FrmStarsectorSelectRight.RefreshCards()
-                                                                          End Sub
                     End If
                     PageChangeAnim(FrmStarsectorSelectLeft, FrmStarsectorSelectRight)
                 Case PageType.TaskManager '任务管理

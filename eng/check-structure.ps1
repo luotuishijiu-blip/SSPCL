@@ -19,8 +19,9 @@ foreach ($item in $items) {
     [void]$included.Add($path)
 }
 
-Get-ChildItem -LiteralPath $projectDirectory -Recurse -File -Include '*.vb', '*.xaml' |
-    Where-Object { $_.FullName -notmatch '[\\/](?:bin|obj)[\\/]' -and
+Get-ChildItem -LiteralPath $projectDirectory -Recurse -File |
+    Where-Object { $_.Extension -in @('.vb', '.xaml') -and
+                   $_.FullName -notmatch '[\\/](?:bin|obj)[\\/]' -and
                    $_.FullName -notmatch '[\\/]Compatibility[\\/]Uncompiled[\\/]' -and
                    $_.Name -ne 'Custom.xaml' } |
     ForEach-Object {
@@ -39,9 +40,10 @@ $references = @{
     'Sspcl.Cli' = @('Sspcl.Core')
     'Sspcl.Desktop' = @('Sspcl.Core')
     'Sspcl.App' = @('Sspcl.Foundation', 'Sspcl.Foundation.Wpf', 'Sspcl.Java')
+    'Sspcl.Core.Forum.Tests' = @('Sspcl.Core')
 }
 foreach ($name in $references.Keys) {
-    $path = if ($name -eq 'Sspcl.App') { $appProject } else { Join-Path $root "src/$name/$name.csproj" }
+    $path = if ($name -eq 'Sspcl.App') { $appProject } elseif ($name -eq 'Sspcl.Core.Forum.Tests') { Join-Path $root "tests/$name/$name.csproj" } else { Join-Path $root "src/$name/$name.csproj" }
     [xml]$xml = Get-Content -LiteralPath $path -Raw
     $actual = @($xml.Project.ItemGroup.ProjectReference | Where-Object { $_ -and $_.Include } |
         ForEach-Object { [IO.Path]::GetFileNameWithoutExtension($_.Include) } | Sort-Object)

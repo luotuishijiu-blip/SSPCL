@@ -26,7 +26,7 @@ Sspcl.App（.NET Standard 2.0 目标程序集）
 
 新增游戏规则和文件解析优先放进 `Sspcl.Core`，供不同入口复用。UI 项目只处理交互和呈现。通用框架不得反向引用游戏模块或应用入口。旧版 `ModStarsector` 是连接 `Sspcl.Core` 与现有 VB 页面的一层适配代码，已按舰船目录、资源解析、启发式配装和配装规划拆成多个 Partial Module 文件。后续新增功能应直接进入核心库，再在适配层提供薄包装。
 
-旧版应用使用 `Resources.resx` 把核心 DLL 嵌入单文件程序。`Sspcl.App.vbproj` 会在编译前从 `Sspcl.Core` 的源码构建 `netstandard2.0` 目标并生成该资源文件；不再提交或手动复制生成的 DLL。其他随项目保存的第三方二进制资源仍按原有方式引用。
+旧版应用使用 `Resources.resx` 声明单文件程序的内嵌 DLL。`Sspcl.App.vbproj` 会在编译前从核心库源码构建 `netstandard2.0` DLL，再调用 `eng/compile-legacy-resources.ps1` 生成 `.resources` 并嵌入。脚本只读取源码树内的字节文件引用，不实例化 resx 中的类型或反序列化对象，也不修改系统来源区域检查设置。保留原有资源名与 Designer 接口；生成的 DLL 和 `.resources` 不提交。
 
 ## 开发流程
 

@@ -11,6 +11,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Framework", "Framework", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{16F33BD8-858E-461F-887F-583F2367F8BC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{E3E62A5C-30BE-416F-A78B-CE81B341B24D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sspcl.Core.Forum.Tests", "tests\Sspcl.Core.Forum.Tests\Sspcl.Core.Forum.Tests.csproj", "{40A12517-34EA-498F-A721-970E22CB2D27}"
+EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Sspcl.App", "src\Sspcl.App\Sspcl.App.vbproj", "{4499F2D2-18EF-4238-B1F0-7BD547AFF925}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sspcl.Foundation", "src\Sspcl.Foundation\Sspcl.Foundation.csproj", "{D22BBF3C-2177-0208-4E29-8466AA41AC6F}"
@@ -31,6 +35,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{40A12517-34EA-498F-A721-970E22CB2D27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40A12517-34EA-498F-A721-970E22CB2D27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40A12517-34EA-498F-A721-970E22CB2D27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40A12517-34EA-498F-A721-970E22CB2D27}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4499F2D2-18EF-4238-B1F0-7BD547AFF925}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4499F2D2-18EF-4238-B1F0-7BD547AFF925}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4499F2D2-18EF-4238-B1F0-7BD547AFF925}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -64,6 +72,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{40A12517-34EA-498F-A721-970E22CB2D27} = {E3E62A5C-30BE-416F-A78B-CE81B341B24D}
 		{BCBE208D-0E0A-40AA-B4A8-95E17F3CF178} = {26363886-AC5C-40CE-A345-FB16F9CC28F0}
 		{6E21997D-39FB-43B9-B937-431FE2C5BD68} = {26363886-AC5C-40CE-A345-FB16F9CC28F0}
 		{16F33BD8-858E-461F-887F-583F2367F8BC} = {26363886-AC5C-40CE-A345-FB16F9CC28F0}

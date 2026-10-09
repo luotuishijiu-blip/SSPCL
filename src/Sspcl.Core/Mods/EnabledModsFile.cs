@@ -38,15 +38,19 @@ public static class EnabledModsFile
 
         if (File.Exists(path))
         {
-            var backup = $"{path}.bak-{DateTime.Now:yyyyMMdd-HHmmss}";
+            var backup = $"{path}.bak-{DateTime.Now:yyyyMMdd-HHmmss-fffffff}-{Guid.NewGuid():N}";
             File.Copy(path, backup);
             PruneBackups(path, maxBackups);
         }
 
-        var tmp = path + ".tmp";
-        File.WriteAllText(tmp, json, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
-        if (File.Exists(path)) File.Delete(path);
-        File.Move(tmp, path);
+        var tmp = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
+        try
+        {
+            File.WriteAllText(tmp, json, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+            if (File.Exists(path)) File.Replace(tmp, path, null);
+            else File.Move(tmp, path);
+        }
+        finally { if (File.Exists(tmp)) File.Delete(tmp); }
     }
 
     private static void PruneBackups(string path, int maxBackups)

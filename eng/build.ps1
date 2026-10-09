@@ -32,6 +32,8 @@ try {
         & $msbuild 'src/Sspcl.App/Sspcl.App.vbproj' -t:Build "-p:Configuration=$Configuration" -v:minimal
         if ($LASTEXITCODE -ne 0) { throw 'Legacy app build failed.' }
     }
+    & dotnet run --project 'tests/Sspcl.Core.Forum.Tests/Sspcl.Core.Forum.Tests.csproj' -c $Configuration --no-restore
+    if ($LASTEXITCODE -ne 0) { throw 'Forum contract checks failed.' }
 }
 finally {
     Pop-Location

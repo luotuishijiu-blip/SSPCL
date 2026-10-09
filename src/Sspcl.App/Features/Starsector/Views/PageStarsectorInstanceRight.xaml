@@ -27,6 +27,7 @@
                 <local:MyCard Title="概览" Margin="0,0,0,15">
                     <StackPanel Margin="20,38,20,18">
                         <TextBlock x:Name="LabOverview" FontSize="13" Foreground="{DynamicResource ColorBrush1}" TextWrapping="Wrap" Text="正在读取……"/>
+                        <TextBlock x:Name="LabOverviewMemory" FontSize="13" Foreground="{DynamicResource ColorBrush1}" TextWrapping="Wrap" Margin="0,12,0,0" Text="正在读取内存信息…"/>
                     </StackPanel>
                 </local:MyCard>
             </StackPanel>
@@ -36,6 +37,7 @@
                     <StackPanel Margin="20,38,20,18">
                         <TextBlock x:Name="LabModSummary" FontSize="13" Foreground="{DynamicResource ColorBrushGray3}" TextWrapping="Wrap" Text="正在扫描……"/>
                         <local:MyButton x:Name="BtnRescan" Text="重新扫描" Padding="14,6" Margin="0,12,0,0" HorizontalAlignment="Left"/>
+                        <Button x:Name="BtnCancelUpdate" Content="取消更新下载" Visibility="Collapsed" Padding="12,6" Margin="0,8,0,0" HorizontalAlignment="Left" Click="CancelUpdate_Click"/>
                         <StackPanel x:Name="PanModList" Margin="0,15,0,0"/>
                     </StackPanel>
                 </local:MyCard>
