@@ -86,4 +86,8 @@ Public Class PageStarsectorToolbox
         End If
     End Sub
 
+    Private Sub OpenWorkbench(sender As Object, e As MouseButtonEventArgs) Handles BtnLoadoutWorkbench.Click
+        Dim workbench As New LoadoutWorkbench(ModMain.StarsectorPath)
+        workbench.Show()
+    End Sub
 End Class

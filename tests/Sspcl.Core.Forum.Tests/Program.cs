@@ -21,6 +21,8 @@ try
     await ModpackChecks.Run(testRoot);
     ActivationChecks.Run(testRoot);
     UpdateChecks.Run(testRoot);
+    await LoadoutChecks.Run(testRoot);
+    if (args.Contains("--live-loadout")) LoadoutChecks.Live("D:/Starsector");
     Console.WriteLine("Offline contract and download checks passed.");
     if (args.Contains("--live") || args.Contains("--live-download")) await CheckLive(testRoot, args.Contains("--live-download"));
     Console.WriteLine("PASS: forum API contract, download policy, archive formats, cancellation and installation.");

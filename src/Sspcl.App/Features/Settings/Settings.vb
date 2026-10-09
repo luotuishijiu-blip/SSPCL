@@ -168,6 +168,7 @@ Public Class Settings
         New Setting("StarsectorRamOptimize", False),
         New Setting("StarsectorAiApiUrl", ""),
         New Setting("StarsectorAiApiKey", ""),
+        New Setting("StarsectorAiApiKeyProtected", ""),
         New Setting("StarsectorAiApiModel", "deepseek-chat"),
         New Setting("UiMusicVolume", 500),
         New Setting("UiMusicStop", False),

@@ -2,6 +2,12 @@
 
 ## 最新版
 
+[2026-10-09：舰船装配工坊](https://github.com/luotuishijiu-blip/SSPCL/releases/tag/build-20261009-loadout-workbench)
+
+下载 `sspcl-loadout-workbench-20261009.zip`，解压运行 `Sspcl.exe`，无需管理员权限。百宝箱内提供重新开发的可视化装配与 `.variant` 导出。包括此前的 MOD 商店、整合包、更新与内存概览。装配范围与验证方式见 [装配说明](LOADOUTS.md)。
+
+## 上一版
+
 [2026-10-09：MOD 更新与内存概览](https://github.com/luotuishijiu-blip/SSPCL/releases/tag/build-20261009-mod-update-memory)
 
 推荐下载 `sspcl-mod-update-memory-20261009.zip`，包含 EXE、运行配置和中文说明。关闭旧启动器后解压运行，无需管理员权限。运行需要 Windows 与 .NET Framework 4.8；RAR/7z 解压需要系统已安装 7-Zip 或 WinRAR。

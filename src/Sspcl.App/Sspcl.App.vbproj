@@ -207,6 +207,7 @@
     </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
@@ -407,10 +408,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Features\Starsector\ModStarsector.vb" />
-    <Compile Include="Features\Starsector\ModStarsector.ShipCatalog.vb" />
-    <Compile Include="Features\Starsector\ModStarsector.LoadoutHeuristics.vb" />
-    <Compile Include="Features\Starsector\ModStarsector.ShipAssets.vb" />
-    <Compile Include="Features\Starsector\ModStarsector.LoadoutPlanner.vb" />
     <Compile Include="Framework\Controls\MyListItem.xaml.vb">
       <DependentUpon>MyListItem.xaml</DependentUpon>
     </Compile>
@@ -763,4 +760,9 @@
       <FileWrites Include="$(IntermediateOutputPath)Sspcl.Resources.resources" />
     </ItemGroup>
   </Target>
+  <ItemGroup>
+    <Page Include="Features\Starsector\Loadouts\LoadoutWorkbench.xaml"><Generator>MSBuild:Compile</Generator><SubType>Designer</SubType></Page>
+    <Compile Include="Features\Starsector\Loadouts\LoadoutWorkbench.xaml.vb"><DependentUpon>LoadoutWorkbench.xaml</DependentUpon></Compile>
+    <Compile Include="Features\Starsector\Loadouts\LoadoutWorkbench.Rendering.vb" />
+  </ItemGroup>
 </Project>
