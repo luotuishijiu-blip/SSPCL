@@ -764,5 +764,6 @@
     <Page Include="Features\Starsector\Loadouts\LoadoutWorkbench.xaml"><Generator>MSBuild:Compile</Generator><SubType>Designer</SubType></Page>
     <Compile Include="Features\Starsector\Loadouts\LoadoutWorkbench.xaml.vb"><DependentUpon>LoadoutWorkbench.xaml</DependentUpon></Compile>
     <Compile Include="Features\Starsector\Loadouts\LoadoutWorkbench.Rendering.vb" />
+    <Compile Include="Features\Starsector\Loadouts\LoadoutWorkbench.Details.vb" />
   </ItemGroup>
 </Project>

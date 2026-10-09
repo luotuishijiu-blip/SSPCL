@@ -5,11 +5,11 @@ public enum LoadoutStyle { Balanced, LongRange, Assault, Defense }
 /// <summary>规则生成器与外部 AI 共用相同的槽位 ID、约束和状态；手工锁定的安装不会被覆盖。</summary>
 public static class LoadoutPlanner
 {
-    public static LoadoutPlan Generate(HullDefinition hull, IReadOnlyList<WeaponDefinition> weapons, LoadoutPlan original, LoadoutStyle style)
+    public static LoadoutPlan Generate(HullDefinition hull, IReadOnlyList<WeaponDefinition> weapons, LoadoutPlan original, LoadoutStyle style, IEnumerable<HullModDefinition>? hullMods = null)
     {
         var plan = LoadoutRules.Copy(original);
         plan.Weapons = plan.Weapons.Where(p => plan.PinnedSlots.Contains(p.Key)).ToDictionary(p => p.Key, p => p.Value, StringComparer.Ordinal);
-        var evaluation = LoadoutRules.Evaluate(hull, weapons, plan);
+        var evaluation = LoadoutRules.Evaluate(hull, weapons, plan, hullMods);
         if (!evaluation.Valid) throw new InvalidOperationException(string.Join("\n", evaluation.Errors));
         int remaining = hull.OrdnancePoints - evaluation.TotalOp;
         double flux = evaluation.WeaponFlux;

@@ -5,9 +5,9 @@ namespace Sspcl.Core.Loadouts;
 
 public static class LoadoutVariant
 {
-    public static string Serialize(HullDefinition hull, IReadOnlyList<WeaponDefinition> weapons, LoadoutPlan plan, string variantId)
+    public static string Serialize(HullDefinition hull, IReadOnlyList<WeaponDefinition> weapons, LoadoutPlan plan, string variantId, IEnumerable<HullModDefinition>? hullMods = null)
     {
-        var evaluation = LoadoutRules.Evaluate(hull, weapons, plan);
+        var evaluation = LoadoutRules.Evaluate(hull, weapons, plan, hullMods);
         if (!evaluation.Valid) throw new InvalidOperationException(string.Join("\n", evaluation.Errors));
         if (hull.Slots.Any(s => s.Type == "STATION_MODULE")) throw new InvalidOperationException("模块舰船需要独立的子舰配置，当前无法导出完整配置。");
         if (string.IsNullOrWhiteSpace(variantId) || variantId.Any(c => !(char.IsLetterOrDigit(c) || c == '_' || c == '-')))
@@ -24,18 +24,22 @@ public static class LoadoutVariant
         var root = new JsonObject {
             ["hullId"] = hull.Id, ["variantId"] = variantId, ["displayName"] = plan.Name,
             ["fluxVents"] = plan.Vents, ["fluxCapacitors"] = plan.Capacitors, ["weaponGroups"] = groups,
-            ["hullMods"] = new JsonArray(), ["wings"] = new JsonArray(), ["quality"] = 1, ["goalVariant"] = false
+            ["hullMods"] = Array(plan.HullMods), ["permaMods"] = Array(plan.PermaMods), ["sMods"] = Array(plan.SMods),
+            ["sModdedBuiltIns"] = Array(plan.SModdedBuiltIns), ["wings"] = new JsonArray(), ["quality"] = 1, ["goalVariant"] = false
         };
         return root.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
     }
-    public static LoadoutPlan Read(string path, HullDefinition hull, IReadOnlyList<WeaponDefinition> weapons)
+    public static LoadoutPlan Read(string path, HullDefinition hull, IReadOnlyList<WeaponDefinition> weapons, IEnumerable<HullModDefinition>? hullMods = null)
     {
         var data = GameDataReader.Json(path);
         var plan = new LoadoutPlan { HullId = GameDataReader.Text(data["hullId"]), Name = GameDataReader.Text(data["displayName"], "导入装配"), Vents = (int)GameDataReader.Number(data["fluxVents"]), Capacitors = (int)GameDataReader.Number(data["fluxCapacitors"]) };
-        if (GameDataReader.Strings(data["hullMods"]).Except(hull.BuiltInHullMods).Any() ||
-            GameDataReader.Strings(data["permaMods"]).Except(hull.BuiltInHullMods).Any() ||
-            GameDataReader.Strings(data["sMods"]).Any() || GameDataReader.Strings(data["wings"]).Any())
-            throw new InvalidDataException("此配置含额外船插或舰载机，目前的武器装配模块无法计算其 OP，不能直接导入。");
+        if (GameDataReader.Strings(data["wings"]).Any()) throw new InvalidDataException("此配置含舰载机，当前模块尚未编辑，不能直接导入。");
+        plan.PermaMods.UnionWith(GameDataReader.Strings(data["permaMods"]).Except(hull.BuiltInHullMods));
+        plan.SMods.UnionWith(GameDataReader.Strings(data["sMods"]).Except(hull.BuiltInHullMods));
+        plan.PermaMods.UnionWith(plan.SMods);
+        plan.SModdedBuiltIns.UnionWith(GameDataReader.Strings(data["sModdedBuiltIns"]));
+        plan.SModdedBuiltIns.UnionWith(GameDataReader.Strings(data["sMods"]).Intersect(hull.BuiltInHullMods));
+        plan.HullMods.UnionWith(GameDataReader.Strings(data["hullMods"]).Except(hull.BuiltInHullMods).Except(plan.PermaMods));
         if (data["modules"] is JsonObject modules && modules.Count > 0) throw new InvalidDataException("此配置含舰船模块，需要专用模块配置，不能直接导入。");
         if (data["weaponGroups"] is JsonArray groups)
             foreach (var group in groups.OfType<JsonObject>())
@@ -47,8 +51,9 @@ public static class LoadoutVariant
                         plan.Weapons[assignment.Key] = GameDataReader.Text(assignment.Value);
                         plan.PinnedSlots.Add(assignment.Key);
                     }
-        var evaluation = LoadoutRules.Evaluate(hull, weapons, plan);
+        var evaluation = LoadoutRules.Evaluate(hull, weapons, plan, hullMods);
         if (!evaluation.Valid) throw new InvalidDataException(string.Join("\n", evaluation.Errors));
         return plan;
     }
+    private static JsonArray Array(IEnumerable<string> values) => new(values.OrderBy(s => s, StringComparer.Ordinal).Select(s => (JsonNode?)JsonValue.Create(s)).ToArray());
 }

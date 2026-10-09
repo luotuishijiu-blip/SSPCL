@@ -25,6 +25,11 @@ static class LoadoutChecks
             Put("starsector-core/data/weapons/" + id + ".wpn", "{\"id\":\"" + id + "\",\"type\":\"" + type + "\",\"size\":\"" + size + "\";\"renderHints\":[RENDER_BARREL_BELOW],\"offset\":1e-3}");
         Put("mods/enabled/mod_info.json", "{\"id\":\"enabled\",\"name\":\"Enabled\",\"version\":\"1\"}");
         Put("mods/enabled/data/weapons/weapon_data.csv", "name,id,OPs\nOverride,a,6\n");
+        Put("starsector-core/data/hullmods/hull_mods.csv", "name,id,cost_frigate,cost_dest,cost_cruiser,cost_capital,desc,sModDesc\nArmor,armor,2,4,6,8,Normal armor,Built in bonus\n");
+        Put("mods/enabled/data/hullmods/hull_mods.csv", "name,id,cost_cruiser\nOverride Armor,armor,7\n");
+        Put("mods/disabled/data/hullmods/hull_mods.csv", "name,id,cost_cruiser\nWrong Armor,armor,999\n");
+        Put("starsector-core/data/strings/descriptions.csv", "id,type,text1,text2\na,WEAPON,\"Weapon, description\nsecond line\",more details\ntest,SHIP,Ship description,\n");
+        Put("mods/enabled/data/strings/descriptions.csv", "id,type,text1\na,WEAPON,Enabled description\n");
         Put("mods/disabled/mod_info.json", "{\"id\":\"disabled\",\"name\":\"Disabled\",\"version\":\"1\"}");
         Put("mods/disabled/data/weapons/weapon_data.csv", "name,id,OPs\nWrong,a,100\n");
         Put("mods/enabled_mods.json", "{\"enabledMods\":[\"enabled\"]}");
@@ -33,6 +38,8 @@ static class LoadoutChecks
         var hull = catalog.Hulls.Single(h => h.Id == "test");
         var skin = catalog.Hulls.Single(h => h.Id == "skin");
         Check(hull.Name == "Ship, quoted", "Quoted CSV");
+        Check(catalog.Weapons.Single(w => w.Id == "a").Description == "Enabled description\n\nmore details" && hull.Description == "Ship description", "Multiline descriptions and enabled source overlay");
+        Check(catalog.HullMods.Single().Cost("CRUISER") == 7 && catalog.HullMods.Single().Cost("CAPITAL_SHIP") == 8, "Hullmod size cost and enabled source overlay");
         Check(catalog.Weapons.Single(w => w.Id == "a").OrdnancePoints == 6 && catalog.Weapons.Single(w => w.Id == "a").Range == 700, "Enabled MOD stats override, inherited blank columns");
         Check(hull.Slots[2].Locked && !skin.Slots[2].Locked && skin.OrdnancePoints == 40 && skin.Slots[0].Type == "HYBRID", "Skin inheritance/builtin removal");
         var position = ShipGeometry.SlotToSprite(hull, hull.Slots[0]);
@@ -79,6 +86,8 @@ static class LoadoutChecks
         foreach (string bad in new[] { good.Replace("\"a\"", "\"b\""), good.Replace("WS 001", "Unknown"), good.Replace("\"vents\":3", "\"vents\":99"), good.Replace("\"vents\":3", "\"vents\":3.5") })
             Throws(() => ChatLoadoutAdvisor.ParseSuggestion(bad, hull, catalog.Weapons, plan));
         Check(plan.Weapons["WS 001"] == "a" && plan.Vents == 3, "Rejected suggestions preserve input");
+        CheckHullMods(game, hull, catalog, plan);
+        CheckDamage();
         using var client = new HttpClient(new AdvisorHandler(good));
         var result = await ChatLoadoutAdvisor.SuggestAsync(client, "https://ai.test/chat/completions", "secret", "test-model", hull, catalog.Weapons, plan, LoadoutStyle.Balanced, default);
         Check(result.Weapons["WS 001"] == "a", "Advice HTTP integration");
@@ -91,16 +100,69 @@ static class LoadoutChecks
         Console.WriteLine("Loadout checks passed: CSV/enums, enabled sources, skins, geometry/pivots, compatibility, budgets, pins, variant roundtrip, validated AI and cancellation.");
     }
 
+    private static void CheckHullMods(string game, HullDefinition hull, LoadoutCatalog catalog, LoadoutPlan original)
+    {
+        hull.BuiltInHullMods.Add("native");
+        var mods = catalog.HullMods.ToList();
+        mods.Add(new HullModDefinition { Id = "native", Name = "Native", Stats = new() { ["cost_cruiser"] = "99" } });
+        var plan = LoadoutRules.Copy(original);
+        plan.HullMods.Add("armor"); plan.SModdedBuiltIns.Add("native");
+        for (int i = 0; i < 8; i++)
+        {
+            string id = "builtin_" + i;
+            mods.Add(new HullModDefinition { Id = id, Name = id, Stats = new() { ["cost_cruiser"] = "30" } });
+            plan.PermaMods.Add(id); plan.SMods.Add(id);
+        }
+        var evaluation = LoadoutRules.Evaluate(hull, catalog.Weapons, plan, mods);
+        Check(evaluation.Valid && evaluation.HullModOp == 7 && evaluation.TotalOp == 18, "Ordinary hullmod OP, eight unlimited free S-mods, native enhancement");
+        var copy = LoadoutRules.Copy(plan); copy.SMods.Clear();
+        Check(plan.SMods.Count == 8, "Hullmod undo snapshots are independent");
+        var generated = LoadoutPlanner.Generate(hull, catalog.Weapons, plan, LoadoutStyle.Balanced, mods);
+        Check(generated.SMods.Count == 8 && generated.HullMods.SetEquals(plan.HullMods) && LoadoutRules.Evaluate(hull, catalog.Weapons, generated, mods).Valid, "Generation preserves player hullmods and their budget");
+        string path = Path.Combine(game, "hullmods.variant");
+        File.WriteAllText(path, LoadoutVariant.Serialize(hull, catalog.Weapons, plan, "test_hullmods", mods));
+        var imported = LoadoutVariant.Read(path, hull, catalog.Weapons, mods);
+        Check(imported.HullMods.SetEquals(plan.HullMods) && imported.PermaMods.SetEquals(plan.PermaMods) && imported.SMods.SetEquals(plan.SMods) && imported.SModdedBuiltIns.SetEquals(plan.SModdedBuiltIns), "All hullmod variant fields roundtrip without cap");
+        string suggestion = "{\"weapons\":{\"WS 001\":\"a\"},\"vents\":3,\"capacitors\":2}";
+        Check(ChatLoadoutAdvisor.ParseSuggestion(suggestion, hull, catalog.Weapons, plan, mods).SMods.Count == 8, "AI preserves player hullmods");
+        Throws(() => ChatLoadoutAdvisor.ParseSuggestion(suggestion.Replace("\"vents\":3", "\"vents\":20"), hull, catalog.Weapons, plan, mods));
+        plan.HullMods.Add("missing_mod");
+        Check(!LoadoutRules.Evaluate(hull, catalog.Weapons, plan, mods).Valid, "Unknown hullmod rejected");
+    }
+    private static void CheckDamage()
+    {
+        var hull = new HullDefinition { BuiltInWeapons = new() { ["native"] = "e" } };
+        var plan = new LoadoutPlan();
+        plan.Weapons = new() { ["k1"] = "k", ["he1"] = "he", ["f1"] = "f", ["e1"] = "e", ["m1"] = "m" };
+        var weapons = new[] {
+            new WeaponDefinition { Id = "k", Type = "BALLISTIC", DamageType = "KINETIC", Dps = 100, FluxPerSecond = 50 },
+            new WeaponDefinition { Id = "he", Type = "BALLISTIC", DamageType = "HIGH_EXPLOSIVE", Dps = 200, FluxPerSecond = 100 },
+            new WeaponDefinition { Id = "f", Type = "ENERGY", DamageType = "FRAGMENTATION", Dps = 400, FluxPerSecond = 200 },
+            new WeaponDefinition { Id = "e", Type = "ENERGY", DamageType = "ENERGY", Dps = 50, FluxPerSecond = 25 },
+            new WeaponDefinition { Id = "m", Type = "MISSILE", DamageType = "HIGH_EXPLOSIVE", Dps = 99999, FluxPerSecond = 99999 }
+        };
+        var damage = LoadoutDetails.Damage(hull, weapons, plan);
+        Check(damage.ShieldDps == 500 && damage.ArmorDps == 650 && damage.HullDps == 800 && damage.FluxPerDamage == .5, "Damage multipliers, repeated native/equipped weapon count, missile exclusion and flux/damage ratio");
+        plan.Weapons.Remove("k1");
+        Check(LoadoutDetails.Damage(hull, weapons, plan).ShieldDps == 300, "Damage totals track weapon changes");
+        Check(LoadoutDetails.Damage(new HullDefinition(), weapons, new LoadoutPlan()).FluxPerDamage == null, "Empty plan ratio is unknown, not infinity");
+        Check(LoadoutDetails.WeaponOverview(weapons[0]).Contains("200") && LoadoutDetails.Parameters(new() { ["emp"] = "30", ["customParameter"] = "customValue" }).Any(p => p.Value == "customValue"), "Detailed properties keep source-specific parameters");
+        Console.WriteLine("Detailed fitting checks passed: unrestricted built-ins, normal hullmod costs, native enhancements, variant/AI preservation, damage totals and full metadata.");
+    }
+
     public static void Live(string game)
     {
         var catalog = LoadoutCatalogReader.Read(game);
-        Console.WriteLine($"Live catalog (read only): {catalog.Hulls.Count} hulls, {catalog.Weapons.Count} weapons, {catalog.Warnings.Count} warnings.");
+        Console.WriteLine($"Live catalog (read only): {catalog.Hulls.Count} hulls, {catalog.Weapons.Count} weapons, {catalog.HullMods.Count} hullmods, {catalog.Warnings.Count} warnings.");
         foreach (string warning in catalog.Warnings.Take(8)) Console.WriteLine(warning);
         var onslaught = catalog.Hulls.Single(h => h.Id == "onslaught");
         var slot = onslaught.Slots.Single(s => s.Id == "WS 001");
         var point = ShipGeometry.SlotToSprite(onslaught, slot);
         Check(point.X == 73 && point.Y == 86 && File.Exists(onslaught.SpritePath), "Actual Onslaught geometry/assets");
         Check(catalog.Hulls.Single(h => h.Id == "onslaught_xiv").OrdnancePoints == 370, "Actual XIV skin");
+        Check(catalog.HullMods.Single(m => m.Id == "heavyarmor").Cost(onslaught.HullSize) == 40, "Actual capital hullmod cost");
+        Check(onslaught.Stats.ContainsKey("armor rating") && onslaught.Stats.ContainsKey("shield efficiency") && onslaught.Description.Length > 0, "Actual hull properties/description");
+        Check(catalog.Weapons.Any(w => w.Description.Length > 0 && w.Stats.Count > 20 && File.Exists(w.ProjectileSpecPath)), "Actual full weapon metadata/projectile");
         foreach (var hull in catalog.Hulls.Where(h => h.Slots.Any(s => s.CanEquip)).Take(100))
             Check(LoadoutRules.Evaluate(hull, catalog.Weapons, LoadoutPlanner.Generate(hull, catalog.Weapons, new LoadoutPlan { HullId = hull.Id }, LoadoutStyle.Balanced)).Valid, "Live planner " + hull.Id);
         Console.WriteLine("Live loadout checks passed, no game files written.");

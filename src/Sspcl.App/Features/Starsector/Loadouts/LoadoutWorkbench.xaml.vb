@@ -21,6 +21,11 @@ Public Partial Class LoadoutWorkbench
 
     Public Sub New(gamePath As String)
         InitializeComponent()
+        Dim workArea = SystemParameters.WorkArea
+        Width = Math.Min(1380, Math.Max(900, workArea.Width - 40))
+        Height = Math.Min(940, Math.Max(700, workArea.Height - 40))
+        MinWidth = Math.Min(1080, Width) : MinHeight = Math.Min(740, Height)
+        If Width < 1200 Then SetHullSidebar(False)
         _gamePath = gamePath
         Try
             Dim protectedKey = Settings.Get(Of String)("StarsectorAiApiKeyProtected")
@@ -70,7 +75,7 @@ Public Partial Class LoadoutWorkbench
         If _ai IsNot Nothing Then _ai.Cancel()
         _catalog = catalog
         _bitmaps.Clear()
-        LabCatalog.Text = catalog.Hulls.Count & " 艘舰船 · " & catalog.Weapons.Count & " 种武器"
+        LabCatalog.Text = catalog.Hulls.Count & " 艘舰船 · " & catalog.Weapons.Count & " 种武器 · " & catalog.HullMods.Count & " 种船插"
         LabCatalog.ToolTip = String.Join(vbCrLf, catalog.Warnings)
         FilterHulls()
         If HullList.Items.Count > 0 Then
@@ -96,7 +101,7 @@ Public Partial Class LoadoutWorkbench
         If Object.ReferenceEquals(selected, _hull) AndAlso _plan IsNot Nothing Then Return
         If _ai IsNot Nothing Then _ai.Cancel()
         _hull = selected
-        If _plans.ContainsKey(_hull.Id) AndAlso LoadoutRules.Evaluate(_hull, _catalog.Weapons, _plans(_hull.Id)).Valid Then
+        If _plans.ContainsKey(_hull.Id) AndAlso LoadoutRules.Evaluate(_hull, _catalog.Weapons, _plans(_hull.Id), _catalog.HullMods).Valid Then
             _plan = LoadoutRules.Copy(_plans(_hull.Id))
         Else
             _plan = New LoadoutPlan With {.HullId = _hull.Id, .Name = _hull.Name & " SSPCL"}
@@ -105,6 +110,7 @@ Public Partial Class LoadoutWorkbench
         _undo.Clear() : _redo.Clear()
         LabHull.Text = _hull.Name
         LabHullDetail.Text = _hull.Id & " · " & _hull.Source & " · " & _hull.Width & " × " & _hull.Height
+        BindHullDetails()
         _slot = Nothing
         FitPreview()
         SyncFields()
@@ -143,8 +149,9 @@ Public Partial Class LoadoutWorkbench
     Private Sub RefreshPlan()
         If _hull Is Nothing Then Return
         _plans(_hull.Id) = LoadoutRules.Copy(_plan)
-        Dim check = LoadoutRules.Evaluate(_hull, _catalog.Weapons, _plan)
+        Dim check = LoadoutRules.Evaluate(_hull, _catalog.Weapons, _plan, _catalog.HullMods)
         LabBudget.Text = "OP  " & check.TotalOp & " / " & _hull.OrdnancePoints
+        LabBudget.ToolTip = "武器 " & check.WeaponOp & " + 普通船插 " & check.HullModOp & " + 通风/电容 " & (_plan.Vents + _plan.Capacitors)
         OpBar.Maximum = Math.Max(1, _hull.OrdnancePoints)
         OpBar.Value = check.TotalOp
         OpBar.Foreground = If(check.Valid, New SolidColorBrush(Color.FromRgb(40, 102, 219)), Brushes.IndianRed)
@@ -153,7 +160,7 @@ Public Partial Class LoadoutWorkbench
         Dim dissipation = _hull.FluxDissipation + _plan.Vents * 10
         LabFlux.Foreground = If(dissipation > 0 AndAlso check.WeaponFlux > dissipation * 1.3, Brushes.IndianRed, Brushes.SlateGray)
         LabExplanation.Text = If(_plan.Explanation = "", "手工安装会锁定槽位。通风、电容各最多 " & _hull.FluxUpgradeLimit & "。滚轮缩放，中键拖动。", _plan.Explanation)
-        LabStatus.Text = If(check.Valid, "装配有效。" & If(_hull.Slots.Any(Function(s) s.Type = "STATION_MODULE"), " 此舰含子模块，当前只可预览，无法导出完整配置。", "导出包括武器组、通风与电容；船插和舰载机尚未编辑。"), String.Join("；", check.Errors))
+        LabStatus.Text = If(check.Valid, "装配有效。" & If(_hull.Slots.Any(Function(s) s.Type = "STATION_MODULE"), " 此舰含子模块，当前只可预览，无法导出完整配置。", "导出含普通与内置船插、武器组、通风和电容。船插效果由游戏运行脚本。"), String.Join("；", check.Errors))
         BtnExport.IsEnabled = check.Valid AndAlso FieldsValid() AndAlso Not _hull.Slots.Any(Function(s) s.Type = "STATION_MODULE")
         BtnGenerate.IsEnabled = check.Valid AndAlso FieldsValid()
         BtnUndo.IsEnabled = _undo.Count > 0 : BtnRedo.IsEnabled = _redo.Count > 0
@@ -171,6 +178,7 @@ Public Partial Class LoadoutWorkbench
         Next
         _sync = False
         RefreshSlot()
+        RefreshDamageAndDetails()
         RenderShip()
     End Sub
     Private Sub SlotSelected(sender As Object, e As SelectionChangedEventArgs) Handles SlotList.SelectionChanged
@@ -197,6 +205,15 @@ Public Partial Class LoadoutWorkbench
         BtnClear.IsEnabled = CheckPin.IsEnabled
         _sync = False
         FilterWeapons()
+        If _slot IsNot Nothing Then
+            Dim currentId As String = ""
+            If Not _hull.BuiltInWeapons.TryGetValue(_slot.Id, currentId) Then _plan.Weapons.TryGetValue(_slot.Id, currentId)
+            Dim current = _catalog.Weapons.FirstOrDefault(Function(w) w.Id = currentId)
+            If current IsNot Nothing Then
+                BindWeaponDetails(current)
+                If WeaponList.Items.Contains(current) Then WeaponList.SelectedItem = current
+            End If
+        End If
     End Sub
     Private Sub WeaponSearchChanged(sender As Object, e As TextChangedEventArgs) Handles BoxWeaponSearch.TextChanged
         If _catalog IsNot Nothing Then FilterWeapons()
@@ -214,6 +231,10 @@ Public Partial Class LoadoutWorkbench
         Dim weapon = TryCast(WeaponList.SelectedItem, WeaponDefinition)
         BtnInstall.IsEnabled = weapon IsNot Nothing AndAlso _slot IsNot Nothing AndAlso _slot.CanEquip
         LabWeapon.Text = If(weapon Is Nothing, "仅显示兼容当前槽位的武器。", weapon.Id & " · " & weapon.Type & " " & weapon.Size & vbCrLf & "DPS " & Math.Round(weapon.Dps) & " · 幅能 " & Math.Round(weapon.FluxPerSecond) & " · " & weapon.DamageType)
+        If weapon IsNot Nothing Then
+            LabWeapon.Text &= vbCrLf & "完整属性、说明与参数见「武器详解」。"
+            BindWeaponDetails(weapon)
+        End If
     End Sub
     Private Sub InstallClick(sender As Object, e As RoutedEventArgs) Handles BtnInstall.Click
         InstallWeapon()
@@ -227,7 +248,7 @@ Public Partial Class LoadoutWorkbench
         Dim proposal = LoadoutRules.Copy(_plan)
         proposal.Weapons(_slot.Id) = weapon.Id
         proposal.PinnedSlots.Add(_slot.Id)
-        Dim check = LoadoutRules.Evaluate(_hull, _catalog.Weapons, proposal)
+        Dim check = LoadoutRules.Evaluate(_hull, _catalog.Weapons, proposal, _catalog.HullMods)
         If Not check.Valid Then
             LabStatus.Text = String.Join("；", check.Errors) : Return
         End If
@@ -263,7 +284,7 @@ Public Partial Class LoadoutWorkbench
     Private Sub GenerateClick(sender As Object, e As RoutedEventArgs) Handles BtnGenerate.Click
         If _hull Is Nothing OrElse Not FieldsValid() Then Return
         Try
-            Dim proposal = LoadoutPlanner.Generate(_hull, _catalog.Weapons, _plan, CType(BoxStyle.SelectedIndex, LoadoutStyle))
+            Dim proposal = LoadoutPlanner.Generate(_hull, _catalog.Weapons, _plan, CType(BoxStyle.SelectedIndex, LoadoutStyle), _catalog.HullMods)
             Remember() : _plan = proposal
             SyncFields() : RefreshPlan()
         Catch ex As Exception
@@ -284,7 +305,7 @@ Public Partial Class LoadoutWorkbench
         LabStatus.Text = "AI 正在生成建议…可取消；修改装配后此结果会丢弃。"
         Try
             Using client As New HttpClient() With {.Timeout = TimeSpan.FromSeconds(120), .MaxResponseContentBufferSize = 1024 * 1024}
-                Dim proposal = Await ChatLoadoutAdvisor.SuggestAsync(client, Settings.Get(Of String)("StarsectorAiApiUrl"), _apiKey, Settings.Get(Of String)("StarsectorAiApiModel"), hull, _catalog.Weapons, original, CType(BoxStyle.SelectedIndex, LoadoutStyle), source.Token)
+                Dim proposal = Await ChatLoadoutAdvisor.SuggestAsync(client, Settings.Get(Of String)("StarsectorAiApiUrl"), _apiKey, Settings.Get(Of String)("StarsectorAiApiModel"), hull, _catalog.Weapons, original, CType(BoxStyle.SelectedIndex, LoadoutStyle), source.Token, _catalog.HullMods)
                 If _closed OrElse source.IsCancellationRequested Then Return
                 If revision <> _revision OrElse Not Object.ReferenceEquals(hull, _hull) Then
                     LabStatus.Text = "装配已变化，已丢弃过期的 AI 建议。" : Return
@@ -312,7 +333,7 @@ Public Partial Class LoadoutWorkbench
         If dialog.ShowDialog(Me) <> True Then Return
         Try
             id = IO.Path.GetFileNameWithoutExtension(dialog.FileName)
-            Dim json = LoadoutVariant.Serialize(_hull, _catalog.Weapons, _plan, id)
+            Dim json = LoadoutVariant.Serialize(_hull, _catalog.Weapons, _plan, id, _catalog.HullMods)
             IO.File.WriteAllText(dialog.FileName, json, New Text.UTF8Encoding(False))
             LabStatus.Text = "已导出 " & dialog.FileName & "。在自建 MOD 的 data/variants 使用，游戏需重新加载该 MOD；不会直接写入存档。"
         Catch ex As Exception
@@ -324,7 +345,7 @@ Public Partial Class LoadoutWorkbench
         Dim dialog As New Microsoft.Win32.OpenFileDialog With {.Title = "导入当前舰船的武器配置", .Filter = "Starsector variant|*.variant"}
         If dialog.ShowDialog(Me) <> True Then Return
         Try
-            Dim proposal = LoadoutVariant.Read(dialog.FileName, _hull, _catalog.Weapons)
+            Dim proposal = LoadoutVariant.Read(dialog.FileName, _hull, _catalog.Weapons, _catalog.HullMods)
             Remember() : _plan = proposal
             SyncFields() : RefreshPlan()
         Catch ex As Exception

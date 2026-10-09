@@ -2,11 +2,17 @@
 
 ## 最新版
 
-[2026-10-09：舰船装配工坊](https://github.com/luotuishijiu-blip/SSPCL/releases/tag/build-20261009-loadout-workbench)
+[2026-10-09：装配工坊船插与完整数据](https://github.com/luotuishijiu-blip/SSPCL/releases/tag/build-20261009-loadout-details)
 
-下载 `sspcl-loadout-workbench-20261009.zip`，解压运行 `Sspcl.exe`，无需管理员权限。百宝箱内提供重新开发的可视化装配与 `.variant` 导出。包括此前的 MOD 商店、整合包、更新与内存概览。装配范围与验证方式见 [装配说明](LOADOUTS.md)。
+下载 `sspcl-loadout-details-20261009.zip`，解压运行 `Sspcl.exe`，无需管理员权限。舰船目录可拖动调宽和收起；支持普通船插、不限数量的内置/S 插及 `.variant` 保存，显示完整基础舰船数据、武器描述和参数，以及排除导弹的配装总护盾/装甲/结构 DPS 与幅伤比。包括此前的 MOD 商店、整合包、更新与内存概览。基础数据和理论伤害不模拟船插或 MOD 脚本的实战修正，范围与验证方式见 [装配说明](LOADOUTS.md)。
 
 ## 上一版
+
+[2026-10-09：舰船装配工坊](https://github.com/luotuishijiu-blip/SSPCL/releases/tag/build-20261009-loadout-workbench)
+
+可视化武器装配、离线规则与 AI 建议、槽位锁定、撤销重做及 `.variant` 导入/导出。
+
+## MOD 更新与内存版
 
 [2026-10-09：MOD 更新与内存概览](https://github.com/luotuishijiu-blip/SSPCL/releases/tag/build-20261009-mod-update-memory)
 

@@ -15,7 +15,7 @@ try {
     $window = [Activator]::CreateInstance($assembly.GetType('Sspcl.LoadoutWorkbench', $true), @($GamePath))
     $flags = [Reflection.BindingFlags]'Instance,NonPublic'
     $window.GetType().GetMethod('ApplyCatalog', $flags).Invoke($window, @($catalog)) | Out-Null
-    foreach ($name in @('HullList','SlotList','WeaponList','ShipCanvas','BtnGenerate','BtnAi','BtnExport','BtnUndo','BoxVents','CheckPin')) {
+    foreach ($name in @('HullList','SlotList','WeaponList','ShipCanvas','BtnGenerate','BtnAi','BtnExport','BtnUndo','BoxVents','CheckPin','BtnToggleHulls','HullSplitter','HullModList','LabShieldDps','LabArmorDps','LabHullDps','BoxWeaponDescription','BoxProjectileSpec')) {
         if ($null -eq $window.FindName($name)) { throw "Missing loadout control: $name" }
     }
     $hull = $catalog.Hulls | Where-Object Id -eq 'onslaught' | Select-Object -First 1
@@ -57,12 +57,62 @@ try {
     $window.FindName('BtnGenerate').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent))
     $plan = $window.GetType().GetField('_plan', $flags).GetValue($window)
     if ($plan.Weapons['WS 001'] -ne 'lightmg') { throw 'Generator replaced pinned slot.' }
+    $damage = $core.GetType('Sspcl.Core.Loadouts.LoadoutDetails').GetMethod('Damage').Invoke($null, @($hull.PSObject.BaseObject, $catalog.Weapons.PSObject.BaseObject, $plan.PSObject.BaseObject))
+    foreach ($pair in @(@('LabShieldDps','ShieldDps'),@('LabArmorDps','ArmorDps'),@('LabHullDps','HullDps'))) {
+        $expected = $core.GetType('Sspcl.Core.Loadouts.LoadoutDetails').GetMethod('Number').Invoke($null, @([double]$damage.($pair[1])))
+        if ($window.FindName($pair[0]).Text -ne $expected) { throw 'Damage labels differ from non-missile calculation.' }
+    }
+    if ($window.FindName('BoxWeaponDescription').Text.Length -lt 30 -or $window.FindName('WeaponParameterList').Items.Count -lt 10 -or $window.FindName('BoxProjectileSpec').Text.Length -lt 30) { throw 'Full weapon description/parameters missing.' }
+    if ($window.FindName('HullParameterList').Items.Count -lt 20 -or $hull.Stats['armor rating'] -eq '' -or $hull.Stats['shield efficiency'] -eq '') { throw 'Detailed hull stats missing.' }
+    $window.FindName('DetailTabs').SelectedIndex = 2
+    $armor = $catalog.HullMods | Where-Object Id -eq 'heavyarmor' | Select-Object -First 1
+    $window.FindName('HullModList').SelectedItem = $armor
+    $window.FindName('BtnHullModNormal').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent))
+    $plan = $window.GetType().GetField('_plan', $flags).GetValue($window)
+    if (-not $plan.HullMods.Contains('heavyarmor')) { throw 'Normal hullmod installation failed.' }
+    $window.FindName('BtnHullModBuiltIn').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent))
+    $plan = $window.GetType().GetField('_plan', $flags).GetValue($window)
+    if ($plan.HullMods.Contains('heavyarmor') -or -not $plan.SMods.Contains('heavyarmor') -or -not $plan.PermaMods.Contains('heavyarmor')) { throw 'Normal to builtin conversion failed.' }
+    foreach ($mod in @($catalog.HullMods | Where-Object { $_.Id -ne 'heavyarmor' -and -not $hull.BuiltInHullMods.Contains($_.Id) } | Select-Object -First 7)) {
+        $window.FindName('HullModList').SelectedItem = $mod
+        $window.FindName('BtnHullModBuiltIn').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent))
+    }
+    $plan = $window.GetType().GetField('_plan', $flags).GetValue($window)
+    if ($plan.SMods.Count -ne 8 -or -not $window.FindName('BtnExport').IsEnabled) { throw 'Built-in upper limit imposed.' }
+    $window.FindName('BtnUndo').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent))
+    $window.FindName('BtnRedo').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent))
+    $plan = $window.GetType().GetField('_plan', $flags).GetValue($window)
+    if ($plan.SMods.Count -ne 8) { throw 'Hullmod undo/redo failed.' }
+    # Remove the arbitrary seven test mods; render a useful example with heavy armor only.
+    foreach ($modId in @($window.FindName('InstalledHullModList').Items | Where-Object { $_.Tag -ne 'heavyarmor' -and -not $hull.BuiltInHullMods.Contains([string]$_.Tag) } | ForEach-Object { [string]$_.Tag })) {
+        $row = $window.FindName('InstalledHullModList').Items | Where-Object Tag -eq $modId | Select-Object -First 1
+        $window.FindName('InstalledHullModList').SelectedItem = $row
+        $window.FindName('BtnHullModRemove').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent))
+    }
+    $plan = $window.GetType().GetField('_plan', $flags).GetValue($window)
+    if ($plan.SMods.Count -ne 1) { throw 'Removing hullmods failed.' }
     $content = $window.Content
-    $content.Width = 1276; $content.Height = 790
-    $content.Measure([Windows.Size]::new(1320,834))
-    $content.Arrange([Windows.Rect]::new(0,0,1320,834))
+    $content.Width = 1336; $content.Height = 870
+    $content.Measure([Windows.Size]::new(1380,914))
+    $content.Arrange([Windows.Rect]::new(0,0,1380,914))
     $content.UpdateLayout()
-    $bitmap = [Windows.Media.Imaging.RenderTargetBitmap]::new(1320,834,96,96,[Windows.Media.PixelFormats]::Pbgra32)
+    if ($window.FindName('HullSidebar').Visibility -ne 'Visible') { $window.FindName('BtnToggleHulls').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent)); $content.UpdateLayout() }
+    $oldWidth = $window.FindName('HullColumn').ActualWidth
+    $splitter = $window.FindName('HullSplitter')
+    $start = [Windows.Controls.Primitives.DragStartedEventArgs]::new(0,0); $start.RoutedEvent = [Windows.Controls.Primitives.Thumb]::DragStartedEvent
+    $delta = [Windows.Controls.Primitives.DragDeltaEventArgs]::new(45,0); $delta.RoutedEvent = [Windows.Controls.Primitives.Thumb]::DragDeltaEvent
+    $end = [Windows.Controls.Primitives.DragCompletedEventArgs]::new(45,0,$false); $end.RoutedEvent = [Windows.Controls.Primitives.Thumb]::DragCompletedEvent
+    $splitter.RaiseEvent($start); $splitter.RaiseEvent($delta); $content.UpdateLayout(); $splitter.RaiseEvent($end)
+    if ($window.FindName('HullColumn').ActualWidth -le $oldWidth + 10) { throw 'Directory drag resizing failed.' }
+    $previewWidth = $window.FindName('PreviewHost').ActualWidth
+    $window.FindName('BtnToggleHulls').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent)); $content.UpdateLayout()
+    if ($window.FindName('HullColumn').ActualWidth -ne 0 -or $window.FindName('PreviewHost').ActualWidth -le $previewWidth) { throw 'Collapsing directory did not free preview space.' }
+    $window.FindName('BtnToggleHulls').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent)); $content.UpdateLayout()
+    if ($window.FindName('HullColumn').ActualWidth -le 170) { throw 'Directory resize width not restored.' }
+    $window.FindName('BtnToggleHulls').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent))
+    $window.FindName('DetailTabs').SelectedIndex = 0
+    $content.UpdateLayout()
+    $bitmap = [Windows.Media.Imaging.RenderTargetBitmap]::new(1380,914,96,96,[Windows.Media.PixelFormats]::Pbgra32)
     $bitmap.Render($content)
     $encoder = [Windows.Media.Imaging.PngBitmapEncoder]::new()
     $encoder.Frames.Add([Windows.Media.Imaging.BitmapFrame]::Create($bitmap))
@@ -70,8 +120,16 @@ try {
     [IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($outputPath)) | Out-Null
     $stream = [IO.File]::Create($outputPath)
     try { $encoder.Save($stream) } finally { $stream.Dispose() }
-    $variant = $core.GetType('Sspcl.Core.Loadouts.LoadoutVariant').GetMethod('Serialize').Invoke($null, @($hull.PSObject.BaseObject, $catalog.Weapons.PSObject.BaseObject, $plan.PSObject.BaseObject, 'onslaught_sspcl_smoke'))
+    foreach ($tab in @(1,2,3)) {
+        $window.FindName('DetailTabs').SelectedIndex = $tab; $content.UpdateLayout()
+        $detailBitmap = [Windows.Media.Imaging.RenderTargetBitmap]::new(1380,914,96,96,[Windows.Media.PixelFormats]::Pbgra32); $detailBitmap.Render($content)
+        $detailEncoder = [Windows.Media.Imaging.PngBitmapEncoder]::new(); $detailEncoder.Frames.Add([Windows.Media.Imaging.BitmapFrame]::Create($detailBitmap))
+        $detailPath = [IO.Path]::Combine([IO.Path]::GetDirectoryName($outputPath), [IO.Path]::GetFileNameWithoutExtension($outputPath) + '-tab' + $tab + '.png')
+        $detailStream = [IO.File]::Create($detailPath); try { $detailEncoder.Save($detailStream) } finally { $detailStream.Dispose() }
+    }
+    $variant = $core.GetType('Sspcl.Core.Loadouts.LoadoutVariant').GetMethod('Serialize').Invoke($null, @($hull.PSObject.BaseObject, $catalog.Weapons.PSObject.BaseObject, $plan.PSObject.BaseObject, 'onslaught_sspcl_smoke', $catalog.HullMods.PSObject.BaseObject))
     [IO.File]::WriteAllText([IO.Path]::ChangeExtension($outputPath, '.variant'), $variant, [Text.UTF8Encoding]::new($false))
     Write-Output "PASS: embedded workbench, actual hull/weapon assets, stable coordinates, manual install, pins, undo/redo and export. Preview: $outputPath"
+    Write-Output 'PASS: directory drag/collapse/restore, ordinary and unlimited built-in hullmods, full hull/weapon data, projectile spec and non-missile damage labels.'
     $window.Close()
 } finally { $application.Shutdown() }

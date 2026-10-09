@@ -3,6 +3,7 @@ namespace Sspcl.Core.Loadouts;
 public sealed class LoadoutEvaluation
 {
     public int WeaponOp { get; internal set; }
+    public int HullModOp { get; internal set; }
     public int TotalOp { get; internal set; }
     public double WeaponFlux { get; internal set; }
     public List<string> Errors { get; } = new();
@@ -20,10 +21,20 @@ public static class LoadoutRules
             slot.Type == "SYNERGY" && (weapon.Type == "ENERGY" || weapon.Type == "MISSILE");
     }
     public static int SizeRank(string size) => size == "SMALL" ? 1 : size == "MEDIUM" ? 2 : size == "LARGE" ? 3 : 0;
-    public static LoadoutEvaluation Evaluate(HullDefinition hull, IEnumerable<WeaponDefinition> weapons, LoadoutPlan plan)
+    public static LoadoutEvaluation Evaluate(HullDefinition hull, IEnumerable<WeaponDefinition> weapons, LoadoutPlan plan, IEnumerable<HullModDefinition>? hullMods = null)
     {
         var result = new LoadoutEvaluation();
         var index = weapons.GroupBy(w => w.Id, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
+        var modIndex = (hullMods ?? Enumerable.Empty<HullModDefinition>()).GroupBy(m => m.Id, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
+        foreach (string id in plan.HullMods.Concat(plan.PermaMods).Distinct(StringComparer.Ordinal))
+        {
+            if (hull.BuiltInHullMods.Contains(id)) continue;
+            if (!modIndex.TryGetValue(id, out var mod)) { result.Errors.Add("未知船插：" + id); continue; }
+            if (plan.HullMods.Contains(id) && !plan.PermaMods.Contains(id)) result.HullModOp += mod.Cost(hull.HullSize);
+        }
+        if (plan.HullMods.Overlaps(plan.PermaMods)) result.Errors.Add("同一船插不能同时为普通和内置。");
+        if (plan.SMods.Except(plan.PermaMods).Any()) result.Errors.Add("S 插必须包含在内置船插中。");
+        if (plan.SModdedBuiltIns.Except(hull.BuiltInHullMods).Any()) result.Errors.Add("原生船插强化包含非原生船插。");
         foreach (string id in hull.BuiltInWeapons.Values)
             if (index.TryGetValue(id, out var builtin) && builtin.Type != "MISSILE") result.WeaponFlux += builtin.SustainedFluxPerSecond;
         if (plan.HullId != hull.Id) result.Errors.Add("方案与舰船不匹配。");
@@ -38,12 +49,14 @@ public static class LoadoutRules
         }
         if (plan.Vents < 0 || plan.Capacitors < 0 || plan.Vents > hull.FluxUpgradeLimit || plan.Capacitors > hull.FluxUpgradeLimit)
             result.Errors.Add("电容或通风超过该舰船的上限。");
-        result.TotalOp = result.WeaponOp + plan.Vents + plan.Capacitors;
+        result.TotalOp = result.WeaponOp + result.HullModOp + plan.Vents + plan.Capacitors;
         if (result.TotalOp > hull.OrdnancePoints) result.Errors.Add("超出 OP 预算：" + result.TotalOp + " / " + hull.OrdnancePoints);
         return result;
     }
     public static LoadoutPlan Copy(LoadoutPlan plan) => new() {
         HullId = plan.HullId, Name = plan.Name, Vents = plan.Vents, Capacitors = plan.Capacitors, Explanation = plan.Explanation,
-        Weapons = new Dictionary<string, string>(plan.Weapons, StringComparer.Ordinal), PinnedSlots = new HashSet<string>(plan.PinnedSlots, StringComparer.Ordinal)
+        Weapons = new Dictionary<string, string>(plan.Weapons, StringComparer.Ordinal), PinnedSlots = new HashSet<string>(plan.PinnedSlots, StringComparer.Ordinal),
+        HullMods = new HashSet<string>(plan.HullMods, StringComparer.Ordinal), PermaMods = new HashSet<string>(plan.PermaMods, StringComparer.Ordinal),
+        SMods = new HashSet<string>(plan.SMods, StringComparer.Ordinal), SModdedBuiltIns = new HashSet<string>(plan.SModdedBuiltIns, StringComparer.Ordinal)
     };
 }

@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace Sspcl.Core.Loadouts;
 
 public sealed class LoadoutCatalog
@@ -7,6 +5,7 @@ public sealed class LoadoutCatalog
     public string GamePath { get; set; } = "";
     public List<HullDefinition> Hulls { get; } = new();
     public List<WeaponDefinition> Weapons { get; } = new();
+    public List<HullModDefinition> HullMods { get; } = new();
     public List<string> Warnings { get; } = new();
 }
 
@@ -29,6 +28,9 @@ public sealed class HullDefinition
     public List<WeaponSlot> Slots { get; set; } = new();
     public Dictionary<string, string> BuiltInWeapons { get; set; } = new(StringComparer.Ordinal);
     public List<string> BuiltInHullMods { get; set; } = new();
+    public Dictionary<string, string> Stats { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+    public string Description { get; set; } = "";
+    public string RawSpec { get; set; } = "";
     public string Display => Name + " · " + Id;
     public int FluxUpgradeLimit => HullSize == "CAPITAL_SHIP" ? 50 : HullSize == "CRUISER" ? 30 : HullSize == "DESTROYER" ? 20 : 10;
 }
@@ -60,6 +62,13 @@ public sealed class WeaponDefinition
     public int OrdnancePoints { get; set; }
     public double Range { get; set; }
     public double Dps { get; set; }
+    public double DamagePerShot { get; set; }
+    public bool DpsEstimated { get; set; }
+    public string Description { get; set; } = "";
+    public Dictionary<string, string> Stats { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+    public string RawSpec { get; set; } = "";
+    public string SpecClass { get; set; } = "";
+    public string ProjectileSpecPath { get; set; } = "";
     public double FluxPerSecond { get; set; }
     public double FluxPerShot { get; set; }
     public double AmmoCapacity { get; set; }
@@ -85,9 +94,30 @@ public sealed class LoadoutPlan
     public string Name { get; set; } = "SSPCL 配装";
     public Dictionary<string, string> Weapons { get; set; } = new(StringComparer.Ordinal);
     public HashSet<string> PinnedSlots { get; set; } = new(StringComparer.Ordinal);
+    public HashSet<string> HullMods { get; set; } = new(StringComparer.Ordinal);
+    public HashSet<string> PermaMods { get; set; } = new(StringComparer.Ordinal);
+    public HashSet<string> SMods { get; set; } = new(StringComparer.Ordinal);
+    public HashSet<string> SModdedBuiltIns { get; set; } = new(StringComparer.Ordinal);
     public int Vents { get; set; }
     public int Capacitors { get; set; }
     public string Explanation { get; set; } = "";
+}
+
+public sealed class HullModDefinition
+{
+    public string Id { get; set; } = "";
+    public string Name { get; set; } = "";
+    public string Source { get; set; } = "";
+    public string Description { get; set; } = "";
+    public string SModDescription { get; set; } = "";
+    public Dictionary<string, string> Stats { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+    public int Cost(string hullSize) => (int)GameDataReader.GetNumber(Stats, hullSize == "CAPITAL_SHIP" ? "cost_capital" : hullSize == "CRUISER" ? "cost_cruiser" : hullSize == "DESTROYER" ? "cost_dest" : "cost_frigate");
+}
+
+public sealed class LoadoutParameter
+{
+    public string Name { get; set; } = "";
+    public string Value { get; set; } = "";
 }
 
 public readonly struct SpritePoint

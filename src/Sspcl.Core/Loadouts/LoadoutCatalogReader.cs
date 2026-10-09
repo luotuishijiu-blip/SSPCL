@@ -21,6 +21,9 @@ public static class LoadoutCatalogReader
             if (mods.TryGetValue(id, out var mod)) roots.Add(new Root(mod.Path, mod.Name));
         var hullStats = new Dictionary<string, Dictionary<string, string>>(StringComparer.Ordinal);
         var weaponStats = new Dictionary<string, Dictionary<string, string>>(StringComparer.Ordinal);
+        var hullModStats = new Dictionary<string, Dictionary<string, string>>(StringComparer.Ordinal);
+        var hullModSources = new Dictionary<string, string>(StringComparer.Ordinal);
+        var descriptions = new Dictionary<string, Dictionary<string, string>>(StringComparer.Ordinal);
         var hullFiles = new Dictionary<string, (JsonObject Json, string File, string Source)>(StringComparer.Ordinal);
         var skinFiles = new Dictionary<string, (JsonObject Json, string File, string Source)>(StringComparer.Ordinal);
         var weaponFiles = new Dictionary<string, (JsonObject Json, string File, string Source)>(StringComparer.Ordinal);
@@ -29,6 +32,13 @@ public static class LoadoutCatalogReader
             token.ThrowIfCancellationRequested();
             MergeStats(Path.Combine(root.Path, "data", "hulls", "ship_data.csv"), hullStats);
             MergeStats(Path.Combine(root.Path, "data", "weapons", "weapon_data.csv"), weaponStats);
+            MergeStats(Path.Combine(root.Path, "data", "hullmods", "hull_mods.csv"), hullModStats, hullModSources, root.Name);
+            foreach (var row in GameDataReader.Csv(Path.Combine(root.Path, "data", "strings", "descriptions.csv")))
+            {
+                string key = GameDataReader.Get(row, "type").ToUpperInvariant() + ":" + GameDataReader.Get(row, "id");
+                if (!descriptions.TryGetValue(key, out var description)) descriptions[key] = description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var field in row) if (!string.IsNullOrWhiteSpace(field.Value)) description[field.Key] = field.Value;
+            }
             ReadDefinitions(root, "data/hulls", ".ship", "hullId", hullFiles);
             ReadDefinitions(root, "data/hulls", ".skin", "skinHullId", skinFiles);
             ReadDefinitions(root, "data/weapons", ".wpn", "id", weaponFiles);
@@ -47,7 +57,9 @@ public static class LoadoutCatalogReader
                 HullSize = GameDataReader.Text(data["hullSize"]), Designation = GameDataReader.Get(stats, "designation"),
                 OrdnancePoints = (int)GameDataReader.GetNumber(stats, "ordnance points"), FluxDissipation = GameDataReader.GetNumber(stats, "flux dissipation"),
                 SpritePath = ResolveAsset(GameDataReader.Text(data["spriteName"]), roots),
-                Slots = Slots(data["weaponSlots"]), BuiltInWeapons = WeaponMap(data["builtInWeapons"]), BuiltInHullMods = GameDataReader.Strings(data["builtInMods"]).ToList()
+                Slots = Slots(data["weaponSlots"]), BuiltInWeapons = WeaponMap(data["builtInWeapons"]), BuiltInHullMods = GameDataReader.Strings(data["builtInMods"]).ToList(),
+                Stats = new Dictionary<string, string>(stats, StringComparer.OrdinalIgnoreCase), RawSpec = data.ToJsonString(),
+                Description = Description("SHIP", GameDataReader.Text(data["descriptionId"], pair.Key))
             };
             if (string.IsNullOrWhiteSpace(hull.Name)) hull.Name = GameDataReader.Text(data["hullName"], hull.Id);
             if (string.IsNullOrWhiteSpace(hull.Name)) hull.Name = hull.Id;
@@ -89,9 +101,12 @@ public static class LoadoutCatalogReader
                     OrdnancePoints = (int)GameDataReader.Number(skin.Json["ordnancePoints"], stats == null || !stats.ContainsKey("ordnance points") ? basis.OrdnancePoints : GameDataReader.GetNumber(stats, "ordnance points")),
                     FluxDissipation = GameDataReader.Number(skin.Json["fluxDissipation"], basis.FluxDissipation),
                     Slots = slots, BuiltInWeapons = builtIns, BuiltInHullMods = hullMods,
+                    Stats = SkinStats(basis.Stats, skin.Json, stats), RawSpec = skin.Json.ToJsonString(),
+                    Description = Description("SHIP", GameDataReader.Text(skin.Json["descriptionId"], baseId)),
                     SpritePath = skin.Json["spriteName"] == null ? basis.SpritePath : ResolveAsset(GameDataReader.Text(skin.Json["spriteName"]), roots)
                 };
                 hulls[id] = hull;
+                if (!string.IsNullOrWhiteSpace(GameDataReader.Text(skin.Json["descriptionPrefix"]))) hull.Description = GameDataReader.Text(skin.Json["descriptionPrefix"]) + "\n\n" + hull.Description;
                 if (string.IsNullOrWhiteSpace(hull.Name)) hull.Name = hull.Id;
                 return hull;
             }
@@ -112,6 +127,10 @@ public static class LoadoutCatalogReader
                 Type = GameDataReader.Text(spec["type"]).ToUpperInvariant(), Size = GameDataReader.Text(spec["size"]).ToUpperInvariant(),
                 OrdnancePoints = (int)GameDataReader.GetNumber(stats, "OPs"), Range = GameDataReader.GetNumber(stats, "range"),
                 Dps = GameDataReader.GetNumber(stats, "damage/second"), DamageType = GameDataReader.Get(stats, "type"),
+                DamagePerShot = GameDataReader.GetNumber(stats, "damage/shot"), SpecClass = GameDataReader.Text(spec["specClass"]),
+                Description = Description("WEAPON", GameDataReader.Text(spec["descriptionId"], pair.Key)),
+                Stats = new Dictionary<string, string>(stats, StringComparer.OrdinalIgnoreCase), RawSpec = spec.ToJsonString(),
+                ProjectileSpecPath = ResolveAsset("data/weapons/proj/" + GameDataReader.Text(spec["projectileSpecId"]) + ".proj", roots),
                 FluxPerSecond = GameDataReader.GetNumber(stats, "energy/second"), PointDefense = hints.Split(',').Any(h => h.Trim() == "PD" || h.Trim() == "PD_ONLY"),
                 FluxPerShot = GameDataReader.GetNumber(stats, "energy/shot"), AmmoCapacity = GameDataReader.GetNumber(stats, "ammo"), AmmoRegeneration = GameDataReader.GetNumber(stats, "ammo/sec"),
                 Restricted = !listed || hints.Split(',').Any(h => h.Trim() == "SYSTEM") || tags.Split(',').Any(t => t.Trim() == "restricted"),
@@ -124,7 +143,7 @@ public static class LoadoutCatalogReader
             if (weapon.Dps <= 0)
             {
                 double cycle = GameDataReader.GetNumber(stats, "chargeup") + GameDataReader.GetNumber(stats, "chargedown") + GameDataReader.GetNumber(stats, "burst delay") * Math.Max(0, GameDataReader.GetNumber(stats, "burst size") - 1);
-                if (cycle > 0) weapon.Dps = GameDataReader.GetNumber(stats, "damage/shot") * Math.Max(1, GameDataReader.GetNumber(stats, "burst size")) / cycle;
+                if (cycle > 0) { weapon.Dps = GameDataReader.GetNumber(stats, "damage/shot") * Math.Max(1, GameDataReader.GetNumber(stats, "burst size")) / cycle; weapon.DpsEstimated = true; }
             }
             if (weapon.FluxPerSecond <= 0 && weapon.Dps > 0 && GameDataReader.GetNumber(stats, "damage/shot") > 0)
                 weapon.FluxPerSecond = weapon.Dps / GameDataReader.GetNumber(stats, "damage/shot") * GameDataReader.GetNumber(stats, "energy/shot");
@@ -132,9 +151,17 @@ public static class LoadoutCatalogReader
             catalog.Weapons.Add(weapon);
         }
         catalog.Weapons.Sort((a, b) => StringComparer.CurrentCulture.Compare(a.Name, b.Name));
+        foreach (var pair in hullModStats)
+            catalog.HullMods.Add(new HullModDefinition {
+                Id = pair.Key, Name = string.IsNullOrWhiteSpace(GameDataReader.Get(pair.Value, "name")) ? pair.Key : GameDataReader.Get(pair.Value, "name"), Source = hullModSources[pair.Key],
+                Description = GameDataReader.Get(pair.Value, "desc"), SModDescription = GameDataReader.Get(pair.Value, "sModDesc"), Stats = pair.Value
+            });
+        catalog.HullMods.Sort((a, b) => StringComparer.CurrentCulture.Compare(a.Name, b.Name));
         return catalog;
 
         void Warn(string message) { if (catalog.Warnings.Count < 100) catalog.Warnings.Add(message); }
+        string Description(string type, string id) => descriptions.TryGetValue(type + ":" + id, out var row)
+            ? string.Join("\n\n", new[] { "text1", "text2", "text3", "text4", "text5" }.Select(k => GameDataReader.Get(row, k)).Where(s => !string.IsNullOrWhiteSpace(s))) : "";
         void ReadDefinitions(Root root, string relative, string extension, string idKey, Dictionary<string, (JsonObject Json, string File, string Source)> destination)
         {
             string directory = Path.Combine(root.Path, relative.Replace('/', Path.DirectorySeparatorChar));
@@ -155,14 +182,30 @@ public static class LoadoutCatalogReader
             }
         }
     }
-    private static void MergeStats(string path, Dictionary<string, Dictionary<string, string>> destination)
+    private static void MergeStats(string path, Dictionary<string, Dictionary<string, string>> destination, Dictionary<string, string>? sources = null, string source = "")
     {
         foreach (var row in GameDataReader.Csv(path))
         {
             string id = GameDataReader.Get(row, "id");
+            if (sources != null) sources[id] = source;
             if (!destination.TryGetValue(id, out var stats)) destination[id] = stats = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             foreach (var cell in row) if (!string.IsNullOrWhiteSpace(cell.Value)) stats[cell.Key] = cell.Value;
         }
+    }
+    private static Dictionary<string, string> SkinStats(Dictionary<string, string> basis, JsonObject skin, Dictionary<string, string>? stats)
+    {
+        var values = new Dictionary<string, string>(basis, StringComparer.OrdinalIgnoreCase);
+        if (stats != null) foreach (var pair in stats) values[pair.Key] = pair.Value;
+        var names = new Dictionary<string, string> {
+            ["hullName"] = "name", ["ordnancePoints"] = "ordnance points", ["fluxDissipation"] = "flux dissipation", ["fluxCapacity"] = "max flux",
+            ["armorRating"] = "armor rating", ["hitpoints"] = "hitpoints", ["maxHitpoints"] = "hitpoints", ["maxSpeed"] = "max speed", ["fighterBays"] = "fighter bays",
+            ["shieldType"] = "shield type", ["shieldArc"] = "shield arc", ["shieldUpkeep"] = "shield upkeep", ["shieldEfficiency"] = "shield efficiency",
+            ["acceleration"] = "acceleration", ["deceleration"] = "deceleration", ["maxTurnRate"] = "max turn rate", ["turnAcceleration"] = "turn acceleration",
+            ["fleetPoints"] = "fleet pts", ["minCrew"] = "min crew", ["maxCrew"] = "max crew", ["cargoCapacity"] = "cargo", ["fuelCapacity"] = "fuel",
+            ["maxBurn"] = "max burn", ["suppliesPerMonth"] = "supplies/mo", ["suppliesToRecover"] = "supplies/rec"
+        };
+        foreach (var name in names) if (skin[name.Key] != null) values[name.Value] = GameDataReader.Text(skin[name.Key]);
+        return values;
     }
     private static string ResolveAsset(string relative, List<Root> roots)
     {
