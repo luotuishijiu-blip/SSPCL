@@ -1,5 +1,7 @@
 # 发布下载
 
+逐版改动见 [中文更新日志](CHANGELOG.zh-CN.md)，从本地 MOD 压缩包导入开始整理。
+
 ## 最新版
 
 [2026-10-09：装配工坊船插与完整数据](https://github.com/luotuishijiu-blip/SSPCL/releases/tag/build-20261009-loadout-details)
