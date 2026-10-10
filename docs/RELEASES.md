@@ -4,11 +4,17 @@
 
 ## 最新版
 
+[2026-10-10：装配工坊全幅画布](https://github.com/luotuishijiu-blip/SSPCL/releases/tag/build-20261010-loadout-canvas)
+
+下载 `sspcl-loadout-canvas-20261010.zip`，完整解压运行 `Sspcl.exe`，无需管理员权限。画布铺满工作区并与背景融合，数据和装配操作移入右上、右下可收起面板；适应画布避开面板，编辑时保留手工视角。完整描述、参数、船插和 `.variant` 功能保留。详见 [装配说明](LOADOUTS.md)。
+
+## 船插与完整数据版
+
 [2026-10-09：装配工坊船插与完整数据](https://github.com/luotuishijiu-blip/SSPCL/releases/tag/build-20261009-loadout-details)
 
 下载 `sspcl-loadout-details-20261009.zip`，解压运行 `Sspcl.exe`，无需管理员权限。舰船目录可拖动调宽和收起；支持普通船插、不限数量的内置/S 插及 `.variant` 保存，显示完整基础舰船数据、武器描述和参数，以及排除导弹的配装总护盾/装甲/结构 DPS 与幅伤比。包括此前的 MOD 商店、整合包、更新与内存概览。基础数据和理论伤害不模拟船插或 MOD 脚本的实战修正，范围与验证方式见 [装配说明](LOADOUTS.md)。
 
-## 上一版
+## 装配工坊初版
 
 [2026-10-09：舰船装配工坊](https://github.com/luotuishijiu-blip/SSPCL/releases/tag/build-20261009-loadout-workbench)
 

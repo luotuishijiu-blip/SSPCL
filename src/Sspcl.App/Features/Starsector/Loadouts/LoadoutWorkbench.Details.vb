@@ -3,6 +3,26 @@ Imports System.Windows.Controls.Primitives
 
 Public Partial Class LoadoutWorkbench
     Private _sidebarWidth As Double = 225
+    Private Sub ToggleData(sender As Object, e As RoutedEventArgs) Handles BtnToggleData.Click
+        DataBody.Visibility = If(DataBody.Visibility = Visibility.Visible, Visibility.Collapsed, Visibility.Visible)
+        BtnToggleData.Content = If(DataBody.Visibility = Visibility.Visible, "收起", "展开")
+        UpdateOverlaySizes()
+        If Not _manualView Then ApplyFit()
+    End Sub
+    Private Sub ToggleFitting(sender As Object, e As RoutedEventArgs) Handles BtnToggleFitting.Click
+        DetailTabs.Visibility = If(DetailTabs.Visibility = Visibility.Visible, Visibility.Collapsed, Visibility.Visible)
+        BtnToggleFitting.Content = If(DetailTabs.Visibility = Visibility.Visible, "收起", "展开")
+        UpdateOverlaySizes()
+        If Not _manualView Then ApplyFit()
+    End Sub
+    Private Sub UpdateOverlaySizes()
+        If OverlayRail Is Nothing OrElse PreviewHost.ActualHeight <= 0 Then Return
+        OverlayRail.Width = If(DataBody.Visibility = Visibility.Collapsed AndAlso DetailTabs.Visibility = Visibility.Collapsed, 180, 330)
+        Dim fittingHeight = If(DetailTabs.Visibility = Visibility.Visible, Math.Max(220, PreviewHost.ActualHeight * 0.45), 44)
+        FittingPanel.Height = fittingHeight
+        WeaponList.Height = Math.Max(90, fittingHeight - 260)
+        DataPanel.MaxHeight = Math.Max(90, PreviewHost.ActualHeight - fittingHeight - 16)
+    End Sub
 
     Private Sub ToggleHulls(sender As Object, e As RoutedEventArgs) Handles BtnToggleHulls.Click
         SetHullSidebar(HullSidebar.Visibility <> Visibility.Visible)

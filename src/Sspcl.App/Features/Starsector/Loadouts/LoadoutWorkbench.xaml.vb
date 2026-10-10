@@ -112,9 +112,9 @@ Public Partial Class LoadoutWorkbench
         LabHullDetail.Text = _hull.Id & " · " & _hull.Source & " · " & _hull.Width & " × " & _hull.Height
         BindHullDetails()
         _slot = Nothing
-        FitPreview()
         SyncFields()
         RefreshPlan()
+        FitPreview()
         If SlotList.Items.Count > 0 Then SlotList.SelectedIndex = 0
     End Sub
     Private Sub SyncFields()
@@ -189,6 +189,8 @@ Public Partial Class LoadoutWorkbench
         RenderShip()
     End Sub
     Private Sub SelectSlot(slot As WeaponSlot)
+        If DetailTabs.Visibility <> Visibility.Visible Then ToggleFitting(Nothing, Nothing)
+        DetailTabs.SelectedIndex = 0
         For Each row As ListBoxItem In SlotList.Items
             If DirectCast(row.Tag, WeaponSlot).Id = slot.Id Then
                 SlotList.SelectedItem = row
@@ -211,7 +213,10 @@ Public Partial Class LoadoutWorkbench
             Dim current = _catalog.Weapons.FirstOrDefault(Function(w) w.Id = currentId)
             If current IsNot Nothing Then
                 BindWeaponDetails(current)
-                If WeaponList.Items.Contains(current) Then WeaponList.SelectedItem = current
+                If WeaponList.Items.Contains(current) Then
+                    WeaponList.SelectedItem = current
+                    WeaponList.ScrollIntoView(current)
+                End If
             End If
         End If
     End Sub
@@ -225,7 +230,7 @@ Public Partial Class LoadoutWorkbench
         Else
             WeaponList.ItemsSource = _catalog.Weapons.Where(Function(w) LoadoutRules.Fits(_slot, w) AndAlso (w.Name & " " & w.Id & " " & w.Source).IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0).OrderByDescending(Function(w) LoadoutRules.SizeRank(w.Size)).ThenBy(Function(w) w.Name).ToList()
         End If
-        BtnInstall.IsEnabled = False
+        BtnInstall.IsEnabled = WeaponList.SelectedItem IsNot Nothing AndAlso _slot IsNot Nothing AndAlso _slot.CanEquip
     End Sub
     Private Sub WeaponSelected(sender As Object, e As SelectionChangedEventArgs) Handles WeaponList.SelectionChanged
         Dim weapon = TryCast(WeaponList.SelectedItem, WeaponDefinition)

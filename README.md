@@ -7,7 +7,7 @@
 
 ## 下载
 
-- [最新版：装配工坊船插与完整数据](https://github.com/luotuishijiu-blip/SSPCL/releases/latest)，下载 ZIP 后解压运行 `Sspcl.exe`，无需管理员权限。
+- [最新版：装配工坊全幅画布](https://github.com/luotuishijiu-blip/SSPCL/releases/latest)，下载 ZIP 后解压运行 `Sspcl.exe`，无需管理员权限。
 - [历史版本与发布说明](docs/RELEASES.md)。
 - [中文更新日志](docs/CHANGELOG.zh-CN.md)：从本地 MOD 压缩包导入开始。
 

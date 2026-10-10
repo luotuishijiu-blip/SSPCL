@@ -7,6 +7,8 @@ Public Partial Class LoadoutWorkbench
     Private ReadOnly _zoom As New ScaleTransform(1, 1)
     Private ReadOnly _pan As New TranslateTransform()
     Private _drag As Point?
+    Private _manualView As Boolean
+    Private _drawingBounds As Rect = New Rect(0, 0, 400, 400)
 
     Private Function Bitmap(path As String) As BitmapSource
         If String.IsNullOrEmpty(path) Then Return Nothing
@@ -31,9 +33,7 @@ Public Partial Class LoadoutWorkbench
         Const padding As Double = 56
         ShipCanvas.Width = _hull.Width + padding * 2
         ShipCanvas.Height = _hull.Height + padding * 2
-        Dim background As New Rectangle With {.Width = _hull.Width, .Height = _hull.Height, .Stroke = New SolidColorBrush(Color.FromRgb(42, 60, 85)), .StrokeDashArray = New DoubleCollection({4, 4}), .StrokeThickness = 0.7, .IsHitTestVisible = False}
-        Canvas.SetLeft(background, padding) : Canvas.SetTop(background, padding)
-        ShipCanvas.Children.Add(background)
+        _drawingBounds = New Rect(padding, padding, _hull.Width, _hull.Height)
         Dim sprite = Bitmap(_hull.SpritePath)
         LabSprite.Text = If(sprite Is Nothing, "未找到舰船贴图，仍按船体坐标显示槽位。", "")
         If sprite IsNot Nothing Then
@@ -76,7 +76,7 @@ Public Partial Class LoadoutWorkbench
                 arc.Points.Add(New Point(point.X + padding, point.Y + padding))
                 ShipCanvas.Children.Add(arc)
             End If
-            Dim marker As New Ellipse With {.Width = If(selected, 16, 12), .Height = If(selected, 16, 12), .Stroke = If(selected, Brushes.White, slotBrush), .StrokeThickness = If(selected, 2, 1.5), .Fill = New SolidColorBrush(Color.FromArgb(165, 16, 28, 48)), .Cursor = Cursors.Hand, .Tag = slot.Id, .ToolTip = slot.Display & vbCrLf & If(slot.Locked, "内置武器", "点击选择；右侧双击武器安装")}
+            Dim marker As New Ellipse With {.Width = If(selected, 16, 12), .Height = If(selected, 16, 12), .Stroke = If(selected, Brushes.DarkSlateGray, slotBrush), .StrokeThickness = If(selected, 2, 1.5), .Fill = New SolidColorBrush(Color.FromArgb(165, 16, 28, 48)), .Cursor = Cursors.Hand, .Tag = slot.Id, .ToolTip = slot.Display & vbCrLf & If(slot.Locked, "内置武器", "点击选择；右侧双击武器安装")}
             Canvas.SetLeft(marker, point.X + padding - marker.Width / 2)
             Canvas.SetTop(marker, point.Y + padding - marker.Height / 2)
             AddHandler marker.MouseLeftButtonDown, Sub(s, e)
@@ -84,7 +84,10 @@ Public Partial Class LoadoutWorkbench
                                                       e.Handled = True
                                                   End Sub
             ShipCanvas.Children.Add(marker)
+            _drawingBounds.Union(New Rect(point.X + padding - 44, point.Y + padding - 44, 88, 88))
         Next
+        PreviewBox.Width = ShipCanvas.Width : PreviewBox.Height = ShipCanvas.Height
+        If Not _manualView Then ApplyFit()
     End Sub
     Private Sub AddWeaponLayer(path As String, point As SpritePoint, slot As WeaponSlot, padding As Double)
         Dim source = Bitmap(path)
@@ -95,27 +98,71 @@ Public Partial Class LoadoutWorkbench
         RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.HighQuality)
         Canvas.SetLeft(image, point.X + padding - pivot.X) : Canvas.SetTop(image, point.Y + padding - pivot.Y)
         ShipCanvas.Children.Add(image)
+        Dim bounds = image.RenderTransform.TransformBounds(New Rect(0, 0, image.Width, image.Height))
+        bounds.Offset(Canvas.GetLeft(image), Canvas.GetTop(image))
+        _drawingBounds.Union(bounds)
     End Sub
     Private Sub FitPreview()
         Dim transforms As New TransformGroup()
-        _zoom.ScaleX = 1 : _zoom.ScaleY = 1
-        _pan.X = 0 : _pan.Y = 0
         transforms.Children.Add(_zoom) : transforms.Children.Add(_pan)
         PreviewBox.RenderTransform = transforms
-        PreviewBox.RenderTransformOrigin = New Point(0.5, 0.5)
+        PreviewBox.RenderTransformOrigin = New Point(0, 0)
+        _manualView = False
+        ApplyFit()
+    End Sub
+    Private Sub ApplyFit()
+        If PreviewHost.ActualWidth <= 0 OrElse PreviewHost.ActualHeight <= 0 Then Return
+        If Not TypeOf PreviewBox.RenderTransform Is TransformGroup Then
+            Dim transforms As New TransformGroup()
+            transforms.Children.Add(_zoom) : transforms.Children.Add(_pan)
+            PreviewBox.RenderTransform = transforms
+        End If
+        Dim area = VisibleShipArea()
+        Dim scale = Math.Min(area.Width / Math.Max(1, _drawingBounds.Width), area.Height / Math.Max(1, _drawingBounds.Height))
+        scale = Math.Max(0.05, Math.Min(8, scale))
+        _zoom.ScaleX = scale : _zoom.ScaleY = scale
+        _pan.X = area.X + (area.Width - _drawingBounds.Width * scale) / 2 - _drawingBounds.X * scale
+        _pan.Y = area.Y + (area.Height - _drawingBounds.Height * scale) / 2 - _drawingBounds.Y * scale
+    End Sub
+    Private Function VisibleShipArea() As Rect
+        Dim reserve = OverlayRail.ActualWidth + 24
+        Return New Rect(16, 42, Math.Max(80, PreviewHost.ActualWidth - reserve - 32), Math.Max(80, PreviewHost.ActualHeight - 62))
+    End Function
+    Private Sub PreviewResized(sender As Object, e As SizeChangedEventArgs) Handles PreviewHost.SizeChanged
+        UpdateOverlaySizes()
+        If Not _manualView Then
+            ApplyFit()
+        Else
+            ' 窗口缩小时保持手工缩放，仅阻止舰船完全离开可见区域。
+            Dim area = VisibleShipArea()
+            Dim centerX = (_drawingBounds.X + _drawingBounds.Width / 2) * _zoom.ScaleX + _pan.X
+            Dim centerY = (_drawingBounds.Y + _drawingBounds.Height / 2) * _zoom.ScaleY + _pan.Y
+            _pan.X += Math.Max(area.Left, Math.Min(area.Right, centerX)) - centerX
+            _pan.Y += Math.Max(area.Top, Math.Min(area.Bottom, centerY)) - centerY
+        End If
+    End Sub
+    Private Sub OverlayResized(sender As Object, e As SizeChangedEventArgs) Handles OverlayRail.SizeChanged
+        If Not _manualView Then ApplyFit()
     End Sub
     Private Sub FitClick(sender As Object, e As RoutedEventArgs) Handles BtnFit.Click
         FitPreview()
     End Sub
     Private Sub ZoomPreview(sender As Object, e As MouseWheelEventArgs) Handles PreviewHost.PreviewMouseWheel
         Dim factor = If(e.Delta > 0, 1.15, 1 / 1.15)
-        _zoom.ScaleX = Math.Max(0.4, Math.Min(5, _zoom.ScaleX * factor))
+        Dim point = e.GetPosition(PreviewHost)
+        Dim oldScale = _zoom.ScaleX
+        _zoom.ScaleX = Math.Max(0.05, Math.Min(12, oldScale * factor))
         _zoom.ScaleY = _zoom.ScaleX
+        Dim ratio = _zoom.ScaleX / oldScale
+        _pan.X = point.X - (point.X - _pan.X) * ratio
+        _pan.Y = point.Y - (point.Y - _pan.Y) * ratio
+        _manualView = True
         e.Handled = True
     End Sub
     Private Sub StartPan(sender As Object, e As MouseButtonEventArgs) Handles PreviewHost.MouseDown
         If e.ChangedButton <> MouseButton.Middle Then Return
         _drag = e.GetPosition(PreviewHost)
+        _manualView = True
         PreviewHost.CaptureMouse()
         e.Handled = True
     End Sub
@@ -129,5 +176,8 @@ Public Partial Class LoadoutWorkbench
         If e.ChangedButton <> MouseButton.Middle Then Return
         _drag = Nothing
         PreviewHost.ReleaseMouseCapture()
+    End Sub
+    Private Sub PanCaptureLost(sender As Object, e As MouseEventArgs) Handles PreviewHost.LostMouseCapture
+        _drag = Nothing
     End Sub
 End Class

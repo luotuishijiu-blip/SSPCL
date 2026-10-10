@@ -112,6 +112,41 @@ try {
     $window.FindName('BtnToggleHulls').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent))
     $window.FindName('DetailTabs').SelectedIndex = 0
     $content.UpdateLayout()
+    $hostPanel = $window.FindName('PreviewHost')
+    $workspace = $window.FindName('Workspace')
+    if ($hostPanel.ActualHeight -lt 750 -or $hostPanel.ActualWidth -ne $workspace.ActualWidth -or $hostPanel.ActualHeight -ne $workspace.ActualHeight) { throw 'Canvas does not fill workspace.' }
+    if ($hostPanel.Background.Color.A -ne 0) { throw 'Canvas background is not transparent.' }
+    $window.FindName('BtnFit').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent))
+    $area = $window.GetType().GetMethod('VisibleShipArea', $flags).Invoke($window,@())
+    $bounds = $window.GetType().GetField('_drawingBounds', $flags).GetValue($window)
+    $zoom = $window.GetType().GetField('_zoom', $flags).GetValue($window)
+    $pan = $window.GetType().GetField('_pan', $flags).GetValue($window)
+    if ($bounds.Left * $zoom.ScaleX + $pan.X -lt $area.Left - 0.1 -or $bounds.Right * $zoom.ScaleX + $pan.X -gt $area.Right + 0.1 -or $bounds.Top * $zoom.ScaleY + $pan.Y -lt $area.Top - 0.1 -or $bounds.Bottom * $zoom.ScaleY + $pan.Y -gt $area.Bottom + 0.1) { throw 'Fit clips ship/weapons or overlaps floating panels.' }
+    $window.GetType().GetField('_manualView', $flags).SetValue($window,$true)
+    $savedScale = $zoom.ScaleX; $savedPanX = $pan.X; $savedPanY = $pan.Y
+    $window.FindName('BtnUndo').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent))
+    $window.FindName('BtnRedo').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent))
+    if ($zoom.ScaleX -ne $savedScale -or $pan.X -ne $savedPanX -or $pan.Y -ne $savedPanY) { throw 'Editing resets manual camera.' }
+    foreach ($button in @('BtnToggleData','BtnToggleFitting')) { $window.FindName($button).RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent)) }
+    $content.UpdateLayout()
+    if ($window.FindName('DataBody').Visibility -ne 'Collapsed' -or $window.FindName('DetailTabs').Visibility -ne 'Collapsed' -or $window.FindName('OverlayRail').Width -ne 180) { throw 'Floating panels do not collapse compactly.' }
+    $window.GetType().GetMethod('SelectSlot', $flags).Invoke($window,@($hull.Slots[0].PSObject.BaseObject)) | Out-Null
+    if ($window.FindName('DetailTabs').Visibility -ne 'Visible' -or $window.FindName('DetailTabs').SelectedIndex -ne 0) { throw 'Selecting slot does not open weapons.' }
+    $window.FindName('BtnToggleData').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent)); $content.UpdateLayout()
+    $window.FindName('BtnFit').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent))
+    $content.UpdateLayout()
+    $savedScale = $zoom.ScaleX
+    $wheel = [Windows.Input.MouseWheelEventArgs]::new([Windows.Input.Mouse]::PrimaryDevice,0,120)
+    $wheel.RoutedEvent = [Windows.UIElement]::PreviewMouseWheelEvent
+    $window.FindName('WeaponList').RaiseEvent($wheel)
+    if ($zoom.ScaleX -ne $savedScale) { throw 'Panel wheel zooms canvas.' }
+    # Disconnected offscreen trees need explicit arrangement of children added by undo/redo.
+    $canvas.InvalidateMeasure()
+    $canvas.Measure([Windows.Size]::new($canvas.Width,$canvas.Height))
+    $canvas.Arrange([Windows.Rect]::new(0,0,$canvas.Width,$canvas.Height))
+    foreach ($slotMarker in @($canvas.Children | Where-Object { $_ -is [Windows.Shapes.Ellipse] })) {
+        if ($slotMarker.ActualWidth -lt 12 -or $slotMarker.RenderedGeometry.Bounds.Width -le 0) { throw 'Slot hit target lost after editing.' }
+    }
     $bitmap = [Windows.Media.Imaging.RenderTargetBitmap]::new(1380,914,96,96,[Windows.Media.PixelFormats]::Pbgra32)
     $bitmap.Render($content)
     $encoder = [Windows.Media.Imaging.PngBitmapEncoder]::new()
@@ -120,16 +155,27 @@ try {
     [IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($outputPath)) | Out-Null
     $stream = [IO.File]::Create($outputPath)
     try { $encoder.Save($stream) } finally { $stream.Dispose() }
-    foreach ($tab in @(1,2,3)) {
+    foreach ($tab in @(1,2)) {
         $window.FindName('DetailTabs').SelectedIndex = $tab; $content.UpdateLayout()
         $detailBitmap = [Windows.Media.Imaging.RenderTargetBitmap]::new(1380,914,96,96,[Windows.Media.PixelFormats]::Pbgra32); $detailBitmap.Render($content)
         $detailEncoder = [Windows.Media.Imaging.PngBitmapEncoder]::new(); $detailEncoder.Frames.Add([Windows.Media.Imaging.BitmapFrame]::Create($detailBitmap))
         $detailPath = [IO.Path]::Combine([IO.Path]::GetDirectoryName($outputPath), [IO.Path]::GetFileNameWithoutExtension($outputPath) + '-tab' + $tab + '.png')
         $detailStream = [IO.File]::Create($detailPath); try { $detailEncoder.Save($detailStream) } finally { $detailStream.Dispose() }
     }
+    $window.FindName('HullDetailsExpander').IsExpanded = $true
+    $content.UpdateLayout()
+    if ($window.FindName('HullParameterList').ActualHeight -le 0) { throw 'Upper hull details inaccessible.' }
+    $window.FindName('DetailTabs').SelectedIndex = 0
+    foreach ($dimensions in @(@(1080,720),@(1280,800))) {
+        $content.Width = $dimensions[0]; $content.Height = $dimensions[1]
+        $content.Measure([Windows.Size]::new($dimensions[0],$dimensions[1])); $content.Arrange([Windows.Rect]::new(0,0,$dimensions[0],$dimensions[1])); $content.UpdateLayout()
+        if ($window.FindName('DataPanel').ActualHeight + $window.FindName('FittingPanel').ActualHeight + 10 -gt $window.FindName('PreviewHost').ActualHeight) { throw 'Floating panels overlap at compact dimensions.' }
+        if ($window.FindName('WeaponList').ActualHeight -lt 40) { throw 'Weapon list unusable at compact dimensions.' }
+    }
     $variant = $core.GetType('Sspcl.Core.Loadouts.LoadoutVariant').GetMethod('Serialize').Invoke($null, @($hull.PSObject.BaseObject, $catalog.Weapons.PSObject.BaseObject, $plan.PSObject.BaseObject, 'onslaught_sspcl_smoke', $catalog.HullMods.PSObject.BaseObject))
     [IO.File]::WriteAllText([IO.Path]::ChangeExtension($outputPath, '.variant'), $variant, [Text.UTF8Encoding]::new($false))
     Write-Output "PASS: embedded workbench, actual hull/weapon assets, stable coordinates, manual install, pins, undo/redo and export. Preview: $outputPath"
     Write-Output 'PASS: directory drag/collapse/restore, ordinary and unlimited built-in hullmods, full hull/weapon data, projectile spec and non-missile damage labels.'
+    Write-Output 'PASS: full-height transparent canvas, unobstructed fit, floating panel collapse, slot reopen, manual camera preservation and compact layouts.'
     $window.Close()
 } finally { $application.Shutdown() }
