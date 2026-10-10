@@ -61,7 +61,7 @@ public static class LoadoutDetails
         string shield = Value("shield type");
         return $"结构 {Value("hitpoints")} · 装甲 {Value("armor rating")} · 速度 {Value("max speed")}\n"
             + $"护盾 {shield} · 盾效 {Value("shield efficiency")} 幅能/伤害 · 盾弧 {Value("shield arc")}°\n"
-            + $"幅能容量 {Value("max flux")} · 基础散幅 {Number(hull.FluxDissipation)}/秒 · 部署 {Value("fleet pts")} DP";
+            + $"幅能容量 {Value("max flux")} · 基础散幅 {Number(hull.FluxDissipation)}/秒";
     }
 
     public static List<LoadoutParameter> Parameters(Dictionary<string, string> fields) => fields.Select(pair => new LoadoutParameter {
@@ -78,7 +78,7 @@ public static class LoadoutDetails
         ["autofireAccBonus"] = "自动开火精度修正", ["extraArcForAI"] = "AI 额外射界", ["groupTag"] = "武器组标签", ["primaryRoleStr"] = "主要用途", ["speedStr"] = "速度描述",
         ["trackingStr"] = "跟踪描述", ["turnRateStr"] = "转速描述", ["accuracyStr"] = "精度描述", ["customPrimary"] = "特性说明", ["customAncillary"] = "附加说明",
         ["tech/manufacturer"] = "技术/制造商", ["tier"] = "层级", ["rarity"] = "稀有度", ["base value"] = "基础价值",
-        ["designation"] = "舰型", ["system id"] = "系统", ["fleet pts"] = "部署点", ["hitpoints"] = "结构", ["armor rating"] = "装甲", ["max flux"] = "幅能容量",
+        ["designation"] = "舰型", ["system id"] = "系统", ["fleet pts"] = "舰队力量评分", ["hitpoints"] = "结构", ["armor rating"] = "装甲", ["max flux"] = "幅能容量",
         ["flux dissipation"] = "散幅", ["ordnance points"] = "装配点", ["fighter bays"] = "机库", ["max speed"] = "最大速度", ["acceleration"] = "加速度", ["deceleration"] = "减速度",
         ["max turn rate"] = "最大转速", ["turn acceleration"] = "转向加速度", ["mass"] = "质量", ["shield type"] = "护盾类型", ["shield arc"] = "盾弧", ["shield upkeep"] = "护盾维持幅能",
         ["shield efficiency"] = "盾效(幅能/伤害)", ["phase cost"] = "相位启动幅能", ["phase upkeep"] = "相位维持幅能", ["min crew"] = "最低船员", ["max crew"] = "最高船员",

@@ -11,6 +11,7 @@ try {
     $wpf.GetType('Sspcl.Foundation.Wpf.Main').GetMethod('Init').Invoke($null, @()) | Out-Null
     $application.InitializeComponent()
     $core = [Reflection.Assembly]::Load('Sspcl.Core')
+    $core.GetType('Sspcl.Core.Loadouts.GameDataReader').GetMethod('Json').Invoke($null,@([string](Join-Path $GamePath 'starsector-core/data/weapons/lightmg.wpn'))) | Out-Null
     $catalog = $core.GetType('Sspcl.Core.Loadouts.LoadoutCatalogReader').GetMethod('Read').Invoke($null, @($GamePath, [Threading.CancellationToken]::None))
     $window = [Activator]::CreateInstance($assembly.GetType('Sspcl.LoadoutWorkbench', $true), @($GamePath))
     $flags = [Reflection.BindingFlags]'Instance,NonPublic'
@@ -47,9 +48,10 @@ try {
     $weapons = $window.FindName('WeaponList')
     if ($weapons.Items.Count -eq 0) { throw 'Compatible list empty.' }
     $weapons.SelectedItem = $weapons.Items | Where-Object Id -eq 'lightmg' | Select-Object -First 1
+    if ($null -eq $weapons.SelectedItem) { throw 'Original lightmg missing from compatible weapon list.' }
     $window.FindName('BtnInstall').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent))
     $plan = $window.GetType().GetField('_plan', $flags).GetValue($window)
-    if ($plan.Weapons['WS 001'] -ne 'lightmg' -or -not $plan.PinnedSlots.Contains('WS 001')) { throw 'Manual installation/pin failed.' }
+    if ($plan.Weapons['WS 001'] -ne 'lightmg' -or -not $plan.PinnedSlots.Contains('WS 001')) { throw "Manual installation/pin failed: selected=$($weapons.SelectedItem.Id); installed=$($plan.Weapons['WS 001']); status=$($window.FindName('LabStatus').Text)" }
     $window.FindName('BtnUndo').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent))
     $window.FindName('BtnRedo').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent))
     $plan = $window.GetType().GetField('_plan', $flags).GetValue($window)
@@ -73,7 +75,7 @@ try {
     $window.FindName('BtnHullModBuiltIn').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent))
     $plan = $window.GetType().GetField('_plan', $flags).GetValue($window)
     if ($plan.HullMods.Contains('heavyarmor') -or -not $plan.SMods.Contains('heavyarmor') -or -not $plan.PermaMods.Contains('heavyarmor')) { throw 'Normal to builtin conversion failed.' }
-    foreach ($mod in @($catalog.HullMods | Where-Object { $_.Id -ne 'heavyarmor' -and -not $hull.BuiltInHullMods.Contains($_.Id) } | Select-Object -First 7)) {
+    foreach ($mod in @($catalog.HullMods | Where-Object { -not $_.IsDMod -and $_.Id -ne 'heavyarmor' -and -not $hull.BuiltInHullMods.Contains($_.Id) } | Select-Object -First 7)) {
         $window.FindName('HullModList').SelectedItem = $mod
         $window.FindName('BtnHullModBuiltIn').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent))
     }
@@ -91,6 +93,30 @@ try {
     }
     $plan = $window.GetType().GetField('_plan', $flags).GetValue($window)
     if ($plan.SMods.Count -ne 1) { throw 'Removing hullmods failed.' }
+    if ($window.FindName('LabDeployment').Text -notmatch '40') { throw 'Onslaught base DP is not 40.' }
+    $window.FindName('HullModKind').SelectedIndex = 1
+    foreach ($damagedMod in @($catalog.HullMods | Where-Object { $_.IsDMod -and -not $hull.BuiltInHullMods.Contains($_.Id) } | Select-Object -First 5)) {
+        $window.FindName('HullModList').SelectedItem = $damagedMod
+        $window.FindName('BtnHullModD').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent))
+    }
+    $plan = $window.GetType().GetField('_plan',$flags).GetValue($window)
+    if ($plan.DMods.Count -ne 5 -or $window.FindName('LabDeployment').Text -notmatch '28') { throw 'Dmod DP preview did not reach 28.' }
+    $window.FindName('CheckDerelict').IsChecked = $false
+    if ($window.FindName('LabDeployment').Text -notmatch '^.*40.*40') { throw 'Skill-off deployment changed.' }
+    $window.FindName('CheckDerelict').IsChecked = $true
+    $window.FindName('HullModKind').SelectedIndex = 0
+    $window.FindName('DetailTabs').SelectedIndex = 0
+    $window.FindName('FilterFeature').SelectedIndex = 3
+    if (@($window.FindName('WeaponList').Items | Where-Object { -not $_.PointDefense }).Count -ne 0) { throw 'PD filter includes non-PD weapons.' }
+    $window.FindName('BtnResetFilters').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent))
+    $window.FindName('WeaponList').SelectedItem = $window.FindName('WeaponList').Items | Where-Object Id -eq 'lightmg' | Select-Object -First 1
+    $window.FindName('BtnCompareA').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent))
+    $otherWeapon = $window.FindName('WeaponList').Items | Where-Object Id -ne 'lightmg' | Select-Object -First 1
+    $window.FindName('WeaponList').SelectedItem = $otherWeapon
+    $window.FindName('BtnCompareB').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent))
+    if ($window.FindName('CompareRows').Items.Count -lt 20 -or $window.FindName('CompareA').SelectedItem.Id -ne 'lightmg' -or $window.FindName('CompareB').SelectedItem.Id -ne $otherWeapon.Id) { throw 'Weapon comparison selection failed.' }
+    $window.FindName('BtnCompareSwap').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent))
+    if ($window.FindName('CompareB').SelectedItem.Id -ne 'lightmg') { throw 'Comparison swap failed.' }
     $content = $window.Content
     $content.Width = 1336; $content.Height = 870
     $content.Measure([Windows.Size]::new(1380,914))
@@ -113,6 +139,7 @@ try {
     $window.FindName('DetailTabs').SelectedIndex = 0
     $content.UpdateLayout()
     $hostPanel = $window.FindName('PreviewHost')
+    if ($window.FindName('WeaponList').ActualHeight -lt 200) { throw 'Normal weapon viewport does not show enough choices.' }
     $workspace = $window.FindName('Workspace')
     if ($hostPanel.ActualHeight -lt 750 -or $hostPanel.ActualWidth -ne $workspace.ActualWidth -or $hostPanel.ActualHeight -ne $workspace.ActualHeight) { throw 'Canvas does not fill workspace.' }
     if ($hostPanel.Background.Color.A -ne 0) { throw 'Canvas background is not transparent.' }
@@ -167,15 +194,36 @@ try {
     if ($window.FindName('HullParameterList').ActualHeight -le 0) { throw 'Upper hull details inaccessible.' }
     $window.FindName('DetailTabs').SelectedIndex = 0
     foreach ($dimensions in @(@(1080,720),@(1280,800))) {
-        $content.Width = $dimensions[0]; $content.Height = $dimensions[1]
+        $content.Width = $dimensions[0]-24; $content.Height = $dimensions[1]-24
         $content.Measure([Windows.Size]::new($dimensions[0],$dimensions[1])); $content.Arrange([Windows.Rect]::new(0,0,$dimensions[0],$dimensions[1])); $content.UpdateLayout()
         if ($window.FindName('DataPanel').ActualHeight + $window.FindName('FittingPanel').ActualHeight + 10 -gt $window.FindName('PreviewHost').ActualHeight) { throw 'Floating panels overlap at compact dimensions.' }
         if ($window.FindName('WeaponList').ActualHeight -lt 40) { throw 'Weapon list unusable at compact dimensions.' }
+        $button = $window.FindName('BtnInstall'); $panel = $window.FindName('FittingPanel')
+        $position = $button.TransformToAncestor($panel).Transform([Windows.Point]::new(0,0))
+        if ($position.Y + $button.ActualHeight -gt $panel.ActualHeight - 5) { throw 'Install action clipped at compact dimensions.' }
     }
+    $window.FindName('HullDetailsExpander').IsExpanded = $false
+    foreach ($sizeAndScale in @(@(1080,720,1.0),@(1280,800,1.25),@(1700,940,1.5))) {
+        $width=$sizeAndScale[0]; $height=$sizeAndScale[1]; $scale=$sizeAndScale[2]
+        $content.Width=$width-24; $content.Height=$height-24
+        $content.Measure([Windows.Size]::new($width,$height));$content.Arrange([Windows.Rect]::new(0,0,$width,$height));$content.UpdateLayout()
+        $window.FindName('BtnFit').RaiseEvent([Windows.RoutedEventArgs]::new([Windows.Controls.Button]::ClickEvent));$content.UpdateLayout()
+        $screen=[Windows.Media.Imaging.RenderTargetBitmap]::new([int]($width*$scale),[int]($height*$scale),96*$scale,96*$scale,[Windows.Media.PixelFormats]::Pbgra32);$screen.Render($content)
+        $png=[Windows.Media.Imaging.PngBitmapEncoder]::new();$png.Frames.Add([Windows.Media.Imaging.BitmapFrame]::Create($screen))
+        $file=[IO.File]::Create([IO.Path]::ChangeExtension($outputPath,"-$width-$([int]($scale*100)).png"));try{$png.Save($file)}finally{$file.Dispose()}
+    }
+    $weapon = $catalog.Weapons | Where-Object Id -eq 'lightmg' | Select-Object -First 1
+    $window.GetType().GetMethod('BindWeaponDetails',$flags).Invoke($window,@($weapon.PSObject.BaseObject)) | Out-Null
+    $popup = $window.FindName('WeaponPopupFrame')
+    $popup.Measure([Windows.Size]::new(410,620));$popup.Arrange([Windows.Rect]::new(0,0,410,620));$popup.UpdateLayout()
+    $screen=[Windows.Media.Imaging.RenderTargetBitmap]::new(410,620,96,96,[Windows.Media.PixelFormats]::Pbgra32);$screen.Render($popup)
+    $png=[Windows.Media.Imaging.PngBitmapEncoder]::new();$png.Frames.Add([Windows.Media.Imaging.BitmapFrame]::Create($screen))
+    $file=[IO.File]::Create([IO.Path]::ChangeExtension($outputPath,'-weapon.png'));try{$png.Save($file)}finally{$file.Dispose()}
     $variant = $core.GetType('Sspcl.Core.Loadouts.LoadoutVariant').GetMethod('Serialize').Invoke($null, @($hull.PSObject.BaseObject, $catalog.Weapons.PSObject.BaseObject, $plan.PSObject.BaseObject, 'onslaught_sspcl_smoke', $catalog.HullMods.PSObject.BaseObject))
     [IO.File]::WriteAllText([IO.Path]::ChangeExtension($outputPath, '.variant'), $variant, [Text.UTF8Encoding]::new($false))
     Write-Output "PASS: embedded workbench, actual hull/weapon assets, stable coordinates, manual install, pins, undo/redo and export. Preview: $outputPath"
     Write-Output 'PASS: directory drag/collapse/restore, ordinary and unlimited built-in hullmods, full hull/weapon data, projectile spec and non-missile damage labels.'
     Write-Output 'PASS: full-height transparent canvas, unobstructed fit, floating panel collapse, slot reopen, manual camera preservation and compact layouts.'
+    Write-Output 'PASS: Dmod install and skill-conditioned DP, PD filtering, comparison candidates and swap.'
     $window.Close()
 } finally { $application.Shutdown() }

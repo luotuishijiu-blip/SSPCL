@@ -224,7 +224,9 @@ RetryCacheCheck:
         Static LoadedAssemblies As New ConcurrentDictionary(Of String, Lazy(Of Assembly))(StringComparer.Ordinal) '缓存
         AddHandler AppDomain.CurrentDomain.AssemblyResolve,
         Function(sender As Object, Args As ResolveEventArgs) As Assembly
-            Dim Prefix As String = Prefixes.FirstOrDefault(Function(p) Args.Name.StartsWith(p, StringComparison.Ordinal))
+            '卫星资源必须交给 CLR 回退；不能把 *.resources 错配成主 DLL。
+            Dim simpleName = New AssemblyName(Args.Name).Name
+            Dim Prefix As String = Prefixes.FirstOrDefault(Function(p) String.Equals(simpleName, p, StringComparison.Ordinal))
             If Prefix Is Nothing Then Return Nothing
             Dim LazyAssembly = LoadedAssemblies.GetOrAdd(Prefix, Function(p) New Lazy(Of Assembly)(
             Function()

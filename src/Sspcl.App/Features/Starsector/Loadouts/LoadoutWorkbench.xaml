@@ -58,6 +58,9 @@
       <Setter Property="Padding" Value="8,5" />
       <Setter Property="Foreground" Value="#23324A" />
     </Style>
+    <Style xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="WeaponRowStyle" TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+ <EventSetter Event="MouseEnter" Handler="WeaponHovered" /><EventSetter Event="MouseLeave" Handler="WeaponLeft" /><EventSetter Event="PreviewMouseRightButtonDown" Handler="WeaponRightClicked" />
+</Style>
   </Window.Resources>
   <Grid Margin="12" Background="#F3F6FA">
     <Grid.RowDefinitions>
@@ -145,11 +148,17 @@
               </Grid>
               <ScrollViewer x:Name="DataBody" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                 <StackPanel>
-                  <TextBlock x:Name="LabHullDetail" FontSize="11" Foreground="#73839B" TextWrapping="Wrap" />
-                  <TextBlock x:Name="LabBudget" FontWeight="SemiBold" Margin="0,6,0,0" />
+                  <TextBlock x:Name="LabHullDetail" FontSize="11" Foreground="#73839B" TextWrapping="Wrap" Visibility="Collapsed" />
+                  <Grid xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="Auto" />
+                      <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="LabBudget" FontWeight="SemiBold" Margin="0,0,10,0" />
+                    <TextBlock x:Name="LabFlux" FontSize="12" Grid.Column="1" HorizontalAlignment="Right" />
+                  </Grid>
                   <ProgressBar x:Name="OpBar" Height="3" Margin="0,5" Foreground="#2866DB" />
-                  <TextBlock x:Name="LabFlux" FontSize="12" />
-                  <Grid Margin="0,8">
+                  <Grid Margin="0,4">
                     <Grid.ColumnDefinitions>
                       <ColumnDefinition />
                       <ColumnDefinition />
@@ -168,9 +177,10 @@
                       <TextBlock x:Name="LabHullDps" Text="0" FontSize="16" Foreground="#248362" FontWeight="SemiBold" />
                     </StackPanel>
                   </Grid>
-                  <TextBlock x:Name="LabDamageBasis" FontSize="11" Foreground="#73839B" TextWrapping="Wrap" />
-                  <TextBlock x:Name="LabHullStats" FontSize="12" TextWrapping="Wrap" Margin="0,8,0,0" />
-                  <Expander Header="配置与生成说明" Margin="0,6,0,0">
+                  <TextBlock x:Name="LabDamageBasis" FontSize="11" Foreground="#73839B" TextWrapping="Wrap" MaxHeight="16" />
+                  <TextBlock x:Name="LabHullStats" FontSize="12" TextWrapping="Wrap" Margin="0,4,0,0" />
+                  <TextBlock xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Name="LabDeployment" FontWeight="SemiBold" Margin="0,4" />
+                  <Expander Header="配置与生成说明" Margin="0,2,0,0">
                     <StackPanel>
                       <TextBox x:Name="BoxName" Text="SSPCL 配装" ToolTip="配置名称" />
                       <WrapPanel Margin="0,6">
@@ -182,7 +192,7 @@
                       <TextBlock x:Name="LabExplanation" TextWrapping="Wrap" Foreground="#73839B" />
                     </StackPanel>
                   </Expander>
-                  <Expander x:Name="HullDetailsExpander" Header="完整舰船数据" Margin="0,6,0,0">
+                  <Expander x:Name="HullDetailsExpander" Header="完整舰船数据" Margin="0,2,0,0">
                     <Grid Height="310">
                       <Grid Margin="0,10,0,0" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
                         <Grid.RowDefinitions>
@@ -213,7 +223,7 @@
                       </Grid>
                     </Grid>
                   </Expander>
-                  <TextBlock x:Name="LabStatus" Text="准备读取游戏数据…" Foreground="#73839B" FontSize="11" TextWrapping="Wrap" Margin="0,8,0,0" />
+                  <TextBlock x:Name="LabStatus" Text="准备读取游戏数据…" Foreground="#73839B" FontSize="11" TextWrapping="Wrap" Margin="0,8,0,0" MaxHeight="16" ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}" />
                 </StackPanel>
               </ScrollViewer>
             </DockPanel>
@@ -230,75 +240,33 @@
               </Grid>
               <TabControl x:Name="DetailTabs" BorderThickness="0" Background="Transparent">
                 <TabItem Header="槽位 / 武器" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-                  <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                    <Grid Margin="0,4,0,0">
-                      <Grid>
-                        <Grid.RowDefinitions>
-                          <RowDefinition Height="0" />
-                          <RowDefinition Height="Auto" />
-                          <RowDefinition Height="Auto" />
-                          <RowDefinition Height="Auto" />
-                          <RowDefinition Height="*" />
-                          <RowDefinition Height="Auto" />
-                          <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="槽位与武器" FontSize="15" FontWeight="SemiBold" Margin="0,0,0,8" />
-                        <Expander Header="槽位目录" Grid.Row="1">
-                          <ListBox x:Name="SlotList" FontSize="12" Height="90" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" />
-                        </Expander>
-                        <StackPanel Grid.Row="2" Margin="0,4,0,4">
-                          <TextBlock x:Name="LabSlot" Text="点击舰船上的圆点选择槽位" FontWeight="SemiBold" TextWrapping="Wrap" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" />
-                          <CheckBox x:Name="CheckPin" Content="锁定此槽位（生成时保留）" Margin="0,4,0,0" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" />
-                        </StackPanel>
-                        <TextBox Grid.Row="3" x:Name="BoxWeaponSearch" ToolTip="搜索兼容武器；双击安装" Margin="0,0,0,8" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" />
-                        <ListBox Grid.Row="4" x:Name="WeaponList" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Height="100" MinHeight="80">
-                          <ListBox.ItemTemplate>
-                            <DataTemplate>
-                              <StackPanel>
-                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextWrapping="Wrap" />
-                                <TextBlock Text="{Binding Display}" FontSize="10" Foreground="#73839B" TextWrapping="Wrap" Margin="0,3,0,0" />
-                                <TextBlock Text="{Binding Source}" Foreground="#73839B" FontSize="10" />
-                              </StackPanel>
-                            </DataTemplate>
-                          </ListBox.ItemTemplate>
-                        </ListBox>
-                        <TextBlock Grid.Row="5" x:Name="LabWeapon" FontSize="11" Foreground="#73839B" TextWrapping="Wrap" Margin="0,4" MaxHeight="18" ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" />
-                        <StackPanel Grid.Row="6" Orientation="Horizontal">
-                          <Button x:Name="BtnInstall" Content="安装武器" Background="#2866DB" Foreground="White" BorderBrush="#2866DB" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" />
-                          <Button x:Name="BtnClear" Content="清空槽位" Margin="0" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" />
-                        </StackPanel>
-                      </Grid>
-                    </Grid>
-                  </ScrollViewer>
+                  <Grid Margin="0,6,0,0">
+ <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+ <Expander Header="槽位目录"><ListBox x:Name="SlotList" FontSize="12" Height="95" /></Expander>
+ <Grid Grid.Row="1" Margin="0,4"><Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions><TextBlock x:Name="LabSlot" TextWrapping="Wrap" FontWeight="SemiBold" /><CheckBox x:Name="CheckPin" Grid.Column="1" Content="锁定" ToolTip="生成时保留该槽位" VerticalAlignment="Center" Margin="8,0,0,0" /></Grid>
+ <TextBox x:Name="BoxWeaponSearch" Grid.Row="2" ToolTip="搜索兼容武器，双击安装" Margin="0,0,0,4" />
+ <StackPanel Grid.Row="3">
+ <Grid><Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+  <ComboBox x:Name="FilterDamage" ToolTip="伤害类型" Margin="0,0,4,0" /><ComboBox x:Name="FilterSource" Grid.Column="1" ToolTip="来源 MOD" Margin="0,0,4,0" /><Button x:Name="BtnResetFilters" Grid.Column="2" Content="重置" Padding="6,3" Margin="0" />
+ </Grid>
+ <Expander Header="更多筛选" Margin="0,4"><Grid><Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions><Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition /></Grid.ColumnDefinitions><ComboBox x:Name="FilterSize" Margin="0,0,4,4" /><ComboBox x:Name="FilterType" Grid.Column="1" Margin="0,0,0,4" /><ComboBox x:Name="FilterFeature" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,0,0,4" /><TextBlock Grid.Row="2" Text="最大 OP" /><TextBlock Grid.Row="2" Grid.Column="1" Text="最低射程" /><TextBox x:Name="FilterMaxOp" Grid.Row="3" ToolTip="最大 OP，留空不限" Margin="0,0,4,0" /><TextBox x:Name="FilterMinRange" Grid.Row="3" Grid.Column="1" ToolTip="最低射程，留空不限" /></Grid></Expander>
+ <TextBlock x:Name="LabWeaponCount" FontSize="11" Foreground="#73839B" Margin="0,0,0,4" />
+ </StackPanel>
+ <ListBox x:Name="WeaponList" Grid.Row="4" MinHeight="80" ItemContainerStyle="{StaticResource WeaponRowStyle}"><ListBox.ItemTemplate><DataTemplate><StackPanel><TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextWrapping="Wrap" /><TextBlock Text="{Binding Display}" FontSize="10" Foreground="#73839B" TextWrapping="Wrap" Margin="0,3,0,0" /><TextBlock Text="{Binding Source}" Foreground="#73839B" FontSize="10" /></StackPanel></DataTemplate></ListBox.ItemTemplate><ListBox.ContextMenu><ContextMenu><MenuItem Header="加入对比 A" Click="AddCompareA" /><MenuItem Header="加入对比 B" Click="AddCompareB" /></ContextMenu></ListBox.ContextMenu></ListBox>
+ <TextBlock x:Name="LabWeapon" Grid.Row="5" FontSize="11" Foreground="#73839B" TextTrimming="CharacterEllipsis" Margin="0,4" />
+ <WrapPanel Grid.Row="6"><Button x:Name="BtnInstall" Content="安装武器" Background="#2866DB" Foreground="White" /><Button x:Name="BtnClear" Content="清空槽位" /><Button x:Name="BtnCompareA" Content="对比 A" /><Button x:Name="BtnCompareB" Content="对比 B" Margin="0" /></WrapPanel>
+</Grid>
                 </TabItem>
-                <TabItem Header="武器详解" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-                  <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                    <StackPanel Margin="4,12,4,8">
-                      <TextBlock x:Name="LabWeaponTitle" Text="先在武器装配中选择武器" FontSize="17" FontWeight="SemiBold" TextWrapping="Wrap" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" />
-                      <TextBlock x:Name="LabWeaponOverview" TextWrapping="Wrap" Margin="0,12,0,0" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" />
-                      <TextBlock Text="详细描述" FontWeight="SemiBold" Margin="0,18,0,8" />
-                      <TextBox x:Name="BoxWeaponDescription" IsReadOnly="True" TextWrapping="Wrap" BorderThickness="0" Padding="0" Background="Transparent" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" />
-                      <TextBlock Text="全部数据表参数" FontWeight="SemiBold" Margin="0,18,0,8" />
-                      <ItemsControl x:Name="WeaponParameterList" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-                        <ItemsControl.ItemTemplate>
-                          <DataTemplate>
-                            <Border BorderBrush="#E7EDF5" BorderThickness="0,0,0,1" Padding="0,6">
-                              <StackPanel>
-                                <TextBlock Text="{Binding Name}" Foreground="#73839B" FontSize="11" TextWrapping="Wrap" />
-                                <TextBlock Text="{Binding Value}" TextWrapping="Wrap" Margin="0,3,0,0" />
-                              </StackPanel>
-                            </Border>
-                          </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                      </ItemsControl>
-                      <Expander Header="完整武器规格（含动画与射击参数）" Margin="0,16,0,0">
-                        <TextBox x:Name="BoxWeaponSpec" IsReadOnly="True" TextWrapping="Wrap" MaxHeight="320" VerticalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="11" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" />
-                      </Expander>
-                      <Expander Header="完整弹体规格" Margin="0,12,0,0">
-                        <TextBox x:Name="BoxProjectileSpec" IsReadOnly="True" TextWrapping="Wrap" MaxHeight="320" VerticalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="11" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" />
-                      </Expander>
-                    </StackPanel>
-                  </ScrollViewer>
+                <TabItem Header="武器对比" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                  <Grid Margin="0,6,0,0">
+ <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+ <StackPanel><TextBox x:Name="BoxCompareSearch" ToolTip="搜索对比候选武器" Margin="0,0,0,6" /><Grid><Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition /></Grid.ColumnDefinitions><ComboBox x:Name="CompareA" DisplayMemberPath="Name" ToolTip="武器 A" Margin="0,0,4,0" /><ComboBox x:Name="CompareB" Grid.Column="1" DisplayMemberPath="Name" ToolTip="武器 B" /></Grid></StackPanel>
+ <StackPanel Grid.Row="1" Margin="0,6"><WrapPanel><Button x:Name="BtnCompareSwap" Content="交换" /><Button x:Name="BtnCompareClear" Content="清空" Margin="0" /></WrapPanel><TextBlock x:Name="LabCompareFit" Foreground="#73839B" TextWrapping="Wrap" Margin="0,5,0,0" /></StackPanel>
+ <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto"><StackPanel>
+  <ItemsControl x:Name="CompareRows"><ItemsControl.ItemTemplate><DataTemplate><Border BorderBrush="#E7EDF5" BorderThickness="0,0,0,1" Padding="0,6"><StackPanel><TextBlock Text="{Binding Name}" FontWeight="SemiBold" /><Grid Margin="0,3"><Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition /></Grid.ColumnDefinitions><TextBlock Text="{Binding Left}" TextWrapping="Wrap" /><TextBlock Grid.Column="1" Text="{Binding Right}" TextWrapping="Wrap" Foreground="#2866DB" /></Grid><TextBlock Text="{Binding Difference}" FontSize="11" Foreground="#73839B" /></StackPanel></Border></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+  <Expander Header="描述与完整源参数" Margin="0,8"><TextBox x:Name="BoxCompareDescriptions" IsReadOnly="True" TextWrapping="Wrap" MaxHeight="360" VerticalScrollBarVisibility="Auto" /></Expander>
+ </StackPanel></ScrollViewer>
+</Grid>
                 </TabItem>
                 <TabItem Header="船插" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
                   <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
@@ -312,7 +280,11 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                       </Grid.RowDefinitions>
-                      <TextBlock Text="普通船插占用 OP；内置/S 插不设数量上限。玩家决定添加，不自动限制适用性或冲突。" TextWrapping="Wrap" FontSize="11" Foreground="#73839B" Margin="0,0,0,8" />
+                      <StackPanel xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Grid.Row="0" Margin="0,0,0,5">
+ <ComboBox x:Name="HullModKind" SelectedIndex="0"><ComboBoxItem Content="普通与内置船插" /><ComboBoxItem Content="D 插" /><ComboBoxItem Content="全部船插" /></ComboBox>
+ <CheckBox x:Name="CheckDerelict" Content="预览废船行动技能部署减免" IsChecked="True" Margin="0,6" ToolTip="0.98：每项 D 插减少 6% 部署点，最多5项；不写入角色技能或存档。" />
+</StackPanel>
+                      <TextBlock Text="普通船插占用 OP；内置/S 插不设数量上限。玩家决定添加，不自动限制适用性或冲突。" TextWrapping="Wrap" FontSize="11" Foreground="#73839B" Margin="0,0,0,8" Visibility="Collapsed" />
                       <TextBox Grid.Row="1" x:Name="BoxHullModSearch" ToolTip="搜索所有原版与已启用 MOD 船插" Margin="0,0,0,8" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" />
                       <ListBox Grid.Row="2" x:Name="HullModList" Height="110" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
                         <ListBox.ItemTemplate>
@@ -332,6 +304,7 @@
                         <Button x:Name="BtnHullModNormal" Content="普通安装" Padding="9,7" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" />
                         <Button x:Name="BtnHullModBuiltIn" Content="内置/S 插" Padding="9,7" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" />
                         <Button x:Name="BtnHullModRemove" Content="移除" Padding="9,7" Margin="0" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" />
+                        <Button xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Name="BtnHullModD" Content="添加 D 插" Padding="6,6" Margin="4,0,0,0" />
                       </StackPanel>
                       <ListBox Grid.Row="5" x:Name="InstalledHullModList" FontSize="11" Height="110" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" />
                       <TextBlock Grid.Row="6" x:Name="LabHullModCount" FontSize="11" Foreground="#73839B" TextWrapping="Wrap" Margin="0,8,0,0" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" />
@@ -344,5 +317,10 @@
         </Grid>
       </Grid>
     </Grid>
+    <Popup xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Name="WeaponPopup" Placement="Left" AllowsTransparency="True" StaysOpen="True" PopupAnimation="Fade">
+ <Border x:Name="WeaponPopupFrame" Width="410" MaxHeight="620" Background="White" BorderBrush="#B7C9E0" BorderThickness="1" CornerRadius="9" Padding="12" MouseEnter="PopupEntered" MouseLeave="PopupLeft" PreviewKeyDown="EscapeWeaponPopup">
+ <DockPanel><Grid DockPanel.Dock="Top"><TextBlock Text="武器详情 · 可滚动阅读" Foreground="#73839B" /><Button x:Name="BtnCloseWeaponPopup" Content="关闭" HorizontalAlignment="Right" Margin="0" Padding="6,2" /></Grid><ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"><StackPanel Margin="4,12,4,8"><TextBlock x:Name="LabWeaponTitle" Text="先在武器装配中选择武器" FontSize="17" FontWeight="SemiBold" TextWrapping="Wrap" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" /><TextBlock x:Name="LabWeaponOverview" TextWrapping="Wrap" Margin="0,12,0,0" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" /><TextBlock Text="详细描述" FontWeight="SemiBold" Margin="0,18,0,8" /><TextBox x:Name="BoxWeaponDescription" IsReadOnly="True" TextWrapping="Wrap" BorderThickness="0" Padding="0" Background="Transparent" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" /><TextBlock Text="全部数据表参数" FontWeight="SemiBold" Margin="0,18,0,8" /><ItemsControl x:Name="WeaponParameterList" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"><ItemsControl.ItemTemplate><DataTemplate><Border BorderBrush="#E7EDF5" BorderThickness="0,0,0,1" Padding="0,6"><StackPanel><TextBlock Text="{Binding Name}" Foreground="#73839B" FontSize="11" TextWrapping="Wrap" /><TextBlock Text="{Binding Value}" TextWrapping="Wrap" Margin="0,3,0,0" /></StackPanel></Border></DataTemplate></ItemsControl.ItemTemplate></ItemsControl><Expander Header="完整武器规格（含动画与射击参数）" Margin="0,16,0,0"><TextBox x:Name="BoxWeaponSpec" IsReadOnly="True" TextWrapping="Wrap" MaxHeight="320" VerticalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="11" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" /></Expander><Expander Header="完整弹体规格" Margin="0,12,0,0"><TextBox x:Name="BoxProjectileSpec" IsReadOnly="True" TextWrapping="Wrap" MaxHeight="320" VerticalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="11" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" /></Expander></StackPanel></ScrollViewer></DockPanel>
+ </Border>
+</Popup>
   </Grid>
 </Window>

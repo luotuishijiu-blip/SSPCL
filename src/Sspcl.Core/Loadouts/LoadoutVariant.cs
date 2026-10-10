@@ -24,7 +24,7 @@ public static class LoadoutVariant
         var root = new JsonObject {
             ["hullId"] = hull.Id, ["variantId"] = variantId, ["displayName"] = plan.Name,
             ["fluxVents"] = plan.Vents, ["fluxCapacitors"] = plan.Capacitors, ["weaponGroups"] = groups,
-            ["hullMods"] = Array(plan.HullMods), ["permaMods"] = Array(plan.PermaMods), ["sMods"] = Array(plan.SMods),
+            ["hullMods"] = Array(plan.HullMods), ["permaMods"] = Array(plan.PermaMods.Concat(plan.DMods)), ["sMods"] = Array(plan.SMods),
             ["sModdedBuiltIns"] = Array(plan.SModdedBuiltIns), ["wings"] = new JsonArray(), ["quality"] = 1, ["goalVariant"] = false
         };
         return root.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
@@ -40,6 +40,9 @@ public static class LoadoutVariant
         plan.SModdedBuiltIns.UnionWith(GameDataReader.Strings(data["sModdedBuiltIns"]));
         plan.SModdedBuiltIns.UnionWith(GameDataReader.Strings(data["sMods"]).Intersect(hull.BuiltInHullMods));
         plan.HullMods.UnionWith(GameDataReader.Strings(data["hullMods"]).Except(hull.BuiltInHullMods).Except(plan.PermaMods));
+        var dIds = new HashSet<string>((hullMods ?? Enumerable.Empty<HullModDefinition>()).Where(m => m.IsDMod).Select(m => m.Id), StringComparer.Ordinal);
+        plan.DMods.UnionWith(plan.HullMods.Concat(plan.PermaMods).Where(dIds.Contains));
+        plan.HullMods.ExceptWith(plan.DMods); plan.PermaMods.ExceptWith(plan.DMods); plan.SMods.ExceptWith(plan.DMods);
         if (data["modules"] is JsonObject modules && modules.Count > 0) throw new InvalidDataException("此配置含舰船模块，需要专用模块配置，不能直接导入。");
         if (data["weaponGroups"] is JsonArray groups)
             foreach (var group in groups.OfType<JsonObject>())

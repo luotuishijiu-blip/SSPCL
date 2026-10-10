@@ -21,6 +21,7 @@ Public Partial Class LoadoutWorkbench
 
     Public Sub New(gamePath As String)
         InitializeComponent()
+        InitializeInspection()
         Dim workArea = SystemParameters.WorkArea
         Width = Math.Min(1380, Math.Max(900, workArea.Width - 40))
         Height = Math.Min(940, Math.Max(700, workArea.Height - 40))
@@ -44,6 +45,7 @@ Public Partial Class LoadoutWorkbench
     End Sub
     Private Sub WindowClosed(sender As Object, e As EventArgs) Handles Me.Closed
         _closed = True
+        CloseWeaponDetails()
         If _load IsNot Nothing Then _load.Cancel()
         If _ai IsNot Nothing Then _ai.Cancel()
     End Sub
@@ -74,6 +76,8 @@ Public Partial Class LoadoutWorkbench
     Private Sub ApplyCatalog(catalog As LoadoutCatalog)
         If _ai IsNot Nothing Then _ai.Cancel()
         _catalog = catalog
+        CloseWeaponDetails()
+        RefreshInspectionSources()
         _bitmaps.Clear()
         LabCatalog.Text = catalog.Hulls.Count & " 艘舰船 · " & catalog.Weapons.Count & " 种武器 · " & catalog.HullMods.Count & " 种船插"
         LabCatalog.ToolTip = String.Join(vbCrLf, catalog.Warnings)
@@ -219,17 +223,19 @@ Public Partial Class LoadoutWorkbench
                 End If
             End If
         End If
+        RefreshComparison()
     End Sub
     Private Sub WeaponSearchChanged(sender As Object, e As TextChangedEventArgs) Handles BoxWeaponSearch.TextChanged
-        If _catalog IsNot Nothing Then FilterWeapons()
+        ApplyWeaponFilters()
     End Sub
     Private Sub FilterWeapons()
-        Dim search = BoxWeaponSearch.Text.Trim()
+        Dim filter = CurrentWeaponFilter()
         If _slot Is Nothing OrElse Not _slot.CanEquip Then
             WeaponList.ItemsSource = Nothing
         Else
-            WeaponList.ItemsSource = _catalog.Weapons.Where(Function(w) LoadoutRules.Fits(_slot, w) AndAlso (w.Name & " " & w.Id & " " & w.Source).IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0).OrderByDescending(Function(w) LoadoutRules.SizeRank(w.Size)).ThenBy(Function(w) w.Name).ToList()
+            WeaponList.ItemsSource = _catalog.Weapons.Where(Function(w) LoadoutRules.Fits(_slot, w) AndAlso filter.Matches(w)).OrderByDescending(Function(w) LoadoutRules.SizeRank(w.Size)).ThenBy(Function(w) w.Name).ToList()
         End If
+        LabWeaponCount.Text = WeaponList.Items.Count & " 件兼容武器 · 悬停查看详情" & If(filter.MaxOp = -1 OrElse filter.MinRange = Double.PositiveInfinity, " · 数值筛选请输入非负数", "")
         BtnInstall.IsEnabled = WeaponList.SelectedItem IsNot Nothing AndAlso _slot IsNot Nothing AndAlso _slot.CanEquip
     End Sub
     Private Sub WeaponSelected(sender As Object, e As SelectionChangedEventArgs) Handles WeaponList.SelectionChanged
@@ -237,7 +243,7 @@ Public Partial Class LoadoutWorkbench
         BtnInstall.IsEnabled = weapon IsNot Nothing AndAlso _slot IsNot Nothing AndAlso _slot.CanEquip
         LabWeapon.Text = If(weapon Is Nothing, "仅显示兼容当前槽位的武器。", weapon.Id & " · " & weapon.Type & " " & weapon.Size & vbCrLf & "DPS " & Math.Round(weapon.Dps) & " · 幅能 " & Math.Round(weapon.FluxPerSecond) & " · " & weapon.DamageType)
         If weapon IsNot Nothing Then
-            LabWeapon.Text &= vbCrLf & "完整属性、说明与参数见「武器详解」。"
+            LabWeapon.ToolTip = "悬停武器查看完整属性；添加至 A/B 对比。"
             BindWeaponDetails(weapon)
         End If
     End Sub

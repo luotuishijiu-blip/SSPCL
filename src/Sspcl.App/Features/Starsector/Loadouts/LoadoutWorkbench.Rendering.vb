@@ -28,6 +28,7 @@ Public Partial Class LoadoutWorkbench
         End Try
     End Function
     Private Sub RenderShip()
+        CloseWeaponDetails()
         ShipCanvas.Children.Clear()
         If _hull Is Nothing Then Return
         Const padding As Double = 56
@@ -83,6 +84,12 @@ Public Partial Class LoadoutWorkbench
                                                       SelectSlot(slot)
                                                       e.Handled = True
                                                   End Sub
+            Dim installed = _catalog.Weapons.FirstOrDefault(Function(w) w.Id = If(_hull.BuiltInWeapons.ContainsKey(slot.Id), _hull.BuiltInWeapons(slot.Id), If(_plan.Weapons.ContainsKey(slot.Id), _plan.Weapons(slot.Id), "")))
+            If installed IsNot Nothing Then
+                marker.ToolTip = Nothing
+                AddHandler marker.MouseEnter, Sub(s, e) BeginWeaponHover(installed, marker)
+                AddHandler marker.MouseLeave, AddressOf WeaponLeft
+            End If
             ShipCanvas.Children.Add(marker)
             _drawingBounds.Union(New Rect(point.X + padding - 44, point.Y + padding - 44, 88, 88))
         Next

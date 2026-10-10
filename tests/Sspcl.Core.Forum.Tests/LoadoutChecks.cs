@@ -7,6 +7,7 @@ static class LoadoutChecks
 {
     public static async Task Run(string root)
     {
+        Inspection(root);
         string game = Path.Combine(root, "loadout-game");
         void Put(string relative, string text) { string path = Path.Combine(game, relative); Directory.CreateDirectory(Path.GetDirectoryName(path)!); File.WriteAllText(path, text); }
         Put("starsector-core/data/hulls/ship_data.csv", "name,id,ordnance points,flux dissipation\n\"Ship, quoted\",test,30,300\n");
@@ -150,6 +151,34 @@ static class LoadoutChecks
         Console.WriteLine("Detailed fitting checks passed: unrestricted built-ins, normal hullmod costs, native enhancements, variant/AI preservation, damage totals and full metadata.");
     }
 
+    private static void Inspection(string root)
+    {
+        var hull = new HullDefinition { Id = "deploy", OrdnancePoints = 30, Stats = new() { ["fleet pts"] = "28", ["supplies/rec"] = "40" } };
+        var mods = Enumerable.Range(0, 7).Select(i => new HullModDefinition { Id = "d" + i, Stats = new() { ["tags"] = "damage, dmod", ["cost_frigate"] = "10" } }).ToList();
+        var plan = new LoadoutPlan { HullId = hull.Id };
+        Check(LoadoutInspection.BaseDeployment(hull) == 40 && LoadoutInspection.BaseDeployment(new()) == null, "DP uses supplies/rec, never fleet pts; unknown remains unknown");
+        Check(LoadoutInspection.Deployment(hull, plan, mods, true) == 40, "No Dmods no reduction");
+        plan.DMods.Add("d0");
+        Check(Math.Abs(LoadoutInspection.Deployment(hull, plan, mods, true)!.Value - 37.6) < .001, "One Dmod six percent");
+        foreach (var mod in mods) plan.DMods.Add(mod.Id);
+        Check(LoadoutInspection.Deployment(hull, plan, mods, true) == 28 && LoadoutInspection.Deployment(hull, plan, mods, false) == 40, "Dmod cap and skill condition");
+        Check(LoadoutRules.Evaluate(hull, Array.Empty<WeaponDefinition>(), plan, mods).TotalOp == 0, "Dmods never consume OP");
+        var copy = LoadoutRules.Copy(plan); copy.DMods.Clear(); Check(plan.DMods.Count == 7, "Dmods independent undo snapshot");
+        string path = Path.Combine(root, "dmods.variant");
+        File.WriteAllText(path, LoadoutVariant.Serialize(hull, Array.Empty<WeaponDefinition>(), plan, "dmods_test", mods));
+        var restored = LoadoutVariant.Read(path, hull, Array.Empty<WeaponDefinition>(), mods);
+        Check(restored.DMods.SetEquals(plan.DMods) && restored.PermaMods.Count == 0 && restored.SMods.Count == 0, "Dmods exported as perma and reclassified on import");
+        var weapons = new[] {
+            new WeaponDefinition { Id = "a", Name = "A", Size = "SMALL", Type = "ENERGY", DamageType = "ENERGY", Source = "base", SpecClass = "beam", Dps = 100, FluxPerSecond = 50, Range = 500, OrdnancePoints = 4 },
+            new WeaponDefinition { Id = "b", Name = "B", Size = "MEDIUM", Type = "BALLISTIC", DamageType = "KINETIC", Source = "mod", SpecClass = "projectile", Dps = 200, FluxPerSecond = 200, Range = 800, OrdnancePoints = 8, AmmoCapacity = 100, PointDefense = true }
+        };
+        Check(new WeaponFilter { Type = "ENERGY", Feature = "BEAM", Source = "base", MaxOp = 4, MinRange = 500 }.Matches(weapons[0]), "Combined exact-boundary filters");
+        Check(!new WeaponFilter { Size = "SMALL", Feature = "FINITE" }.Matches(weapons[1]) && new WeaponFilter { Feature = "PD", DamageType = "KINETIC", Search = "b" }.Matches(weapons[1]), "Feature/type/search filters");
+        var rows = LoadoutInspection.Compare(weapons[0], weapons[1]);
+        Check(rows.Single(r => r.Name == "护盾 DPS").Right == "400" && rows.Single(r => r.Name == "幅伤比").Left == "0.5", "Compare damage basis and ratio");
+        Check(rows.Single(r => r.Name.StartsWith("单发 EMP")).Left == "—" && LoadoutInspection.Compare(null, weapons[1])[0].Left == "—", "Unknown comparison data never becomes zero");
+        Console.WriteLine("Inspection checks passed: correct base deployment, conditional/capped Dmods, snapshots/variant, combined filters and weapon comparison.");
+    }
     public static void Live(string game)
     {
         var catalog = LoadoutCatalogReader.Read(game);

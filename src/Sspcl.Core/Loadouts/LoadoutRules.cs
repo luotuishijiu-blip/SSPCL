@@ -26,6 +26,9 @@ public static class LoadoutRules
         var result = new LoadoutEvaluation();
         var index = weapons.GroupBy(w => w.Id, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
         var modIndex = (hullMods ?? Enumerable.Empty<HullModDefinition>()).GroupBy(m => m.Id, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
+        foreach (string id in plan.DMods)
+            if (!modIndex.TryGetValue(id, out var damaged) || !damaged.IsDMod) result.Errors.Add("未知 D 插：" + id);
+        if (plan.DMods.Overlaps(plan.HullMods.Concat(plan.PermaMods))) result.Errors.Add("D 插不能同时安装为普通或 S 插。");
         foreach (string id in plan.HullMods.Concat(plan.PermaMods).Distinct(StringComparer.Ordinal))
         {
             if (hull.BuiltInHullMods.Contains(id)) continue;
@@ -57,6 +60,7 @@ public static class LoadoutRules
         HullId = plan.HullId, Name = plan.Name, Vents = plan.Vents, Capacitors = plan.Capacitors, Explanation = plan.Explanation,
         Weapons = new Dictionary<string, string>(plan.Weapons, StringComparer.Ordinal), PinnedSlots = new HashSet<string>(plan.PinnedSlots, StringComparer.Ordinal),
         HullMods = new HashSet<string>(plan.HullMods, StringComparer.Ordinal), PermaMods = new HashSet<string>(plan.PermaMods, StringComparer.Ordinal),
-        SMods = new HashSet<string>(plan.SMods, StringComparer.Ordinal), SModdedBuiltIns = new HashSet<string>(plan.SModdedBuiltIns, StringComparer.Ordinal)
+        SMods = new HashSet<string>(plan.SMods, StringComparer.Ordinal), SModdedBuiltIns = new HashSet<string>(plan.SModdedBuiltIns, StringComparer.Ordinal),
+        DMods = new HashSet<string>(plan.DMods, StringComparer.Ordinal)
     };
 }

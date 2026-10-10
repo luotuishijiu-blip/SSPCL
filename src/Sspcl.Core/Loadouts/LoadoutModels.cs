@@ -98,6 +98,7 @@ public sealed class LoadoutPlan
     public HashSet<string> PermaMods { get; set; } = new(StringComparer.Ordinal);
     public HashSet<string> SMods { get; set; } = new(StringComparer.Ordinal);
     public HashSet<string> SModdedBuiltIns { get; set; } = new(StringComparer.Ordinal);
+    public HashSet<string> DMods { get; set; } = new(StringComparer.Ordinal);
     public int Vents { get; set; }
     public int Capacitors { get; set; }
     public string Explanation { get; set; } = "";
@@ -105,6 +106,7 @@ public sealed class LoadoutPlan
 
 public sealed class HullModDefinition
 {
+    public bool IsDMod => GameDataReader.Get(Stats, "tags").Split(',').Any(t => t.Trim().Equals("dmod", StringComparison.OrdinalIgnoreCase));
     public string Id { get; set; } = "";
     public string Name { get; set; } = "";
     public string Source { get; set; } = "";

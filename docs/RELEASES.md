@@ -4,6 +4,12 @@
 
 ## 最新版
 
+[2026-10-10：装配工坊筛选、对比与 D 插](https://github.com/luotuishijiu-blip/SSPCL/releases/tag/build-20261010-loadout-inspection)
+
+下载 `sspcl-loadout-inspection-20261010.zip`，解压运行 `Sspcl.exe`，无需管理员权限。上方数据面板更宽、更矮，下方武器列表扩大并固定操作按钮；新增悬停详情、A/B 对比、组合筛选及 D 插导入/导出。修正基础部署点字段，废船行动技能预览按每项 D 插减免 6%、最多 5 项计算。修复中文环境部分原版武器读取失败。详见 [装配说明](LOADOUTS.md)。
+
+## 全幅画布版
+
 [2026-10-10：装配工坊全幅画布](https://github.com/luotuishijiu-blip/SSPCL/releases/tag/build-20261010-loadout-canvas)
 
 下载 `sspcl-loadout-canvas-20261010.zip`，完整解压运行 `Sspcl.exe`，无需管理员权限。画布铺满工作区并与背景融合，数据和装配操作移入右上、右下可收起面板；适应画布避开面板，编辑时保留手工视角。完整描述、参数、船插和 `.variant` 功能保留。详见 [装配说明](LOADOUTS.md)。

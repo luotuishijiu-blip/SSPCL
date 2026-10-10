@@ -17,11 +17,22 @@ Public Partial Class LoadoutWorkbench
     End Sub
     Private Sub UpdateOverlaySizes()
         If OverlayRail Is Nothing OrElse PreviewHost.ActualHeight <= 0 Then Return
-        OverlayRail.Width = If(DataBody.Visibility = Visibility.Collapsed AndAlso DetailTabs.Visibility = Visibility.Collapsed, 180, 330)
-        Dim fittingHeight = If(DetailTabs.Visibility = Visibility.Visible, Math.Max(220, PreviewHost.ActualHeight * 0.45), 44)
+        Dim wide = HullSidebar.Visibility <> Visibility.Visible
+        Dim panelWidth = If(wide, Math.Min(460, Math.Max(360, PreviewHost.ActualWidth * 0.4)), 360)
+        OverlayRail.Width = If(DataBody.Visibility = Visibility.Collapsed AndAlso DetailTabs.Visibility = Visibility.Collapsed, 180, panelWidth)
+        DataPanel.Width = OverlayRail.Width
+        FittingPanel.Width = If(DetailTabs.Visibility = Visibility.Visible, Math.Min(430, OverlayRail.Width), OverlayRail.Width)
+        FittingPanel.HorizontalAlignment = HorizontalAlignment.Right
+        Dim expanded = DirectCast(DataBody.Content, StackPanel).Children.OfType(Of Expander)().Any(Function(item) item.IsExpanded)
+        Dim compact = PreviewHost.ActualHeight < 760 AndAlso Not expanded
+        LabHullStats.Visibility = If(compact, Visibility.Collapsed, Visibility.Visible)
+        LabDamageBasis.Visibility = If(compact, Visibility.Collapsed, Visibility.Visible)
+        LabStatus.Visibility = Visibility.Visible
+        DataPanel.ToolTip = If(compact, LabHullStats.Text & vbCrLf & LabDamageBasis.Text & vbCrLf & LabStatus.Text, Nothing)
+        Dim dataHeight = If(DataBody.Visibility = Visibility.Collapsed, 44, If(expanded, Math.Min(360, PreviewHost.ActualHeight * 0.45), If(compact, 228, If(wide, 292, 312))))
+        DataPanel.Height = dataHeight : DataPanel.MaxHeight = dataHeight
+        Dim fittingHeight = If(DetailTabs.Visibility = Visibility.Visible, Math.Max(260, PreviewHost.ActualHeight - dataHeight - 12), 44)
         FittingPanel.Height = fittingHeight
-        WeaponList.Height = Math.Max(90, fittingHeight - 260)
-        DataPanel.MaxHeight = Math.Max(90, PreviewHost.ActualHeight - fittingHeight - 16)
     End Sub
 
     Private Sub ToggleHulls(sender As Object, e As RoutedEventArgs) Handles BtnToggleHulls.Click
@@ -44,6 +55,7 @@ Public Partial Class LoadoutWorkbench
             HullSplitter.Visibility = Visibility.Collapsed
             BtnToggleHulls.Content = "展开目录"
         End If
+        UpdateOverlaySizes()
     End Sub
     Private Sub HullDragCompleted(sender As Object, e As DragCompletedEventArgs) Handles HullSplitter.DragCompleted
         If HullColumn.ActualWidth <= 175 Then
@@ -58,11 +70,12 @@ Public Partial Class LoadoutWorkbench
         LabShieldDps.Text = LoadoutDetails.Number(damage.ShieldDps)
         LabArmorDps.Text = LoadoutDetails.Number(damage.ArmorDps)
         LabHullDps.Text = LoadoutDetails.Number(damage.HullDps)
-        LabDamageBasis.Text = "非导弹连射火力（含内置）· 幅伤比 " & LoadoutDetails.Ratio(damage.FluxPerDamage) & " 幅能/伤害"
+        LabDamageBasis.Text = "幅伤比 " & LoadoutDetails.Ratio(damage.FluxPerDamage) & " · 非导弹（含内置）· 理论值"
         LabDamageBasis.ToolTip = "按游戏伤害类型倍率加权；不含目标盾效、装甲减伤、命中率和技能/船插脚本。DPS 来自表值或单发、射速估算；有限弹药为耗尽前连射值。"
         If damage.UnknownDamageWeapons + damage.MissingWeapons > 0 Then LabDamageBasis.Text &= " · " & (damage.UnknownDamageWeapons + damage.MissingWeapons) & " 项数据未知未计入"
         If damage.EstimatedWeapons > 0 Then LabDamageBasis.Text &= " · " & damage.EstimatedWeapons & " 项按射速估算"
-        LabHullStats.Text = "基础舰船数据" & vbCrLf & LoadoutDetails.HullOverview(_hull)
+        LabHullStats.Text = LoadoutDetails.HullOverview(_hull)
+        RefreshDeployment()
         RefreshInstalledHullMods()
     End Sub
     Private Sub BindHullDetails()
@@ -95,17 +108,20 @@ Public Partial Class LoadoutWorkbench
     Private Sub HullModSearchChanged(sender As Object, e As TextChangedEventArgs) Handles BoxHullModSearch.TextChanged
         If _catalog IsNot Nothing Then FilterHullMods()
     End Sub
+    Private Sub HullModKindChanged(sender As Object, e As SelectionChangedEventArgs) Handles HullModKind.SelectionChanged
+        If _catalog IsNot Nothing Then FilterHullMods()
+    End Sub
     Private Sub FilterHullMods()
         Dim selected = TryCast(HullModList.SelectedItem, HullModDefinition)
         Dim search = BoxHullModSearch.Text.Trim()
-        HullModList.ItemsSource = _catalog.HullMods.Where(Function(m) (m.Name & " " & m.Id & " " & m.Source).IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0).ToList()
+        HullModList.ItemsSource = _catalog.HullMods.Where(Function(m) (m.Name & " " & m.Id & " " & m.Source).IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 AndAlso (HullModKind.SelectedIndex = 2 OrElse m.IsDMod = (HullModKind.SelectedIndex = 1))).ToList()
         If selected IsNot Nothing AndAlso HullModList.Items.Contains(selected) Then HullModList.SelectedItem = selected
         UpdateHullModActions()
     End Sub
     Private Sub HullModSelected(sender As Object, e As SelectionChangedEventArgs) Handles HullModList.SelectionChanged
         Dim selected = TryCast(HullModList.SelectedItem, HullModDefinition)
         If selected IsNot Nothing AndAlso _hull IsNot Nothing Then
-            LabHullModDescription.Text = selected.Name & " · 普通 " & selected.Cost(_hull.HullSize) & " OP · 内置 0 OP" & vbCrLf & selected.Description & vbCrLf & "S 插说明：" & If(selected.SModDescription = "", "数据源未提供。", selected.SModDescription)
+            LabHullModDescription.Text = If(selected.IsDMod, selected.Name & " · D 插 · 0 OP" & vbCrLf & selected.Description, selected.Name & " · 普通 " & selected.Cost(_hull.HullSize) & " OP · 内置 0 OP" & vbCrLf & selected.Description & vbCrLf & "S 插说明：" & If(selected.SModDescription = "", "数据源未提供。", selected.SModDescription))
             If LabHullModDescription.Text.Contains("{%s}") Then LabHullModDescription.Text &= vbCrLf & "{%s} 为游戏脚本动态参数，保留原模板。"
         End If
         UpdateHullModActions()
@@ -115,8 +131,9 @@ Public Partial Class LoadoutWorkbench
     End Sub
     Private Sub UpdateHullModActions()
         Dim selected = TryCast(HullModList.SelectedItem, HullModDefinition)
-        BtnHullModNormal.IsEnabled = selected IsNot Nothing AndAlso _hull IsNot Nothing AndAlso Not _hull.BuiltInHullMods.Contains(selected.Id)
-        BtnHullModBuiltIn.IsEnabled = selected IsNot Nothing AndAlso _hull IsNot Nothing
+        BtnHullModNormal.IsEnabled = selected IsNot Nothing AndAlso Not selected.IsDMod AndAlso _hull IsNot Nothing AndAlso Not _hull.BuiltInHullMods.Contains(selected.Id)
+        BtnHullModBuiltIn.IsEnabled = selected IsNot Nothing AndAlso Not selected.IsDMod AndAlso _hull IsNot Nothing
+        BtnHullModD.IsEnabled = selected IsNot Nothing AndAlso selected.IsDMod AndAlso _hull IsNot Nothing AndAlso Not _hull.BuiltInHullMods.Contains(selected.Id)
         Dim installed = TryCast(InstalledHullModList.SelectedItem, ListBoxItem)
         BtnHullModRemove.IsEnabled = installed IsNot Nothing AndAlso _hull IsNot Nothing AndAlso (Not _hull.BuiltInHullMods.Contains(CStr(installed.Tag)) OrElse _plan.SModdedBuiltIns.Contains(CStr(installed.Tag)))
     End Sub
@@ -124,15 +141,15 @@ Public Partial Class LoadoutWorkbench
         Dim selected = TryCast(InstalledHullModList.SelectedItem, ListBoxItem)
         Dim id = If(selected Is Nothing, "", CStr(selected.Tag))
         InstalledHullModList.Items.Clear()
-        For Each modId In _hull.BuiltInHullMods.Concat(_plan.HullMods).Concat(_plan.PermaMods).Distinct().OrderBy(Function(s) s)
+        For Each modId In _hull.BuiltInHullMods.Concat(_plan.HullMods).Concat(_plan.PermaMods).Concat(_plan.DMods).Distinct().OrderBy(Function(s) s)
             Dim definition = _catalog.HullMods.FirstOrDefault(Function(m) m.Id = modId)
             Dim native = _hull.BuiltInHullMods.Contains(modId)
-            Dim mode = If(native, If(_plan.SModdedBuiltIns.Contains(modId), "船体原生 · S 强化", "船体原生"), If(_plan.PermaMods.Contains(modId), If(_plan.SMods.Contains(modId), "内置/S 插", "永久内置"), "普通"))
+            Dim mode = If(native, If(_plan.SModdedBuiltIns.Contains(modId), "船体原生 · S 强化", "船体原生"), If(_plan.DMods.Contains(modId), "D 插", If(_plan.PermaMods.Contains(modId), If(_plan.SMods.Contains(modId), "内置/S 插", "永久内置"), "普通")))
             Dim row As New ListBoxItem With {.Tag = modId, .Content = "[" & mode & "] " & If(definition Is Nothing, modId, definition.Name), .ToolTip = modId}
             InstalledHullModList.Items.Add(row)
             If modId = id Then InstalledHullModList.SelectedItem = row
         Next
-        LabHullModCount.Text = "普通 " & _plan.HullMods.Count & " · 新增内置 " & _plan.PermaMods.Count & "（无上限）· 原生 " & _hull.BuiltInHullMods.Count & vbCrLf & "原生船插由船体定义保留，可添加或移除其 S 强化。"
+        LabHullModCount.Text = "普通 " & _plan.HullMods.Count & " · 内置 " & _plan.PermaMods.Count & "（无上限）· D 插 " & LoadoutInspection.DModCount(_hull, _plan, _catalog.HullMods) & vbCrLf & "原生船插保留；部署减免按技能开关预览。"
         UpdateHullModActions()
     End Sub
     Private Sub InstallHullModNormal(sender As Object, e As RoutedEventArgs) Handles BtnHullModNormal.Click
@@ -143,7 +160,7 @@ Public Partial Class LoadoutWorkbench
     End Sub
     Private Sub ChangeHullMod(builtIn As Boolean)
         Dim selected = TryCast(HullModList.SelectedItem, HullModDefinition)
-        If selected Is Nothing OrElse _hull Is Nothing Then Return
+        If selected Is Nothing OrElse selected.IsDMod OrElse _hull Is Nothing Then Return
         Dim proposal = LoadoutRules.Copy(_plan)
         If _hull.BuiltInHullMods.Contains(selected.Id) Then
             If Not builtIn Then Return
@@ -163,6 +180,13 @@ Public Partial Class LoadoutWorkbench
         Remember() : _plan = proposal
         RefreshPlan()
     End Sub
+    Private Sub AddDMod(sender As Object, e As RoutedEventArgs) Handles BtnHullModD.Click
+        Dim selected = TryCast(HullModList.SelectedItem, HullModDefinition)
+        If selected Is Nothing OrElse Not selected.IsDMod OrElse _hull Is Nothing OrElse _hull.BuiltInHullMods.Contains(selected.Id) OrElse _plan.DMods.Contains(selected.Id) Then Return
+        Remember()
+        _plan.DMods.Add(selected.Id)
+        RefreshPlan()
+    End Sub
     Private Sub RemoveHullMod(sender As Object, e As RoutedEventArgs) Handles BtnHullModRemove.Click
         Dim selected = TryCast(InstalledHullModList.SelectedItem, ListBoxItem)
         If selected Is Nothing Then Return
@@ -170,6 +194,7 @@ Public Partial Class LoadoutWorkbench
         If _hull.BuiltInHullMods.Contains(id) AndAlso Not _plan.SModdedBuiltIns.Contains(id) Then Return
         Remember()
         _plan.HullMods.Remove(id) : _plan.PermaMods.Remove(id) : _plan.SMods.Remove(id) : _plan.SModdedBuiltIns.Remove(id)
+        _plan.DMods.Remove(id)
         RefreshPlan()
     End Sub
 End Class
