@@ -1,4 +1,4 @@
-Public Class PageStarsectorSettings
+﻿Public Class PageStarsectorSettings
 
     Private _loading As Boolean = False
     Private _ramTimer As System.Windows.Threading.DispatcherTimer
@@ -219,10 +219,10 @@ RamDone:
         End Try
     End Sub
 
-    Private Sub BtnOpenModPool_Click(sender As Object, e As MouseButtonEventArgs) Handles BtnOpenModPool.Click
+    Private Sub BtnOpenSharedMods_Click(sender As Object, e As MouseButtonEventArgs) Handles BtnOpenSharedMods.Click
         Try
-            IO.Directory.CreateDirectory(ModMain.ModPoolDir())
-            Process.Start(New ProcessStartInfo(ModMain.ModPoolDir()) With {.UseShellExecute = True})
+            IO.Directory.CreateDirectory(ModMain.SharedModsDir())
+            Process.Start(New ProcessStartInfo(ModMain.SharedModsDir()) With {.UseShellExecute = True})
         Catch ex As Exception
             MsgBox("打开失败：" & ex.Message, MsgBoxStyle.Exclamation, "错误")
         End Try

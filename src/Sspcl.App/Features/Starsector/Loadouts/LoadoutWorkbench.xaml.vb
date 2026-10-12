@@ -5,6 +5,7 @@ Imports Sspcl.Core.Loadouts
 
 Public Partial Class LoadoutWorkbench
     Private ReadOnly _gamePath As String
+    Private ReadOnly _enabledIds As List(Of String)
     Private _catalog As LoadoutCatalog
     Private _hull As HullDefinition
     Private _slot As WeaponSlot
@@ -20,6 +21,9 @@ Public Partial Class LoadoutWorkbench
     Private _closed As Boolean
 
     Public Sub New(gamePath As String)
+        Me.New(gamePath, Nothing)
+    End Sub
+    Public Sub New(gamePath As String, enabledIds As IEnumerable(Of String))
         InitializeComponent()
         InitializeInspection()
         Dim workArea = SystemParameters.WorkArea
@@ -28,6 +32,7 @@ Public Partial Class LoadoutWorkbench
         MinWidth = Math.Min(1080, Width) : MinHeight = Math.Min(740, Height)
         If Width < 1200 Then SetHullSidebar(False)
         _gamePath = gamePath
+        _enabledIds = If(enabledIds Is Nothing, Nothing, enabledIds.ToList())
         Try
             Dim protectedKey = Settings.Get(Of String)("StarsectorAiApiKeyProtected")
             If protectedKey <> "" Then
@@ -59,7 +64,7 @@ Public Partial Class LoadoutWorkbench
         BtnReload.IsEnabled = False
         LabStatus.Text = "读取船体、皮肤、武器和启用的 MOD…"
         Try
-            Dim catalog = Await Task.Run(Function() LoadoutCatalogReader.Read(_gamePath, source.Token), source.Token)
+            Dim catalog = Await Task.Run(Function() LoadoutCatalogReader.ReadSelection(_gamePath, source.Token, _enabledIds), source.Token)
             If _closed OrElse source.IsCancellationRequested Then Return
             ApplyCatalog(catalog)
         Catch ex As OperationCanceledException

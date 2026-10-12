@@ -13,11 +13,13 @@ public static class LoadoutCatalogReader
         public Root(string path, string name) { Path = path; Name = name; }
     }
     public static LoadoutCatalog Read(string gamePath, CancellationToken token = default)
+        => ReadSelection(gamePath, token, null);
+    public static LoadoutCatalog ReadSelection(string gamePath, CancellationToken token, IEnumerable<string>? enabledIds)
     {
         var catalog = new LoadoutCatalog { GamePath = Path.GetFullPath(gamePath) };
         var roots = new List<Root> { new(Path.Combine(catalog.GamePath, "starsector-core"), "原版") };
         var mods = ModScanner.Scan(Path.Combine(gamePath, "mods")).Where(m => m.Id.Length > 0).GroupBy(m => m.Id, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
-        foreach (string id in EnabledModsFile.Read(gamePath).Distinct(StringComparer.Ordinal))
+        foreach (string id in (enabledIds ?? EnabledModsFile.Read(gamePath)).Distinct(StringComparer.Ordinal))
             if (mods.TryGetValue(id, out var mod)) roots.Add(new Root(mod.Path, mod.Name));
         var hullStats = new Dictionary<string, Dictionary<string, string>>(StringComparer.Ordinal);
         var weaponStats = new Dictionary<string, Dictionary<string, string>>(StringComparer.Ordinal);

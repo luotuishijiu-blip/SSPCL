@@ -34,7 +34,7 @@ public sealed class PackManifest
 public static class ModpackExporter
 {
     internal static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
-    public static string Export(string installPath, string outZipPath, string packName, ExportOptions opts, CancellationToken token = default)
+    public static string Export(string installPath, string outZipPath, string packName, ExportOptions opts, CancellationToken token = default, IEnumerable<string>? enabledIds = null, string? profilePayload = null)
     {
         var installation = InstallationDetector.Detect(installPath);
         if (!installation.IsValid) throw new InvalidOperationException("请选择有效的游戏目录。");
@@ -46,7 +46,7 @@ public static class ModpackExporter
         if (opts.IncludeModList)
         {
             var mods = ModScanner.Scan(Path.Combine(installPath, "mods"));
-            manifest.Mods = EnabledModsFile.Read(installPath).Distinct().Select(id => {
+            manifest.Mods = (enabledIds ?? EnabledModsFile.Read(installPath)).Distinct().Select(id => {
                 var mod = mods.FirstOrDefault(m => m.Id == id);
                 return new PackModReference { Id = id, Name = mod?.Name ?? id, Version = mod?.VersionRaw ?? "" };
             }).ToList();
@@ -64,10 +64,11 @@ public static class ModpackExporter
                     writer.Write(JsonSerializer.Serialize(manifest, JsonOptions));
                 if (opts.IncludeGameSettings)
                 {
-                    AddFile(zip, Path.Combine(installPath, "starsector-core/data/config/settings.json"), "settings/settings.json", token);
+                    string settings = profilePayload != null && File.Exists(Path.Combine(profilePayload, "settings/settings.json")) ? Path.Combine(profilePayload, "settings/settings.json") : Path.Combine(installPath, "starsector-core/data/config/settings.json");
+                    AddFile(zip, settings, "settings/settings.json", token);
                     foreach (var folder in new[] { "config", "LunaSettings" })
                     {
-                        string root = Path.Combine(installPath, "saves/common", folder);
+                        string root = profilePayload != null && Directory.Exists(Path.Combine(profilePayload, "settings/common", folder)) ? Path.Combine(profilePayload, "settings/common", folder) : Path.Combine(installPath, "saves/common", folder);
                         if (!Directory.Exists(root)) continue;
                         foreach (var file in PackFiles.Enumerate(root))
                         {
@@ -76,8 +77,9 @@ public static class ModpackExporter
                         }
                     }
                 }
-                if (opts.IncludeSaves && Directory.Exists(Path.Combine(installPath, "saves")))
-                    foreach (var save in Directory.EnumerateDirectories(Path.Combine(installPath, "saves")))
+                string saveRoot = profilePayload != null && Directory.Exists(Path.Combine(profilePayload, "saves")) ? Path.Combine(profilePayload, "saves") : Path.Combine(installPath, "saves");
+                if (opts.IncludeSaves && Directory.Exists(saveRoot))
+                    foreach (var save in Directory.EnumerateDirectories(saveRoot))
                     {
                         if (!File.Exists(Path.Combine(save, "descriptor.xml"))) continue;
                         foreach (var file in PackFiles.Enumerate(save))

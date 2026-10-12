@@ -1,4 +1,4 @@
-Imports Sspcl.Core.Store.Forum
+﻿Imports Sspcl.Core.Store.Forum
 Imports Sspcl.Core.Mods
 Imports System.Collections.ObjectModel
 Imports System.ComponentModel
@@ -188,24 +188,29 @@ Public Class PageStarsectorDownload
             ElseIf duplicate Then
                 LabDownloadHint.Text = "此发布包正在处理，请在下载任务中查看进度或取消。"
             Else
-                LabDownloadHint.Text = "请核对版本和文件名。下载到 MOD 池会更新池内同 ID 的旧版；补丁或附加文件请保存压缩包。"
+                LabDownloadHint.Text = "请核对版本和文件名。下载到共享 MOD 目录会更新目录内同 ID 的旧版；补丁或附加文件请保存压缩包。"
             End If
         End If
     End Sub
 
     Private Async Sub ImportArchive_Click(sender As Object, e As RoutedEventArgs)
+        Try
         Dim dialog As New Microsoft.Win32.OpenFileDialog With {
             .Title = "导入已下载 MOD 压缩包", .Filter = "MOD 压缩包|*.zip;*.rar;*.7z", .Multiselect = True, .CheckFileExists = True
         }
         If dialog.ShowDialog() <> True Then Return
-        Await ImportArchivesAsync(dialog.FileNames, ModMain.ModPoolDir())
+        Await ModMain.EnsureSharedModsAsync()
+        Await ImportArchivesAsync(dialog.FileNames, ModMain.SharedModsDir())
+        Catch ex As Exception
+            LabDownloadHint.Text = "导入失败：" & ex.Message
+        End Try
     End Sub
 
     Private Async Function ImportArchivesAsync(paths As String(), target As String) As Task
         BtnImportArchive.IsEnabled = False
         Try
             For Each path In paths
-                Dim job As New DownloadTaskItem With {.Title = "本地导入 · " & IO.Path.GetFileName(path), .Status = "等待安装到 MOD 池…"}
+                Dim job As New DownloadTaskItem With {.Title = "本地导入 · " & IO.Path.GetFileName(path), .Status = "等待安装到共享 MOD 目录…"}
                 _downloads.Add(job)
                 TaskList.ItemsSource = _downloads
                 RefreshTaskSummary()
@@ -214,8 +219,9 @@ Public Class PageStarsectorDownload
                     Await InstallGate.WaitAsync(job.Cancellation.Token)
                     entered = True
                     job.Cancellation.Token.ThrowIfCancellationRequested()
+                    If Sspcl.Core.Launch.GameMemoryMonitor.Read(ModMain.StarsectorPath).ProcessCount > 0 Then Throw New InvalidOperationException("请关闭游戏后安装到共享 MOD 目录。")
                     job.CanCancel = False
-                    job.Status = "正在导入到 MOD 池…"
+                    job.Status = "正在导入到共享 MOD 目录…"
                     job.Notify()
                     Dim result = Await Task.Run(Function() ModInstaller.InstallArchive(path, target))
                     If result.Success Then
@@ -244,21 +250,29 @@ Public Class PageStarsectorDownload
             BtnImportArchive.IsEnabled = True
         End Try
     End Function
+    Public Function HasActiveTransfers() As Boolean
+        Return _downloads.Any(Function(job) job.Active)
+    End Function
 
     Private Async Sub Download_Click(sender As Object, e As RoutedEventArgs)
+        Try
         Await DownloadSelectedAsync(True)
+        Catch ex As Exception
+            LabDownloadHint.Text = "无法安装到共享目录：" & ex.Message
+        End Try
     End Sub
 
     Private Async Sub SaveArchive_Click(sender As Object, e As RoutedEventArgs)
         Await DownloadSelectedAsync(False)
     End Sub
 
-    Private Async Function DownloadSelectedAsync(installToPool As Boolean) As Task
+    Private Async Function DownloadSelectedAsync(installToShared As Boolean) As Task
+        If installToShared Then Await ModMain.EnsureSharedModsAsync()
         Dim modInfo = TryCast(ModList.SelectedItem, ForumMod)
         Dim selected = TryCast(BoxRelease.SelectedItem, ReleaseOption)
         If modInfo Is Nothing OrElse selected Is Nothing OrElse Not BtnDownload.IsEnabled Then Return
         Dim savePath As String = Nothing
-        If Not installToPool Then
+        If Not installToShared Then
             savePath = ChooseArchivePath(selected.Release)
             If savePath Is Nothing Then Return
         End If
@@ -286,7 +300,7 @@ Public Class PageStarsectorDownload
             job.Cancellation.Token.ThrowIfCancellationRequested()
             job.Indeterminate = False
             job.Percent = 100
-            If Not installToPool Then
+            If Not installToShared Then
                 job.Status = "正在保存文件…"
                 job.CanCancel = False
                 job.Notify()
@@ -294,15 +308,16 @@ Public Class PageStarsectorDownload
                 Await Task.Run(Sub() IO.File.Copy(archive.Path, destination, True))
                 job.Status = "已保存：" & destination
             Else
-                job.Status = "等待安装到 MOD 池…"
+                job.Status = "等待安装到共享 MOD 目录…"
                 job.Notify()
                 Await InstallGate.WaitAsync(job.Cancellation.Token)
                 Try
                     job.Cancellation.Token.ThrowIfCancellationRequested()
+                    If Sspcl.Core.Launch.GameMemoryMonitor.Read(ModMain.StarsectorPath).ProcessCount > 0 Then Throw New InvalidOperationException("请关闭游戏后安装到共享 MOD 目录。")
                     job.CanCancel = False
-                    job.Status = "正在安装到 MOD 池…"
+                    job.Status = "正在安装到共享 MOD 目录…"
                     job.Notify()
-                    Dim target = ModMain.ModPoolDir()
+                    Dim target = ModMain.SharedModsDir()
                     Dim result = Await Task.Run(Function() ModInstaller.InstallArchive(archive.Path, target))
                     If Not result.Success Then
                         If result.Error.Contains("mod_info.json") Then

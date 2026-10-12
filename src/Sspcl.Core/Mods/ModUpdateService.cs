@@ -16,7 +16,7 @@ public static class ModUpdateService
     }
 
     /// <summary>先验证并暂存完整新包，再替换旧目录；成功后删除旧版，失败恢复。</summary>
-    public static InstallResult UpdateArchive(string archivePath, string expectedId, string poolDir, string gameDir)
+    public static InstallResult UpdateArchive(string archivePath, string expectedId, string poolDir, string gameDir, bool enforceGameVersion = true)
     {
         var result = new InstallResult();
         string unpacked = Path.Combine(Path.GetTempPath(), "sspcl-update-" + Guid.NewGuid().ToString("N"));
@@ -39,7 +39,7 @@ public static class ModUpdateService
                 if (previous != null) replacement = replacement with { Folder = previous.Folder };
             }
             string gameVersion = InstallationDetector.Detect(gameDir).Version;
-            if (!IsCompatible(replacement.GameVersionRaw, gameVersion))
+            if (enforceGameVersion && !IsCompatible(replacement.GameVersionRaw, gameVersion))
                 throw new InvalidDataException("更新包适配游戏版本 " + replacement.GameVersionRaw + "，当前游戏为 " + gameVersion + "，已保留旧版 MOD。");
             foreach (string jar in replacement.Jars)
             {

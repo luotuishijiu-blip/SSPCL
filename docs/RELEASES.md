@@ -4,6 +4,12 @@
 
 ## 最新版
 
+[2026-10-12：共享 MOD 与启用方案](https://github.com/luotuishijiu-blip/SSPCL/releases/tag/build-20261012-mod-profiles)
+
+下载 `sspcl-mod-profiles-20261012.zip`，解压运行 `Sspcl.exe`，无需管理员权限。取消 MOD 池，统一使用游戏 `mods`；勾选暂存，保存时添加新版本或替换已有版本，版本选择改为选择已保存启用方案。旧清单自动迁移，旧源文件保留。详细范围见 [方案说明](MOD_PROFILES.md)。
+
+## 装配筛选与对比版
+
 [2026-10-10：装配工坊筛选、对比与 D 插](https://github.com/luotuishijiu-blip/SSPCL/releases/tag/build-20261010-loadout-inspection)
 
 下载 `sspcl-loadout-inspection-20261010.zip`，解压运行 `Sspcl.exe`，无需管理员权限。上方数据面板更宽、更矮，下方武器列表扩大并固定操作按钮；新增悬停详情、A/B 对比、组合筛选及 D 插导入/导出。修正基础部署点字段，废船行动技能预览按每项 D 插减免 6%、最多 5 项计算。修复中文环境部分原版武器读取失败。详见 [装配说明](LOADOUTS.md)。

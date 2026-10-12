@@ -1,4 +1,4 @@
-Imports Sspcl.Core.Mods
+﻿Imports Sspcl.Core.Mods
 Imports Sspcl.Core.Launch
 Imports Sspcl.Core.Store.Forum
 
@@ -8,6 +8,14 @@ Public Class PageStarsectorInstanceRight
     Private _enabled As HashSet(Of String)
     Private _loading As Boolean = False
     Private _modOperation As Boolean = False
+    Private _draftDirty As Boolean
+    Private _draftProfile As String
+    Public Function ConfirmDiscardDraft() As Boolean
+        If _modOperation OrElse _loading Then Return False
+        If Not _draftDirty Then Return True
+        If MessageBox.Show("MOD 勾选尚未保存，是否丢弃修改并切换？", "未保存的方案", MessageBoxButton.YesNo) <> MessageBoxResult.Yes Then Return False
+        _draftDirty = False : Return True
+    End Function
     Private ReadOnly _modBoxes As New List(Of MyCheckBox)
     Private ReadOnly _memoryTimer As New System.Windows.Threading.DispatcherTimer With {.Interval = TimeSpan.FromSeconds(2)}
     Private _readingMemory As Boolean
@@ -118,14 +126,19 @@ Public Class PageStarsectorInstanceRight
         End If
     End Sub
 
-    Private Sub LoadMods()
-        If _modOperation Then Return
+    Private Async Sub LoadMods()
+        If _modOperation OrElse _loading Then Return
         _loading = True
         PanModList.Children.Clear()
         _modBoxes.Clear()
         Try
-            _mods = ModStarsector.ScanMods(ModStarsector.ModsDir(ModMain.StarsectorPath)).Concat(ModStarsector.ScanMods(ModMain.ModPoolDir())).Where(Function(m) Not String.IsNullOrWhiteSpace(m.Id)).GroupBy(Function(m) m.Id).Select(Function(group) group.First()).ToList()
-            _enabled = New HashSet(Of String)(ModStarsector.ReadEnabled(ModMain.StarsectorPath))
+            Await ModMain.EnsureSharedModsAsync()
+            Dim directory = ModMain.SharedModsDir()
+            _mods = Await Task.Run(Function() ModStarsector.ScanMods(directory).Where(Function(m) Not String.IsNullOrWhiteSpace(m.Id)).GroupBy(Function(m) m.Id).Select(Function(group) group.First()).ToList())
+            If Not _draftDirty OrElse _draftProfile <> ModMain.ActiveProfileId Then
+                _enabled = New HashSet(Of String)(If(ModMain.ActiveProfileId = "", ModStarsector.ReadEnabled(ModMain.StarsectorPath), ModMain.ProfileStore().Read(ModMain.ActiveProfileId).EnabledMods))
+                _draftProfile = ModMain.ActiveProfileId : _draftDirty = False
+            End If
             Dim ok = 0
             For Each m In _mods
                 If String.IsNullOrWhiteSpace(m.Id) Then Continue For
@@ -150,11 +163,12 @@ Public Class PageStarsectorInstanceRight
                 row.Children.Add(actions) : row.Children.Add(box)
                 PanModList.Children.Add(row)
             Next
-            If ok = 0 Then
-                LabModSummary.Text = "mod 池为空——请到「下载」页下载 mod，或在「设置 → 其他」点「打开 mod 池」手动放入。"
-            Else
-                LabModSummary.Text = "共 " & ok & " 个 MOD（游戏目录与 MOD 池）。勾选即启用，前置依赖自动勾选；更新只覆盖适配当前游戏的完整包。"
-            End If
+            For Each id In _enabled.Where(Function(value) Not _mods.Any(Function(m) m.Id = value)).ToList()
+                Dim box As New MyCheckBox With {.Text = "缺失 MOD · " & id, .Tag = id, .Checked = True, .Margin = New Thickness(0, 0, 0, 8)}
+                AddHandler box.Change, AddressOf ModCheck_Changed
+                _modBoxes.Add(box) : PanModList.Children.Add(box)
+            Next
+            LabModSummary.Text = "共享目录共 " & ok & " 个 MOD。勾选仅暂存，保存时选择添加新版本或替换已有版本。" & If(_draftDirty, " 当前有未保存修改。", "")
         Catch ex As Exception
             LabModSummary.Text = "扫描失败：" & ex.Message
         Finally
@@ -162,7 +176,7 @@ Public Class PageStarsectorInstanceRight
         End Try
     End Sub
 
-    Private Async Sub ModCheck_Changed(sender As Object, user As Boolean)
+    Private Sub ModCheck_Changed(sender As Object, user As Boolean)
         If _loading OrElse _modOperation OrElse Not user Then Return
         Dim box = TryCast(sender, MyCheckBox)
         If box Is Nothing Then Return
@@ -170,36 +184,53 @@ Public Class PageStarsectorInstanceRight
         If id = "" Then Return
         Dim desired As New HashSet(Of String)(_enabled)
         If box.Checked Then desired.Add(id) Else desired.Remove(id)
-        Dim gamePath = ModMain.StarsectorPath
-        Dim pool = _mods.ToList()
-        _modOperation = True
-        PanModList.IsEnabled = False
-        LabModSummary.Text = "正在后台应用 MOD 选择…"
-        Dim entered As Boolean = False
-        Try
-            Await PageStarsectorDownload.WaitForInstallAsync(CancellationToken.None)
-            entered = True
-            _enabled = Await Task.Run(Function() ModActivationService.Apply(gamePath, pool, desired))
-            LabModSummary.Text = "已保存 MOD 选择。前置依赖自动启用；停用保留文件，再次启用无需重复复制。"
-            If Not box.Checked AndAlso _enabled.Contains(id) Then LabModSummary.Text &= " 该 MOD 是其他已启用 MOD 的前置，因此仍保持启用。"
-        Catch ex As Exception
-            LabModSummary.Text = "应用 MOD 选择失败：" & ex.Message
-        Finally
-            If entered Then PageStarsectorDownload.ReleaseInstall()
-            _loading = True
-            For Each cb In _modBoxes
-                If cb.Tag IsNot Nothing Then cb.Checked = _enabled.Contains(cb.Tag.ToString())
-            Next
-            _loading = False
-            _modOperation = False
-            PanModList.IsEnabled = True
-            If Not String.Equals(gamePath, ModMain.StarsectorPath, StringComparison.OrdinalIgnoreCase) Then LoadMods()
-        End Try
+        _enabled = ModProfileStore.ResolveSelection(desired, _mods) : _draftDirty = True
+        _loading = True
+        For Each cb In _modBoxes
+            cb.Checked = _enabled.Contains(CStr(cb.Tag))
+        Next
+        _loading = False
+        LabModSummary.Text = "已暂存 " & _enabled.Count & " 项选择，尚未保存。前置依赖自动勾选。"
     End Sub
 
     Private Async Sub OnlineUpdate_Click(sender As Object, e As RoutedEventArgs)
         Dim current = TryCast(DirectCast(sender, Button).Tag, ModSpec)
         If current IsNot Nothing Then Await UpdateModAsync(current, Nothing)
+    End Sub
+
+    Private Sub SaveMods(sender As Object, e As MouseButtonEventArgs) Handles BtnSaveMods.Click
+        If _modOperation OrElse _loading OrElse _enabled Is Nothing Then Return
+        Try
+            Dim store = ModMain.ProfileStore(), profiles = store.List()
+            Dim window As New Window With {.Title = "保存 MOD 启用方案", .Width = 480, .SizeToContent = SizeToContent.Height, .WindowStartupLocation = WindowStartupLocation.CenterOwner, .Owner = ModMain.FrmMain, .ResizeMode = ResizeMode.NoResize}
+            Dim panel As New StackPanel With {.Margin = New Thickness(22)}
+            panel.Children.Add(New TextBlock With {.Text = "版本只保存启用清单，共用游戏与 MOD 文件。", .TextWrapping = TextWrapping.Wrap})
+            Dim name As New TextBox With {.Text = If(_draftProfile = "", "我的 MOD 方案", store.Read(_draftProfile).Name), .Margin = New Thickness(0, 12, 0, 12), .Padding = New Thickness(8)}
+            panel.Children.Add(New TextBlock With {.Text = "方案名字", .Margin = New Thickness(0, 12, 0, 0)}) : panel.Children.Add(name)
+            Dim target As New ComboBox With {.ItemsSource = profiles, .DisplayMemberPath = "Name", .SelectedItem = profiles.FirstOrDefault(Function(p) p.Id = _draftProfile), .Margin = New Thickness(0, 8, 0, 12)}
+            panel.Children.Add(New TextBlock With {.Text = "替换目标（添加新版本时忽略）"}) : panel.Children.Add(target)
+            Dim actions As New WrapPanel, replacement As String = Nothing
+            Dim add As New Button With {.Content = "添加新版本", .Padding = New Thickness(10, 6, 10, 6)}
+            Dim replace As New Button With {.Content = "替换现有版本", .Padding = New Thickness(10, 6, 10, 6), .Margin = New Thickness(8, 0, 0, 0), .IsEnabled = profiles.Count > 0}
+            Dim cancel As New Button With {.Content = "取消", .Padding = New Thickness(10, 6, 10, 6), .Margin = New Thickness(8, 0, 0, 0)}
+            AddHandler add.Click, Sub() window.DialogResult = True
+            AddHandler replace.Click, Sub()
+                Dim chosen = TryCast(target.SelectedItem, ModProfile)
+                If chosen Is Nothing Then Return
+                replacement = chosen.Id : window.DialogResult = True
+            End Sub
+            AddHandler cancel.Click, Sub() window.DialogResult = False
+            actions.Children.Add(add) : actions.Children.Add(replace) : actions.Children.Add(cancel)
+            panel.Children.Add(actions) : window.Content = panel
+            If window.ShowDialog() <> True Then Return
+            Dim profile = store.Save(name.Text, ModProfileStore.ResolveSelection(_enabled, _mods), replacement)
+            ModMain.ActiveProfileId = profile.Id : _draftProfile = profile.Id : _draftDirty = False
+            LabModSummary.Text = "已保存「" & profile.Name & "」，下次启动使用此清单。MOD 文件未复制。"
+            If ModMain.FrmStarsectorSelectRight IsNot Nothing Then ModMain.FrmStarsectorSelectRight.RefreshCards()
+            If ModMain.FrmStarsectorLeft IsNot Nothing Then CType(ModMain.FrmStarsectorLeft, PageStarsectorLeft).RefreshInfo()
+        Catch ex As Exception
+            LabModSummary.Text = "保存失败：" & ex.Message
+        End Try
     End Sub
 
     Private Async Sub LocalUpdate_Click(sender As Object, e As RoutedEventArgs)
@@ -228,7 +259,7 @@ Public Class PageStarsectorInstanceRight
         _modOperation = True
         PanModList.IsEnabled = False
         Dim gamePath = ModMain.StarsectorPath
-        Dim poolPath = ModMain.ModPoolDir()
+        Dim sharedPath = ModMain.SharedModsDir()
         Dim downloaded As DownloadedModArchive = Nothing
         Dim entered As Boolean = False
         Dim receiving As Boolean = False
@@ -281,7 +312,7 @@ Public Class PageStarsectorInstanceRight
                     Return
                 End If
                 BtnCancelUpdate.IsEnabled = False
-                Dim result = Await Task.Run(Function() ModUpdateService.UpdateArchive(path, current.Id, poolPath, gamePath))
+                Dim result = Await Task.Run(Function() ModUpdateService.UpdateArchive(path, current.Id, sharedPath, gamePath, False))
                 finalStatus = If(result.Success, "已更新：" & result.Name & "。旧目录已完整替换，启用状态保持不变。" & If(String.IsNullOrWhiteSpace(result.Error), "", vbCrLf & result.Error), "更新失败：" & result.Error)
             Catch ex As OperationCanceledException When cancellation.IsCancellationRequested
                 finalStatus = "更新下载已取消，旧版 MOD 保持不变。"
@@ -318,7 +349,7 @@ Public Class PageStarsectorInstanceRight
 
     Private Sub BtnExportClip_Click(sender As Object, e As MouseButtonEventArgs) Handles BtnExportClip.Click
         Try
-            Dim ids = ModStarsector.ReadEnabled(ModMain.StarsectorPath)
+            Dim ids = ModMain.SelectedModIds()
             Clipboard.SetText(String.Join(Environment.NewLine, ids))
             MsgBox("已复制 " & ids.Count & " 个 mod id 到剪贴板", MsgBoxStyle.Information, "导出")
         Catch ex As Exception

@@ -1,4 +1,4 @@
-Imports Sspcl.Core.Modpack
+﻿Imports Sspcl.Core.Modpack
 Imports System.Windows.Media
 
 Public Class PageStarsectorSelectRight
@@ -9,22 +9,35 @@ Public Class PageStarsectorSelectRight
         RefreshCards()
     End Sub
 
-    Public Sub AddFolder()
-        Dim path As String
-        Using dialog As New System.Windows.Forms.FolderBrowserDialog With {.Description = "选择远行星号安装目录"}
+    Public Async Sub AddFolder()
+        If TypeOf ModMain.FrmStarsectorDownload Is PageStarsectorDownload AndAlso DirectCast(ModMain.FrmStarsectorDownload, PageStarsectorDownload).HasActiveTransfers() Then
+            _status.Text = "请等待下载与安装完成，或取消任务后更换共享目录。" : Return
+        End If
+        ModMain.InitializeSharedProfiles()
+        If ModMain.FrmStarsectorInstanceRight IsNot Nothing AndAlso Not ModMain.FrmStarsectorInstanceRight.ConfirmDiscardDraft() Then Return
+        Using dialog As New System.Windows.Forms.FolderBrowserDialog With {.Description = "选择统一维护的远行星号游戏目录"}
+            Try
             If dialog.ShowDialog() <> System.Windows.Forms.DialogResult.OK Then Return
-            path = dialog.SelectedPath
-        End Using
-        If Not ModStarsector.Detect(path).IsValid Then
-            _status.Text = "此文件夹不是有效的远行星号安装目录。" : Return
-        End If
-        If Not ModMain.StarsectorPaths.Contains(path) Then
-            ModMain.StarsectorPaths.Add(path)
+            Dim path = dialog.SelectedPath
+            If Not ModStarsector.Detect(path).IsValid Then
+                _status.Text = "请选择有效游戏目录。" : Return
+            End If
+            If Sspcl.Core.Launch.GameMemoryMonitor.Read(ModMain.StarsectorPath).ProcessCount > 0 Then
+                _status.Text = "请关闭游戏后更换共享目录。" : Return
+            End If
+            If Not ModMain.StarsectorPaths.Contains(ModMain.StarsectorPath) Then ModMain.StarsectorPaths.Add(ModMain.StarsectorPath)
+            ModMain.StarsectorPath = path
+            If Not ModMain.StarsectorPaths.Contains(path) Then ModMain.StarsectorPaths.Add(path)
             ModMain.SaveStarsectorPaths()
-        End If
-        ModMain.SelectedFolderPath = path
-        ModMain.FrmStarsectorSelectLeft.RefreshList()
-        RefreshCards()
+            Settings.Set("StarsectorSharedGame", path) : Settings.Set("StarsectorSharedMigration", False)
+            Await ModMain.EnsureSharedModsAsync()
+            If ModMain.ActiveProfileId = "" Then ModMain.ActiveProfileId = ModMain.ProfileStore().Save("默认 MOD 方案", ModStarsector.ReadEnabled(path)).Id
+            _status.Text = "共享游戏目录：" & path & "。所有启用方案共用此目录的 MOD 文件。"
+            RefreshCards()
+            Catch ex As Exception
+                _status.Text = "设置共享目录失败：" & ex.Message
+            End Try
+        End Using
     End Sub
 
     Private _packBusy As Boolean
@@ -35,53 +48,79 @@ Public Class PageStarsectorSelectRight
     Public Const DefaultGameDownloadUrl As String = "https://cdn.fossic.cn/forum/202609/05/014446l82kxv7e16f63953.attach"
 
     Public Sub RefreshCards()
-        If ModMain.StarsectorPaths.Count = 0 Then ModMain.LoadStarsectorPaths()
-        PanMain.Children.Clear()
-        PanMain.Children.Add(_status)
-        PanMain.Children.Add(_gamePanel)
-        For Each path In ModMain.StarsectorPaths.Distinct(StringComparer.OrdinalIgnoreCase).ToList()
-            Dim install = ModStarsector.Detect(path)
-            If Not install.IsValid Then Continue For
-            Dim manifest = Sspcl.Core.Modpack.ModpackImporter.ReadInstalledManifest(path)
-            Dim name = If(manifest Is Nothing OrElse String.IsNullOrWhiteSpace(manifest.Name), IO.Path.GetFileName(path.TrimEnd("\"c)), manifest.Name)
-            Dim isCurrent = String.Equals(path, ModMain.StarsectorPath, StringComparison.OrdinalIgnoreCase)
-            Dim card As New MyCard With {.Title = name, .Margin = New Thickness(0, 0, 0, 12), .ToolTip = path}
-            Dim panel As New StackPanel With {.Margin = New Thickness(20, 38, 20, 18)}
-            panel.Children.Add(New TextBlock With {.Text = "远行星号 " & install.Version & If(manifest Is Nothing, "", " · 整合包实例")})
-            If manifest IsNot Nothing AndAlso manifest.Mods IsNot Nothing Then
-                Dim installed = Sspcl.Core.Mods.ModScanner.Scan(IO.Path.Combine(path, "mods"))
-                Dim missing = manifest.Mods.Where(Function(m) Not installed.Any(Function(local) local.Id = m.Id AndAlso (String.IsNullOrWhiteSpace(m.Version) OrElse local.VersionRaw = m.Version))).ToList()
-                If missing.Count > 0 Then panel.Children.Add(New TextBlock With {.Text = "缺失 MOD（需单独下载）：" & String.Join("、", missing.Select(Function(m) If(String.IsNullOrWhiteSpace(m.Name), m.Id, m.Name))), .TextWrapping = TextWrapping.Wrap, .Margin = New Thickness(0, 6, 0, 0)})
-            End If
-            Dim row As New WrapPanel With {.Margin = New Thickness(0, 10, 0, 0)}
-            Dim useButton As New MyButton With {.Text = If(isCurrent, "正在使用", "使用此版本"), .Padding = New Thickness(12, 5, 12, 5)}
-            If Not isCurrent Then AddHandler useButton.Click, Sub(s, e) UseInstall(path)
-            row.Children.Add(useButton)
-            Dim selectButton As New MyButton With {.Text = "选为导出来源", .Padding = New Thickness(12, 5, 12, 5), .Margin = New Thickness(8, 0, 0, 0)}
-            AddHandler selectButton.Click, Sub(s, e)
-                ModMain.SelectedFolderPath = path
-                _status.Text = "导出来源：" & name
-            End Sub
-            row.Children.Add(selectButton)
-            If Not isCurrent Then
-                Dim removeButton As New MyButton With {.Text = "移除", .Padding = New Thickness(10, 5, 10, 5), .Margin = New Thickness(8, 0, 0, 0)}
-                AddHandler removeButton.Click, Sub(s, e) RemoveInstall(path)
-                row.Children.Add(removeButton)
-            End If
-            panel.Children.Add(row)
-            card.BorderChild = panel
-            PanMain.Children.Add(card)
-        Next
-        If PanMain.Children.Count = 2 Then PanMain.Children.Add(New TextBlock With {.Text = "还没有可用版本。左侧添加已有游戏文件夹，或点击右下角 + 下载游戏。", .TextWrapping = TextWrapping.Wrap})
+        Try
+            ModMain.InitializeSharedProfiles()
+            PanMain.Children.Clear() : PanMain.Children.Add(_status) : PanMain.Children.Add(_gamePanel)
+            PanMain.Children.Add(New TextBlock With {.Text = "MOD 启用方案 · 共用游戏：" & ModMain.StarsectorPath, .TextWrapping = TextWrapping.Wrap, .Margin = New Thickness(0, 0, 0, 12)})
+            Dim mods = Sspcl.Core.Mods.ModScanner.Scan(ModMain.SharedModsDir())
+            Dim store = ModMain.ProfileStore(), profiles = store.List()
+            For Each profile In profiles
+                PanMain.Children.Add(BuildProfileCard(profile, store.DirectoryOf(profile.Id), mods, profile.Id = ModMain.ActiveProfileId))
+            Next
+            If profiles.Count = 0 Then PanMain.Children.Add(New TextBlock With {.Text = "添加共享游戏目录后，在版本设置 → MOD 管理中选择 MOD 并保存启用方案。", .TextWrapping = TextWrapping.Wrap})
+        Catch ex As Exception
+            _status.Text = "读取启用方案失败：" & ex.Message
+        End Try
     End Sub
+    Private Function BuildProfileCard(profile As Sspcl.Core.Mods.ModProfile, directory As String, mods As IReadOnlyList(Of Sspcl.Core.Mods.ModSpec), selected As Boolean) As MyCard
+        Dim card As New MyCard With {.Title = profile.Name, .ToolTip = directory, .Margin = New Thickness(0, 0, 0, 12)}
+        Dim panel As New StackPanel With {.Margin = New Thickness(20, 38, 20, 18)}
+        panel.Children.Add(New TextBlock With {.Text = profile.EnabledMods.Count & " 项启用 MOD · " & If(selected, "当前启动方案", "已保存方案")})
+        panel.Children.Add(New TextBlock With {.Text = "启动清单目录：" & directory, .TextWrapping = TextWrapping.Wrap, .FontSize = 11, .Margin = New Thickness(0, 6, 0, 0)})
+        Dim missing = Sspcl.Core.Mods.ModProfileStore.Missing(profile.EnabledMods, mods)
+        If missing.Count > 0 Then panel.Children.Add(New TextBlock With {.Text = "缺失 MOD / 前置：" & String.Join("、", missing), .TextWrapping = TextWrapping.Wrap, .Margin = New Thickness(0, 6, 0, 0)})
+        Dim row As New WrapPanel With {.Margin = New Thickness(0, 10, 0, 0)}
+        Dim useButton As New MyButton With {.Text = If(selected, "编辑启用 MOD", "使用此版本"), .Padding = New Thickness(12, 5, 12, 5)}
+        AddHandler useButton.Click, Async Sub(sender, args) Await UseProfileAsync(profile.Id)
+        row.Children.Add(useButton)
+        Dim exportButton As New MyButton With {.Text = "选为导出来源", .Padding = New Thickness(12, 5, 12, 5), .Margin = New Thickness(8, 0, 0, 0)}
+        AddHandler exportButton.Click, Sub(sender, args)
+            _exportProfile = profile.Id : _status.Text = "导出来源：" & profile.Name
+        End Sub
+        row.Children.Add(exportButton) : panel.Children.Add(row) : card.BorderChild = panel
+        Return card
+    End Function
+    Private _exportProfile As String
+    Private Async Function UseProfileAsync(id As String) As Task
+        Dim editing = id = ModMain.ActiveProfileId
+        If ModMain.FrmStarsectorInstanceRight IsNot Nothing AndAlso Not ModMain.FrmStarsectorInstanceRight.ConfirmDiscardDraft() Then Return
+        Try
+            Await ModMain.EnsureSharedModsAsync()
+            Await PageStarsectorDownload.WaitForInstallAsync(CancellationToken.None)
+            Try
+                If Sspcl.Core.Launch.GameMemoryMonitor.Read(ModMain.StarsectorPath).ProcessCount > 0 Then Throw New InvalidOperationException("请关闭游戏后切换启用方案。")
+                Dim profile = ModMain.ProfileStore().Read(id), game = ModMain.StarsectorPath
+                Dim mods = ModStarsector.ScanMods(ModMain.SharedModsDir())
+                Await Task.Run(Sub() ModStarsector.WriteEnabled(game, Sspcl.Core.Mods.ModProfileStore.ResolveSelection(profile.EnabledMods, mods).Where(Function(value) mods.Any(Function(m) m.Id = value))))
+                ModMain.ActiveProfileId = id
+            Finally
+                PageStarsectorDownload.ReleaseInstall()
+            End Try
+            If ModMain.FrmStarsectorLeft IsNot Nothing Then CType(ModMain.FrmStarsectorLeft, PageStarsectorLeft).RefreshInfo()
+            RefreshCards()
+            If editing Then
+                ModMain.FrmMain.PageChange(FormMain.PageType.InstanceSetup)
+                ModMain.FrmStarsectorInstanceRight.ShowTab(3)
+            Else
+                ModMain.FrmMain.PageChange(FormMain.PageType.Launch)
+            End If
+        Catch ex As Exception
+            _status.Text = "切换失败：" & ex.Message
+        End Try
+    End Function
 
     Public Async Function ExportPackAsync() As Task
         If _packBusy Then Return
-        Dim options As New PackOptionsWindow(True, New Sspcl.Core.Modpack.PackManifest(), ModMain.StarsectorPaths)
+        Dim options As New PackOptionsWindow(True, New Sspcl.Core.Modpack.PackManifest(), {ModMain.StarsectorPath})
         If options.ShowDialog() <> True Then Return
         Dim dialog As New Microsoft.Win32.SaveFileDialog With {.FileName = "整合包.sspack", .Filter = "SSPCL 整合包|*.sspack|ZIP 压缩包|*.zip", .DefaultExt = ".sspack", .OverwritePrompt = True}
         If dialog.ShowDialog() <> True Then Return
-        Dim sourcePath = options.GamePath
+        Dim sourcePath = ModMain.StarsectorPath
+        Dim profileId = If(String.IsNullOrWhiteSpace(_exportProfile), ModMain.ActiveProfileId, _exportProfile)
+        If String.IsNullOrWhiteSpace(profileId) Then
+            _status.Text = "请先保存启用方案。" : Return
+        End If
+        Dim profile = ModMain.ProfileStore().Read(profileId)
         Dim name = options.PackName
         Dim selectedOptions = options.Options
         _packBusy = True
@@ -92,7 +131,7 @@ Public Class PageStarsectorSelectRight
             _gamePanel.Children.Add(cancelButton)
             Try
                 _status.Text = "正在导出清单、配置和存档…"
-                Await Task.Run(Function() Sspcl.Core.Modpack.ModpackExporter.Export(sourcePath, dialog.FileName, name, selectedOptions, cancellation.Token))
+                Await Task.Run(Function() Sspcl.Core.Modpack.ModpackExporter.Export(sourcePath, dialog.FileName, name, selectedOptions, cancellation.Token, profile.EnabledMods, IO.Path.Combine(ModMain.ProfileStore().DirectoryOf(profileId), "payload")))
                 _status.Text = "整合包已导出：" & dialog.FileName & "。包内没有 MOD 文件和游戏本体。"
             Catch ex As OperationCanceledException
                 _status.Text = "导出已取消，已有整合包文件未被覆盖。"
@@ -115,21 +154,16 @@ Public Class PageStarsectorSelectRight
             _packCancel = cancellation
             Try
                 Dim manifest = Await Task.Run(Function() Sspcl.Core.Modpack.ModpackImporter.Inspect(dialog.FileName))
-                Dim options As New PackOptionsWindow(False, manifest, ModMain.StarsectorPaths)
+                Dim options As New PackOptionsWindow(False, manifest, {ModMain.StarsectorPath})
                 If options.ShowDialog() <> True Then Return
-                _status.Text = "正在创建独立版本并导入整合包…"
+                _status.Text = "正在导入启用方案与可选配置、存档…"
                 Dim cancelButton As New Button With {.Content = "取消导入", .Padding = New Thickness(8, 4, 8, 4)}
                 AddHandler cancelButton.Click, Sub() cancellation.Cancel()
                 _gamePanel.Children.Add(cancelButton)
-                Dim gamePath = options.GamePath
-                Dim targetPath = options.TargetPath
-                Dim pool = ModMain.ModPoolDir()
-                Dim selectedOptions = options.Options
-                Dim result = Await Task.Run(Function() Sspcl.Core.Modpack.ModpackImporter.Import(dialog.FileName, gamePath, targetPath, pool, selectedOptions, cancellation.Token))
-                ModMain.StarsectorPaths.Add(result.Path)
-                ModMain.SelectedFolderPath = result.Path
-                ModMain.SaveStarsectorPaths()
-                _status.Text = "整合包已导入，右侧已生成独立版本。" & If(result.MissingMods.Count > 0, "缺失 " & result.MissingMods.Count & " 个 MOD，请单独下载后启用。", "")
+                Dim store = ModMain.ProfileStore(), selectedOptions = options.Options
+                Dim profile = Await Task.Run(Function() Sspcl.Core.Modpack.ProfilePackImporter.Import(dialog.FileName, store, selectedOptions, cancellation.Token))
+                _exportProfile = profile.Id
+                _status.Text = "整合包已导入为启用方案「" & profile.Name & "」。缺失 MOD 可在共享目录下载；选择此方案后启动时应用配置。"
                 RefreshCards()
                 _gamePanel.Children.Remove(cancelButton)
             Catch ex As OperationCanceledException
@@ -208,29 +242,6 @@ Public Class PageStarsectorSelectRight
                 End If
             End Try
         End Using
-    End Sub
-
-    Private Sub UseInstall(path As String)
-        Logger.Info("UseInstall=" & path)
-        ModMain.StarsectorPath = path
-        ModMain.SelectedFolderPath = path
-        If Not ModMain.StarsectorPaths.Contains(path) Then ModMain.StarsectorPaths.Add(path)
-        ModMain.SaveStarsectorPaths()
-        CType(ModMain.FrmStarsectorLeft, PageStarsectorLeft).RefreshInfo()
-        CType(ModMain.FrmStarsectorRight, PageStarsectorRight).RefreshAll()
-        ModMain.FrmMain.PageChange(FormMain.PageType.Launch)
-    End Sub
-
-    Private Sub RemoveInstall(path As String)
-        If String.Equals(path, ModMain.StarsectorPath, StringComparison.OrdinalIgnoreCase) Then
-            MsgBox("无法移除正在使用的版本。", MsgBoxStyle.Exclamation, "移除")
-            Return
-        End If
-        ModMain.StarsectorPaths.Remove(path)
-        ModMain.SaveStarsectorPaths()
-        ModMain.SelectedFolderPath = ModMain.StarsectorPath
-        ModMain.FrmStarsectorSelectLeft.RefreshList()
-        RefreshCards()
     End Sub
 
 End Class

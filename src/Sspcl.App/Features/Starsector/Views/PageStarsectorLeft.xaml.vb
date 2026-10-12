@@ -12,10 +12,12 @@ Public Class PageStarsectorLeft
 
     Public Sub RefreshInfo()
         Try
+            ModMain.InitializeSharedProfiles()
             Dim install = ModStarsector.Detect(ModMain.StarsectorPath)
             If install.IsValid Then
                 LabName.Text = If(String.IsNullOrWhiteSpace(install.DisplayName), "远行星号", install.DisplayName)
                 LabVersionSub.Text = install.Version & " · 汉化"
+                If ModMain.ActiveProfileId <> "" Then LabName.Text = ModMain.ProfileStore().Read(ModMain.ActiveProfileId).Name
             Else
                 LabName.Text = "远行星号"
                 LabVersionSub.Text = "未检测到安装"
@@ -60,8 +62,11 @@ Public Class PageStarsectorLeft
         End If
     End Sub
 
-    Private Sub BtnLaunch_Click(sender As Object, e As MouseButtonEventArgs) Handles BtnLaunch.Click
+    Private Async Sub BtnLaunch_Click(sender As Object, e As MouseButtonEventArgs) Handles BtnLaunch.Click
+        If Not BtnLaunch.IsEnabled Then Return
+        BtnLaunch.IsEnabled = False
         Try
+            Await ModMain.ApplyActiveProfileAsync()
             Dim install = ModStarsector.Detect(ModMain.StarsectorPath)
             If Not install.IsValid Then
                 MsgBox("未检测到有效的远行星号安装。", MsgBoxStyle.Exclamation, "无法启动")
@@ -79,6 +84,8 @@ Public Class PageStarsectorLeft
             End If
         Catch ex As Exception
             MsgBox("启动失败：" & ex.Message, MsgBoxStyle.Exclamation, "错误")
+        Finally
+            BtnLaunch.IsEnabled = True
         End Try
     End Sub
 

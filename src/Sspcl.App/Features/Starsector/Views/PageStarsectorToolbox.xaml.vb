@@ -1,4 +1,4 @@
-Public Class PageStarsectorToolbox
+﻿Public Class PageStarsectorToolbox
 
     Private Sub Init() Handles Me.Loaded
         PanBack.ScrollToHome()
@@ -87,7 +87,7 @@ Public Class PageStarsectorToolbox
     End Sub
 
     Private Sub OpenWorkbench(sender As Object, e As MouseButtonEventArgs) Handles BtnLoadoutWorkbench.Click
-        Dim workbench As New LoadoutWorkbench(ModMain.StarsectorPath)
+        Dim workbench As New LoadoutWorkbench(ModMain.StarsectorPath, ModMain.SelectedModIds())
         workbench.Show()
     End Sub
 End Class

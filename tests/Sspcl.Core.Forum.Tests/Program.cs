@@ -20,6 +20,7 @@ try
     await CheckParallelDownloads(testRoot);
     await ModpackChecks.Run(testRoot);
     ActivationChecks.Run(testRoot);
+    ProfileChecks.Run(testRoot);
     UpdateChecks.Run(testRoot);
     await LoadoutChecks.Run(testRoot);
     if (args.Contains("--live-loadout")) LoadoutChecks.Live("D:/Starsector");

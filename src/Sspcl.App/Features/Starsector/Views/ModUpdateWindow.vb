@@ -58,16 +58,12 @@ Public Class ModUpdateWindow
         Dim choice = TryCast(Releases.SelectedItem, ReleaseChoice)
         DownloadButton.IsEnabled = False
         If choice Is Nothing Then Return
-        If Not ModUpdateService.IsCompatible(choice.Release.GameVersion, GameVersion) Then
-            Hint.Text = "此发布包适配 " & choice.Release.GameVersion & "，与当前游戏版本不同，不能覆盖旧版 MOD。"
-            Return
-        End If
         Dim uri As Uri = Nothing
         If Not choice.ModInfo.AllowDirectDownload OrElse Not Uri.TryCreate(choice.Release.DownloadUrl, UriKind.Absolute, uri) OrElse (uri.Scheme <> "http" AndAlso uri.Scheme <> "https") Then
             Hint.Text = "论坛未提供此包的可用直下载。请打开发布帖下载，再使用「本地更新」。"
             Return
         End If
-        Hint.Text = "游戏版本匹配。下载后还会核对压缩包中的 MOD ID、适配版本和完整性，验证通过才替换旧版。"
+        Hint.Text = "统一维护最新游戏。下载后核对 MOD ID 和完整性，再替换共享目录中的旧版。"
         DownloadButton.IsEnabled = True
     End Sub
 

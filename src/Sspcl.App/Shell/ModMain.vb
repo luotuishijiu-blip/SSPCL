@@ -1,4 +1,4 @@
-Imports System.Collections.ObjectModel
+﻿Imports System.Collections.ObjectModel
 Imports System.Windows.Interop
 Imports System.Windows.Threading
 
@@ -385,6 +385,70 @@ EndHint:
     Public FrmStarsectorSelectLeft As PageStarsectorSelectLeft
     Public FrmStarsectorSelectRight As PageStarsectorSelectRight
     Public StarsectorPaths As List(Of String) = New List(Of String)()
+    Private _profilesInitialized As Boolean
+    Public Function ProfileStore() As Sspcl.Core.Mods.ModProfileStore
+        Return New Sspcl.Core.Mods.ModProfileStore(IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SSPCL", "ModProfiles"))
+    End Function
+    Public Function SelectedModIds() As List(Of String)
+        InitializeSharedProfiles()
+        Return If(ActiveProfileId = "", ModStarsector.ReadEnabled(StarsectorPath), ProfileStore().Read(ActiveProfileId).EnabledMods)
+    End Function
+    Public Property ActiveProfileId As String
+        Get
+            Return Settings.Get(Of String)("StarsectorProfile")
+        End Get
+        Set(value As String)
+            Settings.Set("StarsectorProfile", value)
+        End Set
+    End Property
+    Public Sub InitializeSharedProfiles()
+        If _profilesInitialized Then Return
+        LoadStarsectorPaths()
+        Dim maintainedPath = Settings.Get(Of String)("StarsectorSharedGame")
+        If Not String.IsNullOrWhiteSpace(maintainedPath) Then
+            StarsectorPath = maintainedPath
+        ElseIf Not IO.File.Exists(IO.Path.Combine(StarsectorPath, "starsector-core", "starfarer_obf.jar")) Then
+            StarsectorPath = StarsectorPaths.FirstOrDefault(Function(p) IO.File.Exists(IO.Path.Combine(p, "starsector-core", "starfarer_obf.jar")))
+            If String.IsNullOrWhiteSpace(StarsectorPath) Then StarsectorPath = "D:\Starsector"
+        End If
+        Dim store = ProfileStore()
+        store.MigrateLists(StarsectorPaths.Where(Function(p) IO.File.Exists(IO.Path.Combine(p, "starsector-core", "starfarer_obf.jar"))))
+        Dim profiles = store.List()
+        If profiles.Count = 0 AndAlso IO.File.Exists(IO.Path.Combine(StarsectorPath, "starsector-core", "starfarer_obf.jar")) Then profiles.Add(store.Save("默认 MOD 方案", ModStarsector.ReadEnabled(StarsectorPath)))
+        If Not profiles.Any(Function(p) p.Id = ActiveProfileId) Then
+            Dim preferred = profiles.FirstOrDefault(Function(p) String.Equals(p.LegacySource, IO.Path.GetFullPath(StarsectorPath), StringComparison.OrdinalIgnoreCase))
+            ActiveProfileId = If(preferred IsNot Nothing, preferred.Id, If(profiles.Count = 0, "", profiles(0).Id))
+        End If
+        Settings.Set("StarsectorSharedGame", StarsectorPath)
+        _profilesInitialized = True
+    End Sub
+    Public Async Function EnsureSharedModsAsync() As Task
+        InitializeSharedProfiles()
+        If Not IO.File.Exists(IO.Path.Combine(StarsectorPath, "starsector-core", "starfarer_obf.jar")) Then Throw New InvalidOperationException("请先添加要统一维护的游戏目录。")
+        If Settings.Get(Of Boolean)("StarsectorSharedMigration") Then Return
+        Await PageStarsectorDownload.WaitForInstallAsync(CancellationToken.None)
+        Try
+            If Settings.Get(Of Boolean)("StarsectorSharedMigration") Then Return
+            If Sspcl.Core.Launch.GameMemoryMonitor.Read(StarsectorPath).ProcessCount > 0 Then Throw New InvalidOperationException("请关闭游戏后迁移旧 MOD 到共享目录。")
+            Dim sources = StarsectorPaths.Select(Function(p) IO.Path.Combine(p, "mods")).Concat({IO.Path.Combine(Paths.Base, "ModPool")}).ToList()
+            Await Task.Run(Sub() Sspcl.Core.Mods.ModProfileStore.MergeLegacyMods(StarsectorPath, sources))
+            Settings.Set("StarsectorSharedMigration", True)
+        Finally
+            PageStarsectorDownload.ReleaseInstall()
+        End Try
+    End Function
+    Public Async Function ApplyActiveProfileAsync() As Task
+        Await EnsureSharedModsAsync()
+        If ActiveProfileId = "" Then Throw New InvalidOperationException("请先在 MOD 管理中保存一个启用方案。")
+        Await PageStarsectorDownload.WaitForInstallAsync(CancellationToken.None)
+        Try
+            If Sspcl.Core.Launch.GameMemoryMonitor.Read(StarsectorPath).ProcessCount > 0 Then Throw New InvalidOperationException("游戏运行中，请关闭游戏后切换或重新启动方案。")
+            Dim store = ProfileStore(), id = ActiveProfileId, game = StarsectorPath
+            Await Task.Run(Sub() Sspcl.Core.Modpack.ProfilePackImporter.Apply(store, id, game))
+        Finally
+            PageStarsectorDownload.ReleaseInstall()
+        End Try
+    End Function
 
     ''' <summary>从设置读取安装目录列表；为空则回退到默认路径。</summary>
     Public Sub LoadStarsectorPaths()
@@ -479,38 +543,10 @@ EndHint:
         End Try
     End Function
 
-    ''' <summary>mod 池目录（所有下载的 mod 都存这里）。</summary>
-    Public Function ModPoolDir() As String
-        Return IO.Path.Combine(Paths.Base, "ModPool")
+    Public Function SharedModsDir() As String
+        InitializeSharedProfiles()
+        Return IO.Path.Combine(StarsectorPath, "mods")
     End Function
-
-    ''' <summary>判断 mod 池中的某个 mod 是否已启用（已复制到游戏 mods 目录）。</summary>
-    Public Function IsModEnabled(modFolder As String) As Boolean
-        Return IO.Directory.Exists(IO.Path.Combine(ModStarsector.ModsDir(StarsectorPath), modFolder))
-    End Function
-
-    ''' <summary>启用 mod：从 mod 池复制到游戏 mods 目录。</summary>
-    Public Sub EnableMod(modFolder As String)
-        Try
-            Dim src = IO.Path.Combine(ModPoolDir(), modFolder)
-            Dim dst = IO.Path.Combine(ModStarsector.ModsDir(StarsectorPath), modFolder)
-            If Not IO.Directory.Exists(src) Then Return
-            If IO.Directory.Exists(dst) Then IO.Directory.Delete(dst, True)
-            My.Computer.FileSystem.CopyDirectory(src, dst)
-        Catch ex As Exception
-            Logger.Warn(ex, "启用 mod 失败：" & modFolder)
-        End Try
-    End Sub
-
-    ''' <summary>停用 mod：从游戏 mods 目录移除（进回收站）。</summary>
-    Public Sub DisableMod(modFolder As String)
-        Try
-            Dim dst = IO.Path.Combine(ModStarsector.ModsDir(StarsectorPath), modFolder)
-            If IO.Directory.Exists(dst) Then ModStarsector.RecycleDir(dst)
-        Catch ex As Exception
-            Logger.Warn(ex, "停用 mod 失败：" & modFolder)
-        End Try
-    End Sub
 
     'MC 空壳页面声明（保留字段以兼容残留引用，均无实际功能）
     Public FrmLaunchLeft As PageLaunchLeft

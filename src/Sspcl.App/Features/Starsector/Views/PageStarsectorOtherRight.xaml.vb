@@ -1,4 +1,4 @@
-Imports System.Net.Http
+﻿Imports System.Net.Http
 Imports System.Text
 
 Public Class PageStarsectorOtherRight
@@ -103,7 +103,7 @@ Public Class PageStarsectorOtherRight
     End Sub
 
     Private Sub BtnAiLoadout_Click(sender As Object, e As MouseButtonEventArgs) Handles BtnAiLoadout.Click
-        Dim workbench As New LoadoutWorkbench(ModMain.StarsectorPath)
+        Dim workbench As New LoadoutWorkbench(ModMain.StarsectorPath, ModMain.SelectedModIds())
         workbench.Show()
     End Sub
 End Class

@@ -19,7 +19,7 @@ public static class ModpackImporter
         using var zip = ZipFile.OpenRead(archive);
         return Inspect(zip);
     }
-    private static PackManifest Inspect(ZipArchive zip)
+    internal static PackManifest Inspect(ZipArchive zip)
     {
         var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         long size = 0;
