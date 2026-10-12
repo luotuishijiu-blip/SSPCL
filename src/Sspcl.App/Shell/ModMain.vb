@@ -386,6 +386,17 @@ EndHint:
     Public FrmStarsectorSelectRight As PageStarsectorSelectRight
     Public StarsectorPaths As List(Of String) = New List(Of String)()
     Private _profilesInitialized As Boolean
+    Private _sharedModsTarget As String
+    Private Function WorkspaceFile() As String
+        Return IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SSPCL", "workspace.json")
+    End Function
+    Public Sub PersistWorkspace()
+        Sspcl.Core.Mods.SharedWorkspace.Save(WorkspaceFile(), New Sspcl.Core.Mods.WorkspacePreferences With {.GamePath = StarsectorPath, .ModsPath = If(_sharedModsTarget, IO.Path.Combine(StarsectorPath, "mods")), .ProfileId = ActiveProfileId})
+    End Sub
+    Public Sub SetModsFolder(path As String)
+        _sharedModsTarget = Sspcl.Core.Mods.SharedWorkspace.ConnectMods(StarsectorPath, path)
+        PersistWorkspace()
+    End Sub
     Public Function ProfileStore() As Sspcl.Core.Mods.ModProfileStore
         Return New Sspcl.Core.Mods.ModProfileStore(IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SSPCL", "ModProfiles"))
     End Function
@@ -399,12 +410,16 @@ EndHint:
         End Get
         Set(value As String)
             Settings.Set("StarsectorProfile", value)
+            If _profilesInitialized Then PersistWorkspace()
         End Set
     End Property
     Public Sub InitializeSharedProfiles()
         If _profilesInitialized Then Return
         LoadStarsectorPaths()
-        Dim maintainedPath = Settings.Get(Of String)("StarsectorSharedGame")
+        Dim durable = Sspcl.Core.Mods.SharedWorkspace.Read(WorkspaceFile())
+        Dim maintainedPath = If(String.IsNullOrWhiteSpace(durable.GamePath), Settings.Get(Of String)("StarsectorSharedGame"), durable.GamePath)
+        _sharedModsTarget = If(String.IsNullOrWhiteSpace(durable.ModsPath), Nothing, durable.ModsPath)
+        If durable.ProfileId <> "" Then Settings.Set("StarsectorProfile", durable.ProfileId)
         If Not String.IsNullOrWhiteSpace(maintainedPath) Then
             StarsectorPath = maintainedPath
         ElseIf Not IO.File.Exists(IO.Path.Combine(StarsectorPath, "starsector-core", "starfarer_obf.jar")) Then
@@ -421,15 +436,22 @@ EndHint:
         End If
         Settings.Set("StarsectorSharedGame", StarsectorPath)
         _profilesInitialized = True
+        PersistWorkspace()
     End Sub
     Public Async Function EnsureSharedModsAsync() As Task
         InitializeSharedProfiles()
         If Not IO.File.Exists(IO.Path.Combine(StarsectorPath, "starsector-core", "starfarer_obf.jar")) Then Throw New InvalidOperationException("请先添加要统一维护的游戏目录。")
-        If Settings.Get(Of Boolean)("StarsectorSharedMigration") Then Return
         Await PageStarsectorDownload.WaitForInstallAsync(CancellationToken.None)
         Try
+            Dim reconnect = _sharedModsTarget IsNot Nothing AndAlso Not Sspcl.Core.Mods.SharedWorkspace.IsConnected(StarsectorPath, _sharedModsTarget)
+            If reconnect OrElse Not Settings.Get(Of Boolean)("StarsectorSharedMigration") Then
+                If Sspcl.Core.Launch.GameMemoryMonitor.Read(StarsectorPath).ProcessCount > 0 Then Throw New InvalidOperationException("请关闭游戏后迁移或连接 MOD 目录。")
+            End If
+            If reconnect Then
+                _sharedModsTarget = Sspcl.Core.Mods.SharedWorkspace.ConnectMods(StarsectorPath, _sharedModsTarget)
+                PersistWorkspace()
+            End If
             If Settings.Get(Of Boolean)("StarsectorSharedMigration") Then Return
-            If Sspcl.Core.Launch.GameMemoryMonitor.Read(StarsectorPath).ProcessCount > 0 Then Throw New InvalidOperationException("请关闭游戏后迁移旧 MOD 到共享目录。")
             Dim sources = StarsectorPaths.Select(Function(p) IO.Path.Combine(p, "mods")).Concat({IO.Path.Combine(Paths.Base, "ModPool")}).ToList()
             Await Task.Run(Sub() Sspcl.Core.Mods.ModProfileStore.MergeLegacyMods(StarsectorPath, sources))
             Settings.Set("StarsectorSharedMigration", True)

@@ -10,6 +10,83 @@ Public Class PageStarsectorInstanceRight
     Private _modOperation As Boolean = False
     Private _draftDirty As Boolean
     Private _draftProfile As String
+    Private _modRows As New List(Of ModRow)
+    Public Class ModRow
+        Implements ComponentModel.INotifyPropertyChanged
+        Public Property Id As String
+        Public Property Label As String
+        Public Property Details As String
+        Public Property [Mod] As ModSpec
+        Public Property Changed As Action(Of String, Boolean)
+        Private _checked As Boolean
+        Public Property IsChecked As Boolean
+            Get
+                Return _checked
+            End Get
+            Set(value As Boolean)
+                If value = _checked Then Return
+                _checked = value
+                RaiseEvent PropertyChanged(Me, New ComponentModel.PropertyChangedEventArgs(NameOf(IsChecked)))
+                If Changed IsNot Nothing Then Changed.Invoke(Id, value)
+            End Set
+        End Property
+        Public Event PropertyChanged As ComponentModel.PropertyChangedEventHandler Implements ComponentModel.INotifyPropertyChanged.PropertyChanged
+    End Class
+    Private Sub BindModRows()
+        _modRows = _mods.Select(Function(m) New ModRow With {.Id = m.Id, .Label = m.Name & "  [" & m.Id & "]  " & m.VersionRaw, .Details = m.Path, .Mod = m, .IsChecked = _enabled.Contains(m.Id), .Changed = AddressOf RowChanged}).ToList()
+        Dim installed As New HashSet(Of String)(_mods.Select(Function(m) m.Id))
+        For Each id In _enabled.Where(Function(value) Not installed.Contains(value))
+            _modRows.Add(New ModRow With {.Id = id, .Label = "缺失 MOD · " & id, .IsChecked = True, .Changed = AddressOf RowChanged})
+        Next
+        PanModList.ItemsSource = _modRows
+    End Sub
+    Private Sub RowChanged(id As String, value As Boolean)
+        If _loading OrElse _modOperation Then Return
+        Dim desired As New HashSet(Of String)(_enabled)
+        If value Then desired.Add(id) Else desired.Remove(id)
+        ApplyDraft(desired)
+    End Sub
+    Private Sub ApplyDraft(desired As IEnumerable(Of String))
+        _enabled = ModProfileStore.ResolveSelection(desired, _mods)
+        _draftDirty = True : _loading = True
+        Try
+            For Each row In _modRows
+                row.IsChecked = _enabled.Contains(row.Id)
+            Next
+        Finally
+            _loading = False
+        End Try
+        LabModSummary.Text = "已暂存 " & _enabled.Count & " 项选择，尚未保存。请点击上方蓝色保存按钮。"
+    End Sub
+    Private Sub SelectAllMods(sender As Object, e As RoutedEventArgs)
+        If Not _loading AndAlso Not _modOperation AndAlso _enabled IsNot Nothing Then ApplyDraft(_enabled.Concat(_mods.Select(Function(m) m.Id)).ToList())
+    End Sub
+    Private Sub ClearAllMods(sender As Object, e As RoutedEventArgs)
+        If Not _loading AndAlso Not _modOperation AndAlso _enabled IsNot Nothing Then ApplyDraft(New String() {})
+    End Sub
+    Private Async Sub SelectModsFolder(sender As Object, e As RoutedEventArgs)
+        If _loading OrElse _modOperation Then Return
+        Try
+            Using dialog As New System.Windows.Forms.FolderBrowserDialog With {.Description = "选择 MOD 集文件夹，可直接选择已有的 mods，无需改名"}
+                If dialog.ShowDialog() <> System.Windows.Forms.DialogResult.OK Then Return
+                If TypeOf ModMain.FrmStarsectorDownload Is PageStarsectorDownload AndAlso DirectCast(ModMain.FrmStarsectorDownload, PageStarsectorDownload).HasActiveTransfers() Then Throw New InvalidOperationException("请结束下载和安装后选择 MOD 文件夹。")
+                Await PageStarsectorDownload.WaitForInstallAsync(CancellationToken.None)
+                Try
+                    If GameMemoryMonitor.Read(ModMain.StarsectorPath).ProcessCount > 0 Then Throw New InvalidOperationException("请先关闭游戏。")
+                    ModMain.SetModsFolder(dialog.SelectedPath)
+                    If IO.File.Exists(IO.Path.Combine(dialog.SelectedPath, "enabled_mods.json")) Then
+                        _enabled = New HashSet(Of String)(ModStarsector.ReadEnabled(ModMain.StarsectorPath))
+                        _draftProfile = ModMain.ActiveProfileId : _draftDirty = True
+                    End If
+                Finally
+                    PageStarsectorDownload.ReleaseInstall()
+                End Try
+                LoadMods()
+            End Using
+        Catch ex As Exception
+            LabModSummary.Text = "选择 MOD 文件夹失败：" & ex.Message
+        End Try
+    End Sub
     Public Function ConfirmDiscardDraft() As Boolean
         If _modOperation OrElse _loading Then Return False
         If Not _draftDirty Then Return True
@@ -129,7 +206,7 @@ Public Class PageStarsectorInstanceRight
     Private Async Sub LoadMods()
         If _modOperation OrElse _loading Then Return
         _loading = True
-        PanModList.Children.Clear()
+        PanModList.ItemsSource = Nothing
         _modBoxes.Clear()
         Try
             Await ModMain.EnsureSharedModsAsync()
@@ -139,35 +216,8 @@ Public Class PageStarsectorInstanceRight
                 _enabled = New HashSet(Of String)(If(ModMain.ActiveProfileId = "", ModStarsector.ReadEnabled(ModMain.StarsectorPath), ModMain.ProfileStore().Read(ModMain.ActiveProfileId).EnabledMods))
                 _draftProfile = ModMain.ActiveProfileId : _draftDirty = False
             End If
-            Dim ok = 0
-            For Each m In _mods
-                If String.IsNullOrWhiteSpace(m.Id) Then Continue For
-                ok += 1
-                Dim box As New MyCheckBox With {
-                    .Text = m.Name & "  [" & m.Id & "]  " & m.VersionRaw,
-                    .ToolTip = "适配游戏：" & m.GameVersionRaw & vbCrLf & m.Path,
-                    .Checked = _enabled.Contains(m.Id),
-                    .Tag = m.Id,
-                    .Margin = New Thickness(0, 0, 0, 6)
-                }
-                AddHandler box.Change, AddressOf ModCheck_Changed
-                _modBoxes.Add(box)
-                Dim row As New DockPanel With {.Margin = New Thickness(0, 0, 0, 8)}
-                Dim actions As New StackPanel With {.Orientation = Orientation.Horizontal, .Margin = New Thickness(10, 0, 0, 0)}
-                DockPanel.SetDock(actions, Dock.Right)
-                Dim online As New Button With {.Content = "论坛更新", .Tag = m, .Padding = New Thickness(8, 3, 8, 3)}
-                Dim local As New Button With {.Content = "本地更新", .Tag = m, .Padding = New Thickness(8, 3, 8, 3), .Margin = New Thickness(6, 0, 0, 0)}
-                AddHandler online.Click, AddressOf OnlineUpdate_Click
-                AddHandler local.Click, AddressOf LocalUpdate_Click
-                actions.Children.Add(online) : actions.Children.Add(local)
-                row.Children.Add(actions) : row.Children.Add(box)
-                PanModList.Children.Add(row)
-            Next
-            For Each id In _enabled.Where(Function(value) Not _mods.Any(Function(m) m.Id = value)).ToList()
-                Dim box As New MyCheckBox With {.Text = "缺失 MOD · " & id, .Tag = id, .Checked = True, .Margin = New Thickness(0, 0, 0, 8)}
-                AddHandler box.Change, AddressOf ModCheck_Changed
-                _modBoxes.Add(box) : PanModList.Children.Add(box)
-            Next
+            BindModRows()
+            Dim ok = _mods.Count
             LabModSummary.Text = "共享目录共 " & ok & " 个 MOD。勾选仅暂存，保存时选择添加新版本或替换已有版本。" & If(_draftDirty, " 当前有未保存修改。", "")
         Catch ex As Exception
             LabModSummary.Text = "扫描失败：" & ex.Message
@@ -187,7 +237,7 @@ Public Class PageStarsectorInstanceRight
         _enabled = ModProfileStore.ResolveSelection(desired, _mods) : _draftDirty = True
         _loading = True
         For Each cb In _modBoxes
-            cb.Checked = _enabled.Contains(CStr(cb.Tag))
+            If cb.Checked <> _enabled.Contains(CStr(cb.Tag)) Then cb.Checked = _enabled.Contains(CStr(cb.Tag))
         Next
         _loading = False
         LabModSummary.Text = "已暂存 " & _enabled.Count & " 项选择，尚未保存。前置依赖自动勾选。"
@@ -198,7 +248,7 @@ Public Class PageStarsectorInstanceRight
         If current IsNot Nothing Then Await UpdateModAsync(current, Nothing)
     End Sub
 
-    Private Sub SaveMods(sender As Object, e As MouseButtonEventArgs) Handles BtnSaveMods.Click
+    Private Sub SaveMods(sender As Object, e As RoutedEventArgs)
         If _modOperation OrElse _loading OrElse _enabled Is Nothing Then Return
         Try
             Dim store = ModMain.ProfileStore(), profiles = store.List()
@@ -343,7 +393,7 @@ Public Class PageStarsectorInstanceRight
         End Try
     End Sub
 
-    Private Sub BtnRescan_Click(sender As Object, e As MouseButtonEventArgs) Handles BtnRescan.Click
+    Private Sub RescanMods(sender As Object, e As RoutedEventArgs)
         LoadMods()
     End Sub
 

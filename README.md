@@ -7,7 +7,7 @@
 
 ## 下载
 
-- [最新版：共享 MOD 与启用方案](https://github.com/luotuishijiu-blip/SSPCL/releases/latest)，下载 ZIP 后解压运行 `Sspcl.exe`，无需管理员权限。
+- [最新版：MOD 管理可用性与目录修复](https://github.com/luotuishijiu-blip/SSPCL/releases/latest)，下载 ZIP 后解压运行 `Sspcl.exe`，无需管理员权限。提供保存、全选、全部取消和 MOD 集文件夹选择，游戏路径跨解压目录保存。
 - [历史版本与发布说明](docs/RELEASES.md)。
 - [中文更新日志](docs/CHANGELOG.zh-CN.md)：从本地 MOD 压缩包导入开始。
 

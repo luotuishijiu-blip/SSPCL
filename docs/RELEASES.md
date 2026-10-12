@@ -4,6 +4,12 @@
 
 ## 最新版
 
+[2026-10-12：MOD 管理可用性与目录修复](https://github.com/luotuishijiu-blip/SSPCL/releases/tag/build-20261012-mod-usability)
+
+下载 `sspcl-mod-usability-20261012.zip`，解压运行。补齐明显的保存、全选和全部取消按钮，虚拟化 MOD 列表减少勾选卡顿；游戏目录跨解压位置持久保存，新增手动选择 MOD 集文件夹，固定使用 `mods` 入口而无需玩家改名。无需管理员权限。见 [方案说明](MOD_PROFILES.md)。
+
+## 共享方案初版
+
 [2026-10-12：共享 MOD 与启用方案](https://github.com/luotuishijiu-blip/SSPCL/releases/tag/build-20261012-mod-profiles)
 
 下载 `sspcl-mod-profiles-20261012.zip`，解压运行 `Sspcl.exe`，无需管理员权限。取消 MOD 池，统一使用游戏 `mods`；勾选暂存，保存时添加新版本或替换已有版本，版本选择改为选择已保存启用方案。旧清单自动迁移，旧源文件保留。详细范围见 [方案说明](MOD_PROFILES.md)。

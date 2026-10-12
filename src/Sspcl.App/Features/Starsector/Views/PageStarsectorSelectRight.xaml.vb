@@ -30,6 +30,7 @@ Public Class PageStarsectorSelectRight
             If Not ModMain.StarsectorPaths.Contains(path) Then ModMain.StarsectorPaths.Add(path)
             ModMain.SaveStarsectorPaths()
             Settings.Set("StarsectorSharedGame", path) : Settings.Set("StarsectorSharedMigration", False)
+            ModMain.PersistWorkspace()
             Await ModMain.EnsureSharedModsAsync()
             If ModMain.ActiveProfileId = "" Then ModMain.ActiveProfileId = ModMain.ProfileStore().Save("默认 MOD 方案", ModStarsector.ReadEnabled(path)).Id
             _status.Text = "共享游戏目录：" & path & "。所有启用方案共用此目录的 MOD 文件。"

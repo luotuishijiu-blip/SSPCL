@@ -7,6 +7,19 @@ internal static class ProfileChecks
 {
     public static void Run(string root)
     {
+        string workspace = Path.Combine(root,"preferences","workspace.json"), junctionGame = Path.Combine(root,"junction-game"), folderA = Path.Combine(root,"collection-a"), folderB = Path.Combine(root,"collection-b");
+        Directory.CreateDirectory(Path.Combine(junctionGame,"mods"));Directory.CreateDirectory(folderA);Directory.CreateDirectory(folderB);
+        File.WriteAllText(Path.Combine(junctionGame,"mods","original.txt"),"keep");File.WriteAllText(Path.Combine(folderA,"a.txt"),"a");File.WriteAllText(Path.Combine(folderB,"b.txt"),"b");
+        SharedWorkspace.Save(workspace,new WorkspacePreferences{GamePath=junctionGame,ModsPath=folderA,ProfileId="saved"});
+        var reread=SharedWorkspace.Read(workspace);Check(reread.GamePath==junctionGame && reread.ModsPath==folderA && reread.ProfileId=="saved","Paths lost on reload.");
+        SharedWorkspace.Save(workspace,reread);File.WriteAllText(workspace,"{broken");Check(SharedWorkspace.Read(workspace).GamePath==junctionGame,"Corrupt preferences did not recover backup.");
+        SharedWorkspace.ConnectMods(junctionGame,folderA);Check(File.Exists(Path.Combine(junctionGame,"mods/a.txt")),"Fixed mods entry does not use selected directory.");
+        SharedWorkspace.ConnectMods(junctionGame,folderB);Check(File.Exists(Path.Combine(junctionGame,"mods/b.txt")) && File.Exists(Path.Combine(folderA,"a.txt")),"Switch renamed or removed collection.");
+        Check(SharedWorkspace.IsConnected(junctionGame,folderB) && SharedWorkspace.ConnectMods(junctionGame,Path.Combine(junctionGame,"mods"))==folderB,"Selecting fixed mods entry lost physical target.");
+        SharedWorkspace.ConnectMods(junctionGame,folderB);Check(Directory.GetDirectories(junctionGame,"mods-backup-*").Length==1,"Reopen repeatedly backed up mods.");
+        Expect<IOException>(()=>SharedWorkspace.ConnectMods(junctionGame,junctionGame));
+        // Remove only our temporary junction so recursive test cleanup cannot follow it.
+        Directory.Delete(Path.Combine(junctionGame,"mods"));
         string game = Path.Combine(root, "shared-game"), old = Path.Combine(root, "old-game"), pool = Path.Combine(root, "legacy-pool");
         WriteMod(Path.Combine(game,"mods","base"),"base","current");
         WriteMod(Path.Combine(pool,"base-old"),"base","old");
