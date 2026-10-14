@@ -68,7 +68,8 @@ public static class ModUpdateService
             {
                 foreach (var old in plan.Old)
                 {
-                    string backup = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(old.Path)!)!, ".sspcl-old-" + Guid.NewGuid().ToString("N"));
+                    string backup = Path.Combine(Path.GetDirectoryName(old.Path)!, ".sspcl-backups", Guid.NewGuid().ToString("N"));
+                    Directory.CreateDirectory(Path.GetDirectoryName(backup)!);
                     Directory.Move(old.Path, backup);
                     moved.Add((old.Path, backup));
                     result.RemovedFolders.Add(old.Folder);

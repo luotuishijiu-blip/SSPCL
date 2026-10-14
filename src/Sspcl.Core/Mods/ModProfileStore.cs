@@ -23,9 +23,15 @@ public sealed class ModProfileStore
     }
     public ModProfile Read(string id)
     {
-        var profile = JsonSerializer.Deserialize<ModProfile>(File.ReadAllText(Path.Combine(DirectoryOf(id), "profile.json"))) ?? throw new InvalidDataException("方案为空。");
-        if (profile.Id != id || profile.EnabledMods == null || string.IsNullOrWhiteSpace(profile.Name)) throw new InvalidDataException("方案清单无效。");
-        return profile;
+        string path = Path.Combine(DirectoryOf(id), "profile.json");
+        ModProfile Parse(string file)
+        {
+            var profile = JsonSerializer.Deserialize<ModProfile>(File.ReadAllText(file)) ?? throw new InvalidDataException("方案为空。");
+            if (profile.Id != id || profile.EnabledMods == null || profile.EnabledMods.Any(string.IsNullOrWhiteSpace) || string.IsNullOrWhiteSpace(profile.Name)) throw new InvalidDataException("方案清单无效。");
+            return profile;
+        }
+        try { return Parse(path); }
+        catch(Exception ex) when((ex is JsonException || ex is InvalidDataException || ex is FileNotFoundException) && File.Exists(path + ".bak")) { return Parse(path + ".bak"); }
     }
     public List<ModProfile> List()
     {
@@ -47,7 +53,24 @@ public sealed class ModProfileStore
     internal static void AtomicWrite(string path, string text)
     {
         string temporary = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
-        try { File.WriteAllText(temporary, text); if (File.Exists(path)) File.Replace(temporary, path, path + ".bak"); else File.Move(temporary, path); }
+        try
+        {
+            File.WriteAllText(temporary, text);
+            if (File.Exists(path))
+            {
+                bool valid = true;
+                try
+                {
+                    using var document = JsonDocument.Parse(File.ReadAllText(path)); var data = document.RootElement;
+                    valid = data.ValueKind == JsonValueKind.Object;
+                    if(valid && data.TryGetProperty("Id", out var id)) valid = id.ValueKind == JsonValueKind.String && id.GetString() == Path.GetFileName(Path.GetDirectoryName(path)) && data.TryGetProperty("Name", out var name) && name.ValueKind == JsonValueKind.String && !string.IsNullOrWhiteSpace(name.GetString()) && data.TryGetProperty("EnabledMods", out var mods) && mods.ValueKind == JsonValueKind.Array && mods.EnumerateArray().All(m => m.ValueKind == JsonValueKind.String && !string.IsNullOrWhiteSpace(m.GetString()));
+                    if(valid && data.TryGetProperty("GamePath", out _)) valid = new[] {"GamePath", "ModsPath", "ProfileId"}.All(key => data.TryGetProperty(key, out var value) && value.ValueKind == JsonValueKind.String);
+                }
+                catch(JsonException) { valid = false; }
+                File.Replace(temporary, path, valid ? path + ".bak" : null);
+            }
+            else File.Move(temporary, path);
+        }
         finally { if (File.Exists(temporary)) File.Delete(temporary); }
     }
     public static HashSet<string> ResolveSelection(IEnumerable<string> requested, IReadOnlyList<ModSpec> mods)

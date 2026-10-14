@@ -69,11 +69,13 @@ Public Class PageStarsectorInstanceRight
         Try
             Using dialog As New System.Windows.Forms.FolderBrowserDialog With {.Description = "选择 MOD 集文件夹，可直接选择已有的 mods，无需改名"}
                 If dialog.ShowDialog() <> System.Windows.Forms.DialogResult.OK Then Return
+                If Not ConfirmDiscardDraft() Then Return
                 If TypeOf ModMain.FrmStarsectorDownload Is PageStarsectorDownload AndAlso DirectCast(ModMain.FrmStarsectorDownload, PageStarsectorDownload).HasActiveTransfers() Then Throw New InvalidOperationException("请结束下载和安装后选择 MOD 文件夹。")
                 Await PageStarsectorDownload.WaitForInstallAsync(CancellationToken.None)
                 Try
                     If GameMemoryMonitor.Read(ModMain.StarsectorPath).ProcessCount > 0 Then Throw New InvalidOperationException("请先关闭游戏。")
                     ModMain.SetModsFolder(dialog.SelectedPath)
+                    DiscardDraft()
                     If IO.File.Exists(IO.Path.Combine(dialog.SelectedPath, "enabled_mods.json")) Then
                         _enabled = New HashSet(Of String)(ModStarsector.ReadEnabled(ModMain.StarsectorPath))
                         _draftProfile = ModMain.ActiveProfileId : _draftDirty = True
@@ -91,8 +93,11 @@ Public Class PageStarsectorInstanceRight
         If _modOperation OrElse _loading Then Return False
         If Not _draftDirty Then Return True
         If MessageBox.Show("MOD 勾选尚未保存，是否丢弃修改并切换？", "未保存的方案", MessageBoxButton.YesNo) <> MessageBoxResult.Yes Then Return False
-        _draftDirty = False : Return True
+        Return True
     End Function
+    Public Sub DiscardDraft()
+        _draftDirty = False
+    End Sub
     Private ReadOnly _modBoxes As New List(Of MyCheckBox)
     Private ReadOnly _memoryTimer As New System.Windows.Threading.DispatcherTimer With {.Interval = TimeSpan.FromSeconds(2)}
     Private _readingMemory As Boolean

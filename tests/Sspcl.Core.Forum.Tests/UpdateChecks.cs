@@ -38,6 +38,20 @@ internal static class UpdateChecks
         Check(ModUpdateService.IsCompatible("0.98", "0.98a-RC8") && ModUpdateService.IsCompatible("0.98a", "0.98a-RC8"), "Broad forum game versions rejected.");
         Check(!ModUpdateService.IsCompatible("0.97", "0.98a-RC8") && !ModUpdateService.IsCompatible("0.98a-RC7", "0.98a-RC8") && !ModUpdateService.IsCompatible("", "0.98a-RC8"), "Incompatible/unknown game versions accepted.");
         Check(File.Exists(archive) && !Directory.GetDirectories(pool, ".sspcl-new-*").Any(), "Source archive removed or staging leaked.");
+        string downloadRoot = Path.Combine(root,"store-install"), sourceFolder = Path.Combine(root,"source","new-folder");Directory.CreateDirectory(sourceFolder);
+        Directory.CreateDirectory(Path.Combine(downloadRoot,"old"));File.WriteAllText(Path.Combine(downloadRoot,"old/mod_info.json"),"{\"id\":\"store-id\",\"version\":\"1.0\"}");File.WriteAllText(Path.Combine(downloadRoot,"old/old.txt"),"keep");
+        File.WriteAllText(Path.Combine(sourceFolder,"mod_info.json"),"{\"id\":\"store-id\",\"version\":\"2.0\",\"jars\":[\"plugin.jar\"]}");
+        var installation=ModInstaller.InstallFolder(sourceFolder,downloadRoot);Check(!installation.Success && File.Exists(Path.Combine(downloadRoot,"old/old.txt")),"Incomplete store update removed old MOD.");
+        File.WriteAllText(Path.Combine(sourceFolder,"plugin.jar"),"new");Directory.CreateDirectory(Path.Combine(downloadRoot,"new-folder"));File.WriteAllText(Path.Combine(downloadRoot,"new-folder/mod_info.json"),"{\"id\":\"unrelated\"}");
+        installation=ModInstaller.InstallFolder(sourceFolder,downloadRoot);Check(!installation.Success && File.Exists(Path.Combine(downloadRoot,"old/old.txt")) && ModScanner.Scan(downloadRoot).Any(m=>m.Id=="unrelated"),"Same-name store import removed another MOD.");
+        Directory.Move(Path.Combine(downloadRoot,"new-folder"),Path.Combine(downloadRoot,"unrelated"));
+        installation=ModInstaller.InstallFolder(sourceFolder,downloadRoot);Check(installation.Success && installation.WasUpdate && File.Exists(Path.Combine(downloadRoot,"new-folder/plugin.jar")) && !Directory.Exists(Path.Combine(downloadRoot,"old")),"Transactional store replacement failed.");
+        string rollbackRoot=Path.Combine(root,"install-rollback");
+        foreach(string folder in new[]{"a-old","z-locked"}) { Directory.CreateDirectory(Path.Combine(rollbackRoot,folder));File.WriteAllText(Path.Combine(rollbackRoot,folder,"mod_info.json"),"{\"id\":\"rollback\"}");File.WriteAllText(Path.Combine(rollbackRoot,folder,"data.txt"),"old"); }
+        File.WriteAllText(Path.Combine(sourceFolder,"mod_info.json"),"{\"id\":\"rollback\"}");
+        using(var locked=new FileStream(Path.Combine(rollbackRoot,"z-locked/data.txt"),FileMode.Open,FileAccess.Read,FileShare.None))
+        { installation=ModInstaller.InstallFolder(sourceFolder,rollbackRoot);Check(!installation.Success && File.Exists(Path.Combine(rollbackRoot,"a-old/data.txt")),"Failed second rename did not restore first old MOD."); }
+        string hidden=Path.Combine(downloadRoot,".sspcl-install-fixture");Directory.CreateDirectory(hidden);File.WriteAllText(Path.Combine(hidden,"mod_info.json"),"{\"id\":\"hidden\"}");Check(!ModScanner.Scan(downloadRoot).Any(m=>m.Id=="hidden"),"Private install stage leaked into MOD catalog.");
         Console.WriteLine("Update checks passed: complete replacement in pool/game, obsolete files removed, duplicate cleanup, enabled state preservation, incompatible/invalid package rejection.");
     }
 

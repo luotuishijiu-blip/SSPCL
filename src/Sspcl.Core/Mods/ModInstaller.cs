@@ -21,7 +21,7 @@ public sealed class InstallResult
 /// 安装 / 更新 / 删除 mod：
 ///   - zip 原生解压；7z/rar 借 WinRAR/7-Zip 解压
 ///   - 识别「压缩包内多一层同名目录」
-///   - 同 id 已存在 → 视为更新：旧版先进回收站再装新版
+///   - 同 id 已存在 → 完整暂存新版后替换，失败恢复旧版
 ///   - 删除 mod 目录走回收站
 /// </summary>
 public static class ModInstaller
@@ -63,43 +63,56 @@ public static class ModInstaller
     public static InstallResult InstallFolder(string sourceFolder, string modsDir)
     {
         var r = new InstallResult();
+        string? stage = null;
+        var moved = new List<(string Original, string Backup)>();
+        string? placed = null;
         try
         {
             string infoPath = Path.Combine(sourceFolder, "mod_info.json");
             if (!File.Exists(infoPath)) { r.Error = "该文件夹内没有 mod_info.json"; return r; }
 
             var spec = ModScanner.ParseModInfo(File.ReadAllText(infoPath), sourceFolder, Path.GetFileName(sourceFolder));
+            if(string.IsNullOrWhiteSpace(spec.Id) || !string.IsNullOrWhiteSpace(spec.Error))throw new InvalidDataException("MOD 元数据无效，缺少有效 ID。");
+            foreach(string jar in spec.Jars)
+            {
+                string file=Path.GetFullPath(Path.Combine(sourceFolder,jar));
+                if(!file.StartsWith(Path.GetFullPath(sourceFolder).TrimEnd(Path.DirectorySeparatorChar)+Path.DirectorySeparatorChar,StringComparison.OrdinalIgnoreCase) || !File.Exists(file))throw new InvalidDataException("完整 MOD 包缺少声明的 JAR："+jar);
+            }
             r.ModId = spec.Id;
             r.Name = string.IsNullOrWhiteSpace(spec.Name) ? Path.GetFileName(sourceFolder) : spec.Name;
             r.TargetFolder = Path.GetFileName(sourceFolder.TrimEnd('\\', '/'));
 
+            modsDir = Path.GetFullPath(modsDir);
             var target = Path.Combine(modsDir, r.TargetFolder);
-
-            // 同 id 或同名目录已存在 → 旧版进回收站（更新）
-            foreach (var m in ModScanner.Scan(modsDir))
-                if (spec.Id.Length > 0 && m.Id == spec.Id && !PathsEqual(m.Path, target))
-                {
-                    RecycleDir(m.Path);
-                    r.RemovedFolders.Add(m.Folder);
-                    r.WasUpdate = true;
-                }
-            if (Directory.Exists(target))
-            {
-                RecycleDir(target);
-                r.RemovedFolders.Add(r.TargetFolder);
-                r.WasUpdate = true;
-            }
+            if(modsDir.StartsWith(Path.GetFullPath(sourceFolder).TrimEnd(Path.DirectorySeparatorChar)+Path.DirectorySeparatorChar,StringComparison.OrdinalIgnoreCase) || PathsEqual(modsDir,sourceFolder))throw new IOException("安装目标不能位于源 MOD 内。");
+            var old = ModScanner.Scan(modsDir).Where(m => m.Id == spec.Id).ToList();
+            if((Directory.Exists(target) || File.Exists(target)) && !old.Any(m => PathsEqual(m.Path,target)))throw new IOException("同名目录属于其他 MOD，已保留："+r.TargetFolder);
 
             Directory.CreateDirectory(modsDir);
-            CopyDirectory(sourceFolder, target);
+            stage=Path.Combine(modsDir,".sspcl-install-"+Guid.NewGuid().ToString("N"));
+            ModActivationService.CopyDirectory(sourceFolder,stage);
+            foreach(var mod in old)
+            {
+                string backup=Path.Combine(modsDir,".sspcl-backups",Guid.NewGuid().ToString("N"));
+                Directory.CreateDirectory(Path.GetDirectoryName(backup)!);
+                Directory.Move(mod.Path,backup);moved.Add((mod.Path,backup));r.RemovedFolders.Add(mod.Folder);
+            }
+            Directory.Move(stage,target);placed=target;
+            r.WasUpdate=moved.Count>0;
             r.Success = true;
+            foreach(var item in moved)
+                try { Directory.Delete(item.Backup,true); }
+                catch(Exception ex) when(ex is IOException || ex is UnauthorizedAccessException) { r.Error="新版已安装，旧版备份未能清理："+item.Backup; }
             return r;
         }
         catch (Exception ex)
         {
+            if(placed != null && Directory.Exists(placed))Directory.Delete(placed,true);
+            foreach(var item in moved.AsEnumerable().Reverse())if(!Directory.Exists(item.Original) && Directory.Exists(item.Backup))Directory.Move(item.Backup,item.Original);
             r.Error = ex.Message;
             return r;
         }
+        finally { if(stage != null && Directory.Exists(stage))Directory.Delete(stage,true); }
     }
 
     /// <summary>从压缩包安装：先解压到临时目录，找到 mod_info.json 所在目录，再走 InstallFolder。</summary>

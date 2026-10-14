@@ -13,9 +13,15 @@ public static class SharedWorkspace
 {
     public static WorkspacePreferences Read(string path)
     {
-        if(!File.Exists(path))return new();
-        try { return JsonSerializer.Deserialize<WorkspacePreferences>(File.ReadAllText(path)) ?? throw new InvalidDataException("目录配置为空。"); }
-        catch(JsonException) when(File.Exists(path+".bak")) { return JsonSerializer.Deserialize<WorkspacePreferences>(File.ReadAllText(path+".bak")) ?? throw new InvalidDataException("目录配置备份为空。"); }
+        if(!File.Exists(path) && !File.Exists(path+".bak"))return new();
+        WorkspacePreferences Parse(string file)
+        {
+            var value = JsonSerializer.Deserialize<WorkspacePreferences>(File.ReadAllText(file)) ?? throw new InvalidDataException("目录配置为空。");
+            if(value.GamePath==null || value.ModsPath==null || value.ProfileId==null)throw new InvalidDataException("目录配置字段无效。");
+            return value;
+        }
+        try { return Parse(path); }
+        catch(Exception ex) when((ex is JsonException || ex is InvalidDataException || ex is FileNotFoundException) && File.Exists(path+".bak")) { return Parse(path+".bak"); }
     }
     public static void Save(string path, WorkspacePreferences preferences)
     { Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path))!); ModProfileStore.AtomicWrite(path,JsonSerializer.Serialize(preferences)); }
@@ -28,7 +34,9 @@ public static class SharedWorkspace
         if(selected.Equals(entry,StringComparison.OrdinalIgnoreCase)) return Directory.Exists(entry) && (File.GetAttributes(entry)&FileAttributes.ReparsePoint)!=0 ? Target(entry) : entry;
         if(!Directory.Exists(selected) || selected.Equals(game,StringComparison.OrdinalIgnoreCase) || entry.StartsWith(selected.TrimEnd(Path.DirectorySeparatorChar)+Path.DirectorySeparatorChar,StringComparison.OrdinalIgnoreCase) || selected.StartsWith(entry+Path.DirectorySeparatorChar,StringComparison.OrdinalIgnoreCase)) throw new IOException("请选择独立的 MOD 文件夹，不能是游戏目录、mods 的父目录或子目录。");
         selected=Target(selected);
-        if(entry.StartsWith(selected.TrimEnd(Path.DirectorySeparatorChar)+Path.DirectorySeparatorChar,StringComparison.OrdinalIgnoreCase) || selected.StartsWith(entry+Path.DirectorySeparatorChar,StringComparison.OrdinalIgnoreCase))throw new IOException("所选目录联接会导致目录循环，请选择独立的真实 MOD 文件夹。");
+        string physicalEntry=Path.Combine(Target(game),"mods");
+        if(physicalEntry.StartsWith(selected.TrimEnd(Path.DirectorySeparatorChar)+Path.DirectorySeparatorChar,StringComparison.OrdinalIgnoreCase) || selected.StartsWith(physicalEntry+Path.DirectorySeparatorChar,StringComparison.OrdinalIgnoreCase))throw new IOException("所选目录联接会导致目录循环，请选择独立的真实 MOD 文件夹。");
+        if(selected.Equals(physicalEntry,StringComparison.OrdinalIgnoreCase))return selected;
         string? previous=null, backup=null;
         if(Directory.Exists(entry))
         {

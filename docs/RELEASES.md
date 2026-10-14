@@ -4,6 +4,12 @@
 
 ## 最新版
 
+[2026-10-14：关键流程审查修复](https://github.com/luotuishijiu-blip/SSPCL/releases/tag/build-20261014-audit-fixes)
+
+下载 `sspcl-audit-fixes-20261014.zip`，解压运行。修复商店/本地导入失败后的旧 MOD 保护、同名目录误覆盖、目录别名循环、方案清单与配置备份恢复、重复启动覆盖手动设置，以及取消切换时的暂存状态。无需管理员权限。
+
+## MOD 管理可用性版
+
 [2026-10-12：MOD 管理可用性与目录修复](https://github.com/luotuishijiu-blip/SSPCL/releases/tag/build-20261012-mod-usability)
 
 下载 `sspcl-mod-usability-20261012.zip`，解压运行。补齐明显的保存、全选和全部取消按钮，虚拟化 MOD 列表减少勾选卡顿；游戏目录跨解压位置持久保存，新增手动选择 MOD 集文件夹，固定使用 `mods` 入口而无需玩家改名。无需管理员权限。见 [方案说明](MOD_PROFILES.md)。

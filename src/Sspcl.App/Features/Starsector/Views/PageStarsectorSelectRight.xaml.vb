@@ -32,6 +32,7 @@ Public Class PageStarsectorSelectRight
             Settings.Set("StarsectorSharedGame", path) : Settings.Set("StarsectorSharedMigration", False)
             ModMain.PersistWorkspace()
             Await ModMain.EnsureSharedModsAsync()
+            If ModMain.FrmStarsectorInstanceRight IsNot Nothing Then ModMain.FrmStarsectorInstanceRight.DiscardDraft()
             If ModMain.ActiveProfileId = "" Then ModMain.ActiveProfileId = ModMain.ProfileStore().Save("默认 MOD 方案", ModStarsector.ReadEnabled(path)).Id
             _status.Text = "共享游戏目录：" & path & "。所有启用方案共用此目录的 MOD 文件。"
             RefreshCards()
@@ -94,6 +95,7 @@ Public Class PageStarsectorSelectRight
                 Dim mods = ModStarsector.ScanMods(ModMain.SharedModsDir())
                 Await Task.Run(Sub() ModStarsector.WriteEnabled(game, Sspcl.Core.Mods.ModProfileStore.ResolveSelection(profile.EnabledMods, mods).Where(Function(value) mods.Any(Function(m) m.Id = value))))
                 ModMain.ActiveProfileId = id
+                If ModMain.FrmStarsectorInstanceRight IsNot Nothing Then ModMain.FrmStarsectorInstanceRight.DiscardDraft()
             Finally
                 PageStarsectorDownload.ReleaseInstall()
             End Try

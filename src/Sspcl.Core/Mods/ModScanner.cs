@@ -15,6 +15,7 @@ public static class ModScanner
         foreach (var dir in Directory.EnumerateDirectories(modsDirectory))
         {
             var folder = Path.GetFileName(dir);
+            if(folder.StartsWith(".sspcl-", StringComparison.OrdinalIgnoreCase))continue;
             var infoPath = Path.Combine(dir, "mod_info.json");
             if (!File.Exists(infoPath)) continue; // 无 mod_info.json 的目录 = 非 mod，跳过（与游戏本体一致）
 
