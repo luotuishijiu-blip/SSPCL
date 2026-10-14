@@ -4,6 +4,12 @@
 
 ## 最新版
 
+[2026-10-14：MOD 搜索、诊断与备份管理](https://github.com/luotuishijiu-blip/SSPCL/releases/tag/build-20261014-mod-management)
+
+下载 `sspcl-mod-management-20261014.zip`，解压运行 `Sspcl.exe`。增加搜索与组合筛选、候选更新检查、保存前清单差异、启动诊断及报告导出、方案和旧 MOD 备份的查看/恢复/清理。无需管理员权限。详情见 [方案说明](MOD_PROFILES.md)。
+
+## 审查修复版
+
 [2026-10-14：关键流程审查修复](https://github.com/luotuishijiu-blip/SSPCL/releases/tag/build-20261014-audit-fixes)
 
 下载 `sspcl-audit-fixes-20261014.zip`，解压运行。修复商店/本地导入失败后的旧 MOD 保护、同名目录误覆盖、目录别名循环、方案清单与配置备份恢复、重复启动覆盖手动设置，以及取消切换时的暂存状态。无需管理员权限。

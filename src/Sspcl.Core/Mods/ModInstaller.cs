@@ -60,7 +60,7 @@ public static class ModInstaller
     private static extern int SHFileOperation(ref SHFILEOPSTRUCT lpFileOp);
 
     /// <summary>从一个已解压的 mod 文件夹安装（读取其 mod_info.json，处理同名/同 id 覆盖）。</summary>
-    public static InstallResult InstallFolder(string sourceFolder, string modsDir)
+    public static InstallResult InstallFolder(string sourceFolder, string modsDir, string? folderOverride = null)
     {
         var r = new InstallResult();
         string? stage = null;
@@ -80,7 +80,8 @@ public static class ModInstaller
             }
             r.ModId = spec.Id;
             r.Name = string.IsNullOrWhiteSpace(spec.Name) ? Path.GetFileName(sourceFolder) : spec.Name;
-            r.TargetFolder = Path.GetFileName(sourceFolder.TrimEnd('\\', '/'));
+            r.TargetFolder = folderOverride ?? Path.GetFileName(sourceFolder.TrimEnd('\\', '/'));
+            if(string.IsNullOrWhiteSpace(r.TargetFolder) || r.TargetFolder=="." || r.TargetFolder==".." || Path.GetFileName(r.TargetFolder)!=r.TargetFolder || r.TargetFolder.IndexOfAny(Path.GetInvalidFileNameChars())>=0 || r.TargetFolder.StartsWith(".sspcl-",StringComparison.OrdinalIgnoreCase))throw new IOException("目标 MOD 文件夹名字无效。");
 
             modsDir = Path.GetFullPath(modsDir);
             var target = Path.Combine(modsDir, r.TargetFolder);
@@ -94,15 +95,14 @@ public static class ModInstaller
             foreach(var mod in old)
             {
                 string backup=Path.Combine(modsDir,".sspcl-backups",Guid.NewGuid().ToString("N"));
-                Directory.CreateDirectory(Path.GetDirectoryName(backup)!);
+                BackupCatalog.PrepareRoot(modsDir);
                 Directory.Move(mod.Path,backup);moved.Add((mod.Path,backup));r.RemovedFolders.Add(mod.Folder);
+                BackupCatalog.RememberFolder(backup,mod.Folder);
             }
             Directory.Move(stage,target);placed=target;
             r.WasUpdate=moved.Count>0;
             r.Success = true;
-            foreach(var item in moved)
-                try { Directory.Delete(item.Backup,true); }
-                catch(Exception ex) when(ex is IOException || ex is UnauthorizedAccessException) { r.Error="新版已安装，旧版备份未能清理："+item.Backup; }
+            // 成功替换后保留旧版，供备份管理恢复或手动清理。
             return r;
         }
         catch (Exception ex)

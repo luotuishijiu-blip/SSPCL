@@ -22,6 +22,7 @@ try
     ActivationChecks.Run(testRoot);
     ProfileChecks.Run(testRoot);
     UpdateChecks.Run(testRoot);
+    ManagementChecks.Run(testRoot);
     await LoadoutChecks.Run(testRoot);
     if (args.Contains("--live-loadout")) LoadoutChecks.Live("D:/Starsector");
     Console.WriteLine("Offline contract and download checks passed.");

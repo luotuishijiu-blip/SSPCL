@@ -2,7 +2,7 @@
 Imports Sspcl.Core.Launch
 Imports Sspcl.Core.Store.Forum
 
-Public Class PageStarsectorInstanceRight
+Public Partial Class PageStarsectorInstanceRight
 
     Private _mods As List(Of ModSpec)
     Private _enabled As HashSet(Of String)
@@ -38,16 +38,26 @@ Public Class PageStarsectorInstanceRight
         For Each id In _enabled.Where(Function(value) Not installed.Contains(value))
             _modRows.Add(New ModRow With {.Id = id, .Label = "缺失 MOD · " & id, .IsChecked = True, .Changed = AddressOf RowChanged})
         Next
-        PanModList.ItemsSource = _modRows
+        For Each row In _modRows
+            If _availableUpdates.ContainsKey(row.Id) Then
+                row.Label &= "  ↑ " & _availableUpdates(row.Id)
+                row.Details &= vbCrLf & "候选更新，请在论坛更新中确认发布包。"
+            End If
+        Next
+        ConfigureModFilters()
     End Sub
     Private Sub RowChanged(id As String, value As Boolean)
         If _loading OrElse _modOperation Then Return
         Dim desired As New HashSet(Of String)(_enabled)
+        If value Then _automaticAdded.Remove(id)
         If value Then desired.Add(id) Else desired.Remove(id)
         ApplyDraft(desired)
     End Sub
     Private Sub ApplyDraft(desired As IEnumerable(Of String))
-        _enabled = ModProfileStore.ResolveSelection(desired, _mods)
+        Dim requested As New HashSet(Of String)(desired)
+        _enabled = ModProfileStore.ResolveSelection(requested, _mods)
+        _automaticAdded.UnionWith(_enabled.Except(requested))
+        _automaticAdded.IntersectWith(_enabled)
         _draftDirty = True : _loading = True
         Try
             For Each row In _modRows
@@ -57,11 +67,14 @@ Public Class PageStarsectorInstanceRight
             _loading = False
         End Try
         LabModSummary.Text = "已暂存 " & _enabled.Count & " 项选择，尚未保存。请点击上方蓝色保存按钮。"
+        RefreshModFilter(True)
     End Sub
     Private Sub SelectAllMods(sender As Object, e As RoutedEventArgs)
+        _automaticAdded.Clear()
         If Not _loading AndAlso Not _modOperation AndAlso _enabled IsNot Nothing Then ApplyDraft(_enabled.Concat(_mods.Select(Function(m) m.Id)).ToList())
     End Sub
     Private Sub ClearAllMods(sender As Object, e As RoutedEventArgs)
+        _automaticAdded.Clear()
         If Not _loading AndAlso Not _modOperation AndAlso _enabled IsNot Nothing Then ApplyDraft(New String() {})
     End Sub
     Private Async Sub SelectModsFolder(sender As Object, e As RoutedEventArgs)
@@ -216,10 +229,12 @@ Public Class PageStarsectorInstanceRight
         Try
             Await ModMain.EnsureSharedModsAsync()
             Dim directory = ModMain.SharedModsDir()
+            _availableUpdates.Clear()
             _mods = Await Task.Run(Function() ModStarsector.ScanMods(directory).Where(Function(m) Not String.IsNullOrWhiteSpace(m.Id)).GroupBy(Function(m) m.Id).Select(Function(group) group.First()).ToList())
             If Not _draftDirty OrElse _draftProfile <> ModMain.ActiveProfileId Then
                 _enabled = New HashSet(Of String)(If(ModMain.ActiveProfileId = "", ModStarsector.ReadEnabled(ModMain.StarsectorPath), ModMain.ProfileStore().Read(ModMain.ActiveProfileId).EnabledMods))
                 _draftProfile = ModMain.ActiveProfileId : _draftDirty = False
+                _automaticAdded.Clear()
             End If
             BindModRows()
             Dim ok = _mods.Count
@@ -257,17 +272,26 @@ Public Class PageStarsectorInstanceRight
         If _modOperation OrElse _loading OrElse _enabled Is Nothing Then Return
         Try
             Dim store = ModMain.ProfileStore(), profiles = store.List()
-            Dim window As New Window With {.Title = "保存 MOD 启用方案", .Width = 480, .SizeToContent = SizeToContent.Height, .WindowStartupLocation = WindowStartupLocation.CenterOwner, .Owner = ModMain.FrmMain, .ResizeMode = ResizeMode.NoResize}
+            Dim window As New Window With {.Title = "保存 MOD 启用方案", .Width = Math.Min(620, SystemParameters.WorkArea.Width - 40), .SizeToContent = SizeToContent.Height, .MaxHeight = SystemParameters.WorkArea.Height - 40, .WindowStartupLocation = WindowStartupLocation.CenterOwner, .Owner = ModMain.FrmMain}
             Dim panel As New StackPanel With {.Margin = New Thickness(22)}
             panel.Children.Add(New TextBlock With {.Text = "版本只保存启用清单，共用游戏与 MOD 文件。", .TextWrapping = TextWrapping.Wrap})
             Dim name As New TextBox With {.Text = If(_draftProfile = "", "我的 MOD 方案", store.Read(_draftProfile).Name), .Margin = New Thickness(0, 12, 0, 12), .Padding = New Thickness(8)}
             panel.Children.Add(New TextBlock With {.Text = "方案名字", .Margin = New Thickness(0, 12, 0, 0)}) : panel.Children.Add(name)
             Dim target As New ComboBox With {.ItemsSource = profiles, .DisplayMemberPath = "Name", .SelectedItem = profiles.FirstOrDefault(Function(p) p.Id = _draftProfile), .Margin = New Thickness(0, 8, 0, 12)}
             panel.Children.Add(New TextBlock With {.Text = "替换目标（添加新版本时忽略）"}) : panel.Children.Add(target)
+            Dim preview As New TextBlock With {.TextWrapping = TextWrapping.Wrap}
+            Dim showDiff As Action = Sub()
+                Dim baseline = If(_draftProfile = "", New List(Of String), store.Read(_draftProfile).EnabledMods)
+                Dim selected = TryCast(target.SelectedItem, ModProfile)
+                preview.Text = "添加新版本 · 相对当前方案" & vbCrLf & DescribeDiff(baseline) & vbCrLf & vbCrLf & "替换现有版本 · " & If(selected Is Nothing, "请先选择目标", selected.Name & vbCrLf & DescribeDiff(selected.EnabledMods))
+            End Sub
+            AddHandler target.SelectionChanged, Sub() showDiff()
+            showDiff()
+            panel.Children.Add(New ScrollViewer With {.Content = preview, .Height = 190, .VerticalScrollBarVisibility = ScrollBarVisibility.Auto, .Margin = New Thickness(0, 0, 0, 12)})
             Dim actions As New WrapPanel, replacement As String = Nothing
-            Dim add As New Button With {.Content = "添加新版本", .Padding = New Thickness(10, 6, 10, 6)}
+            Dim add As New Button With {.Content = "添加新版本", .Padding = New Thickness(10, 6, 10, 6), .IsDefault = True}
             Dim replace As New Button With {.Content = "替换现有版本", .Padding = New Thickness(10, 6, 10, 6), .Margin = New Thickness(8, 0, 0, 0), .IsEnabled = profiles.Count > 0}
-            Dim cancel As New Button With {.Content = "取消", .Padding = New Thickness(10, 6, 10, 6), .Margin = New Thickness(8, 0, 0, 0)}
+            Dim cancel As New Button With {.Content = "取消", .Padding = New Thickness(10, 6, 10, 6), .Margin = New Thickness(8, 0, 0, 0), .IsCancel = True}
             AddHandler add.Click, Sub() window.DialogResult = True
             AddHandler replace.Click, Sub()
                 Dim chosen = TryCast(target.SelectedItem, ModProfile)
@@ -276,10 +300,11 @@ Public Class PageStarsectorInstanceRight
             End Sub
             AddHandler cancel.Click, Sub() window.DialogResult = False
             actions.Children.Add(add) : actions.Children.Add(replace) : actions.Children.Add(cancel)
-            panel.Children.Add(actions) : window.Content = panel
+            panel.Children.Add(actions) : window.Content = New ScrollViewer With {.Content = panel, .VerticalScrollBarVisibility = ScrollBarVisibility.Auto}
             If window.ShowDialog() <> True Then Return
             Dim profile = store.Save(name.Text, ModProfileStore.ResolveSelection(_enabled, _mods), replacement)
             ModMain.ActiveProfileId = profile.Id : _draftProfile = profile.Id : _draftDirty = False
+            _automaticAdded.Clear()
             LabModSummary.Text = "已保存「" & profile.Name & "」，下次启动使用此清单。MOD 文件未复制。"
             If ModMain.FrmStarsectorSelectRight IsNot Nothing Then ModMain.FrmStarsectorSelectRight.RefreshCards()
             If ModMain.FrmStarsectorLeft IsNot Nothing Then CType(ModMain.FrmStarsectorLeft, PageStarsectorLeft).RefreshInfo()

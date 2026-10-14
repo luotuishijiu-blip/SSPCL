@@ -24,7 +24,8 @@ internal static class UpdateChecks
         {
             var installed = ModScanner.Scan(modsRoot);
             Check(installed.Count(m => m.Id == "update_fixture") == 1 && installed.Single(m => m.Id == "update_fixture").VersionRaw == "2.0", "Old or duplicate version remains.");
-            Check(!Directory.GetFiles(modsRoot, "obsolete.txt", SearchOption.AllDirectories).Any(), "Old files merged into new version.");
+            Check(!installed.Any(m => File.Exists(Path.Combine(m.Path, "obsolete.txt"))), "Old files merged into active new version.");
+            Check(new BackupCatalog(Path.Combine(root, "backup-profiles"), modsRoot).List().Any(e => e.Kind == "mod" && e.Version == "1.0"), "Update did not retain recoverable old MOD.");
             Check(File.Exists(Path.Combine(modsRoot, "new-folder", "new.jar")), "New files not installed.");
         }
         Check(!Directory.GetDirectories(game, ".sspcl-old-*").Any() && !Directory.GetDirectories(root, ".sspcl-old-*").Any(), "Old backups not deleted after success.");

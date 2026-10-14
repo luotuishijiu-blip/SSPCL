@@ -43,13 +43,27 @@
                             <Button x:Name="BtnRescan" Content="重新扫描" Padding="12,8" Margin="0,0,8,0" Click="RescanMods"/>
                             <Button Content="选择 MOD 集文件夹" Padding="12,8" Click="SelectModsFolder"/>
                         </WrapPanel>
+                        <WrapPanel Margin="0,0,0,8">
+                            <Button Content="检查可用更新" Padding="10,6" Margin="0,0,8,4" Click="CheckUpdates_Click" x:Name="BtnCheckUpdates"/>
+                            <Button Content="启动诊断" Padding="10,6" Margin="0,0,8,4" Click="Diagnostics_Click"/>
+                            <Button Content="备份管理" Padding="10,6" Margin="0,0,8,4" Click="Backups_Click"/>
+                        </WrapPanel>
+                        <WrapPanel>
+                            <TextBlock Text="搜索" VerticalAlignment="Center" Margin="0,0,8,4"/>
+                            <TextBox x:Name="BoxModSearch" Width="210" Padding="7,5" Margin="0,0,8,4" TextChanged="SearchMods_Changed" ToolTip="搜索名字、ID、作者或文件夹"/>
+                            <ComboBox x:Name="FilterModStatus" Width="120" SelectedIndex="0" Margin="0,0,8,4" Padding="5" SelectionChanged="FilterMods_Changed">
+                                <ComboBoxItem Content="全部 MOD" Tag="all"/><ComboBoxItem Content="已启用" Tag="enabled"/><ComboBoxItem Content="未启用" Tag="disabled"/><ComboBoxItem Content="缺失" Tag="missing"/><ComboBoxItem Content="可更新" Tag="updates"/>
+                            </ComboBox>
+                            <ComboBox x:Name="FilterModAuthor" Width="160" Margin="0,0,8,4" Padding="5" SelectionChanged="FilterMods_Changed" ToolTip="按作者筛选"/>
+                        </WrapPanel>
+                        <TextBlock x:Name="LabModResults" Foreground="{DynamicResource ColorBrushGray3}" TextWrapping="Wrap" FontSize="12" Text="全选与全部取消作用于完整清单。"/>
                         <Button x:Name="BtnCancelUpdate" Content="取消更新下载" Visibility="Collapsed" Padding="12,6" Margin="0,8,0,0" HorizontalAlignment="Left" Click="CancelUpdate_Click"/>
                         <ListBox x:Name="PanModList" Height="440" Margin="0,8,0,0" ScrollViewer.CanContentScroll="True" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                           <ListBox.ItemContainerStyle><Style TargetType="ListBoxItem"><Setter Property="HorizontalContentAlignment" Value="Stretch"/></Style></ListBox.ItemContainerStyle>
                           <ListBox.ItemsPanel><ItemsPanelTemplate><VirtualizingStackPanel/></ItemsPanelTemplate></ListBox.ItemsPanel>
                           <ListBox.ItemTemplate><DataTemplate><DockPanel Margin="2,4">
                             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal"><Button Content="论坛更新" Tag="{Binding Mod}" Click="OnlineUpdate_Click" Padding="6,3"/><Button Content="本地更新" Tag="{Binding Mod}" Click="LocalUpdate_Click" Padding="6,3" Margin="4,0,0,0"/></StackPanel>
-                            <CheckBox Content="{Binding Label}" IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" ToolTip="{Binding Details}"/>
+                            <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalContentAlignment="Stretch" ToolTip="{Binding Details}"><TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis"/></CheckBox>
                           </DockPanel></DataTemplate></ListBox.ItemTemplate>
                         </ListBox>
                     </StackPanel>

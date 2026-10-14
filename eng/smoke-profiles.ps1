@@ -39,6 +39,23 @@ try {
  if($enabledField.GetValue($editor).Count -ne 2002){throw 'Select all lost items.'}
  $editor.GetType().GetMethod('ClearAllMods',$flags).Invoke($editor,@($null,$null))|Out-Null
  if($enabledField.GetValue($editor).Count -ne 0){throw 'Clear all did not clear selections.'}
+ $search=$editor.FindName('BoxModSearch');$status=$editor.FindName('FilterModStatus');$view=$editor.FindName('PanModList')
+ $search.Text='mod1999';$editor.GetType().GetMethod('RefreshModFilter',$flags).Invoke($editor,@($false))|Out-Null
+ if($view.Items.Count -ne 1){throw 'Search result incorrect.'}
+ $rows=$editor.GetType().GetField('_modRows',$flags).GetValue($editor);$rows[2000].IsChecked=$true
+ $search.Text='';$status.SelectedIndex=1
+ if($view.Items.Count -ne 1 -or -not $enabledField.GetValue($editor).Contains('mod1999')){throw 'Enabled filter lost draft or showed wrong rows.'}
+ $status.SelectedIndex=3
+ if($view.Items.Count -ne 1){throw 'Missing-ID filter incorrect.'}
+ $status.SelectedIndex=0
+ $editor.GetType().GetMethod('ClearAllMods',$flags).Invoke($editor,@($null,$null))|Out-Null
+ $automatic=$editor.GetType().GetField('_automaticAdded',$flags).GetValue($editor);$automatic.Add('mod0')|Out-Null
+ $rows[1].IsChecked=$true
+ $previous=[Activator]::CreateInstance($profile.EnabledMods.GetType());$previous.Add('sample')
+ $arguments=New-Object object[] 1;$arguments[0]=$previous.PSObject.BaseObject
+ $difference=$editor.GetType().GetMethod('DescribeDiff',$flags).Invoke($editor,$arguments)
+ if(-not $difference.Contains('mod0') -or -not $difference.Contains('sample')){throw "Save difference preview incorrect: $difference"}
+ $editor.GetType().GetMethod('ClearAllMods',$flags).Invoke($editor,@($null,$null))|Out-Null
  $editor.FindName('PanMod').Visibility='Visible';$editor.Width=940;$editor.Height=690
  foreach($item in $editor.FindName('PanMod').Children){if($item.GetType().Name -eq 'MyCard'){$null=$item.MainTextBlock}}
  $editor.Measure([Windows.Size]::new(940,690));$editor.Arrange([Windows.Rect]::new(0,0,940,690));$editor.UpdateLayout()
@@ -52,6 +69,37 @@ try {
  if($editor.FindName('BtnSaveMods').ActualWidth -lt 80){throw 'Visible save button missing.'}
  $bitmap=[Windows.Media.Imaging.RenderTargetBitmap]::new(940,690,96,96,[Windows.Media.PixelFormats]::Pbgra32);$bitmap.Render($editor)
  $png=[Windows.Media.Imaging.PngBitmapEncoder]::new();$png.Frames.Add([Windows.Media.Imaging.BitmapFrame]::Create($bitmap));$file=[IO.File]::Create([IO.Path]::ChangeExtension($Output,'-mods.png'));try{$png.Save($file)}finally{$file.Dispose()}
+ $editor.Width=640;$editor.Height=620;$editor.Measure([Windows.Size]::new(640,620));$editor.Arrange([Windows.Rect]::new(0,0,640,620));$editor.UpdateLayout()
+ $bitmap=[Windows.Media.Imaging.RenderTargetBitmap]::new(640,620,96,96,[Windows.Media.PixelFormats]::Pbgra32);$bitmap.Render($editor)
+ $png=[Windows.Media.Imaging.PngBitmapEncoder]::new();$png.Frames.Add([Windows.Media.Imaging.BitmapFrame]::Create($bitmap));$file=[IO.File]::Create([IO.Path]::ChangeExtension($Output,'-compact.png'));try{$png.Save($file)}finally{$file.Dispose()}
+ if($editor.FindName('PanModList').ActualHeight -gt 390){throw 'Compact MOD list failed to adapt height.'}
+ [IO.Directory]::CreateDirectory((Join-Path $root 'starsector-core'))|Out-Null
+ [IO.File]::WriteAllText((Join-Path $root 'starsector-core/starfarer_obf.jar'),'fixture')
+ [IO.Directory]::CreateDirectory((Join-Path $root 'jre/bin'))|Out-Null
+ [IO.File]::WriteAllText((Join-Path $root 'jre/bin/javaw.exe'),'fixture, never execute')
+ [IO.File]::WriteAllText((Join-Path $root 'vmparams'),'java.exe -Xmx4g -Xms1g com.fs.starfarer.StarfarerLauncher')
+ $arguments=New-Object object[] 2;$arguments[0]=[string]$root;$arguments[1]=$profile2.EnabledMods.PSObject.BaseObject
+ $diagnostics=$editor.GetType().GetMethod('BuildDiagnosticsWindow',$flags).Invoke($editor,$arguments)
+ $report=$core.GetType('Sspcl.Core.Launch.LaunchDiagnostics').GetMethod('Check').Invoke($null,$arguments)
+ $diagnostics.Content.Children[$diagnostics.Content.Children.Count-1].Text=$report.ToText()
+ $backupId=[Guid]::NewGuid().ToString('N');$backupDir=Join-Path $root ('mods/.sspcl-backups/'+$backupId);[IO.Directory]::CreateDirectory($backupDir)|Out-Null
+ [IO.File]::WriteAllText((Join-Path $backupDir 'mod_info.json'),'{"id":"sample","name":"Sample MOD","version":"0.9"}')
+ $backupProfile=Join-Path $root ('profiles/'+$profile.Id);[IO.Directory]::CreateDirectory($backupProfile)|Out-Null
+ [IO.File]::WriteAllText((Join-Path $backupProfile 'profile.json.bak'),('{"Id":"'+$profile.Id+'","Name":"Exploration","EnabledMods":["sample"]}'))
+ $catalog=[Activator]::CreateInstance($core.GetType('Sspcl.Core.Mods.BackupCatalog'),@([string](Join-Path $root 'profiles'),[string](Join-Path $root 'mods')))
+ $arguments=New-Object object[] 2;$arguments[0]=[string]$root;$arguments[1]=$catalog.PSObject.BaseObject
+ $backups=$editor.GetType().GetMethod('BuildBackupsWindow',$flags).Invoke($editor,$arguments)
+ $inventory=$catalog.List();$backups.Content.Children[$backups.Content.Children.Count-1].ItemsSource=$inventory
+ if($inventory.Count -ne 2){throw 'Backup UI fixture inventory incorrect.'}
+ foreach($item in @(@($diagnostics,'-diagnostics.png'),@($backups,'-backups.png'))) {
+  $body=$item[0].Content;$item[0].Content=$null
+  $content=[Windows.Controls.Border]::new();$content.Child=$body;$content.Width=720;$content.Height=470;$content.Background=[Windows.Media.Brushes]::WhiteSmoke
+  $content.Measure([Windows.Size]::new(720,470));$content.Arrange([Windows.Rect]::new(0,0,720,470));$content.UpdateLayout()
+  $bitmap=[Windows.Media.Imaging.RenderTargetBitmap]::new(720,470,96,96,[Windows.Media.PixelFormats]::Pbgra32);$bitmap.Render($content)
+  $png=[Windows.Media.Imaging.PngBitmapEncoder]::new();$png.Frames.Add([Windows.Media.Imaging.BitmapFrame]::Create($bitmap));$file=[IO.File]::Create([IO.Path]::ChangeExtension($Output,$item[1]));try{$png.Save($file)}finally{$file.Dispose()}
+ }
+ Write-Output 'PASS: real diagnostic and backup window content rendered from isolated fixtures.'
+ Write-Output 'PASS: search, enabled/missing filters, preserved drafts, difference preview and compact layout.'
  Write-Output "PASS: 2002 MOD rows, $realized realized containers; 100 toggles $($watch.ElapsedMilliseconds) ms; select/clear all and visible save."
  Write-Output 'PASS: real profile cards, missing-MOD display, saved-list editing action, explicit save control and draft-only checkbox changes.'
 } finally { $application.Shutdown();[IO.Directory]::Delete($root,$true) }

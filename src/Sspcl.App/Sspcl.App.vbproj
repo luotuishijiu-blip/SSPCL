@@ -325,6 +325,7 @@
     <Compile Include="Features\Starsector\Views\PageStarsectorInstanceRight.xaml.vb">
       <DependentUpon>PageStarsectorInstanceRight.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Features\Starsector\Views\PageStarsectorInstanceRight.Management.vb" />
     <Compile Include="Features\Starsector\Views\PageStarsectorSelectLeft.xaml.vb">
       <DependentUpon>PageStarsectorSelectLeft.xaml</DependentUpon>
     </Compile>

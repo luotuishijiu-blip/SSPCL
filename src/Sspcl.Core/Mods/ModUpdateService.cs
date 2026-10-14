@@ -15,7 +15,7 @@ public static class ModUpdateService
             (target.Rc == 0 || target.Rc == game.Rc);
     }
 
-    /// <summary>先验证并暂存完整新包，再替换旧目录；成功后删除旧版，失败恢复。</summary>
+    /// <summary>先验证并暂存完整新包，再替换旧目录；成功保留旧版备份，失败恢复。</summary>
     public static InstallResult UpdateArchive(string archivePath, string expectedId, string poolDir, string gameDir, bool enforceGameVersion = true)
     {
         var result = new InstallResult();
@@ -69,9 +69,10 @@ public static class ModUpdateService
                 foreach (var old in plan.Old)
                 {
                     string backup = Path.Combine(Path.GetDirectoryName(old.Path)!, ".sspcl-backups", Guid.NewGuid().ToString("N"));
-                    Directory.CreateDirectory(Path.GetDirectoryName(backup)!);
+                    BackupCatalog.PrepareRoot(Path.GetDirectoryName(old.Path)!);
                     Directory.Move(old.Path, backup);
                     moved.Add((old.Path, backup));
+                    BackupCatalog.RememberFolder(backup,old.Folder);
                     result.RemovedFolders.Add(old.Folder);
                 }
                 Directory.Move(plan.Stage, plan.Destination);
@@ -82,12 +83,7 @@ public static class ModUpdateService
             result.ModId = replacement.Id;
             result.Name = replacement.Name;
             result.TargetFolder = replacement.Folder;
-            foreach (var old in moved)
-            {
-                try { Directory.Delete(old.Backup, true); }
-                catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
-                { result.Error = "新版本已安装，但旧版备份未能完全清理：" + old.Backup + "（" + ex.Message + "）"; }
-            }
+            // 旧版备份保留在私有目录，不参与游戏 MOD 扫描。
         }
         catch (Exception ex)
         {

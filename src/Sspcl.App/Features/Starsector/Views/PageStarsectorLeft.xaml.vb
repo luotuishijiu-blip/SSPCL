@@ -66,6 +66,13 @@ Public Class PageStarsectorLeft
         If Not BtnLaunch.IsEnabled Then Return
         BtnLaunch.IsEnabled = False
         Try
+            Await ModMain.EnsureSharedModsAsync()
+            Dim game = ModMain.StarsectorPath, selected = ModMain.SelectedModIds().ToList()
+            Dim diagnostics = Await Task.Run(Function() Sspcl.Core.Launch.LaunchDiagnostics.Check(game, selected))
+            If Not diagnostics.CanLaunch Then
+                MessageBox.Show(diagnostics.ToText(), "启动诊断 · 请修复后重试", MessageBoxButton.OK, MessageBoxImage.Warning)
+                Return
+            End If
             Await ModMain.ApplyActiveProfileAsync()
             Dim install = ModStarsector.Detect(ModMain.StarsectorPath)
             If Not install.IsValid Then
